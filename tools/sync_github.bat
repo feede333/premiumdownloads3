@@ -1,7 +1,17 @@
 @echo off
+echo Verificando token de GitHub...
+if "%GITHUB_TOKEN%" == "" (
+    echo Error: Variable GITHUB_TOKEN no encontrada
+    echo Configure la variable de entorno GITHUB_TOKEN con su token de acceso personal
+    pause
+    exit /b 1
+)
+
 echo Sincronizando con GitHub...
 
-git remote set-url origin https://%GITHUB_TOKEN%@github.com/feede333/premiumdownloads3.git
+echo.
+echo Generando páginas HTML...
+python tools/page_generator.py
 
 echo.
 echo Obteniendo cambios remotos...
@@ -11,7 +21,6 @@ if %errorlevel% neq 0 (
     echo.
     echo Hubo un conflicto al intentar sincronizar con el remoto.
     echo Resolviendo conflictos automáticamente...
-    git rm -r premiumdownloads2
     git add .
     git rebase --continue
 )

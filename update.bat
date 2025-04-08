@@ -1,5 +1,13 @@
 REM filepath: c:\Users\Federico\Downloads\downloads site\premiumdownloads2\update.bat
 @echo off
+echo Verificando token de GitHub...
+if "%GITHUB_TOKEN%" == "" (
+    echo Error: Variable GITHUB_TOKEN no encontrada
+    echo Configure la variable de entorno GITHUB_TOKEN con su token de acceso personal
+    pause
+    exit /b 1
+)
+
 echo Verificando rutas y archivos...
 
 cd ..

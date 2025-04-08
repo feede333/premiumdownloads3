@@ -63,6 +63,22 @@
         "disk": "bbb",
         "display": "b"
       }
+    },
+    {
+      "id": "D",
+      "title": "D",
+      "category": "D",
+      "fileSize": "D",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "D",
+      "requirements": {
+        "os": "DD",
+        "processor": "D",
+        "ram": "D",
+        "disk": "D",
+        "display": "D"
+      }
     }
   ]
 }

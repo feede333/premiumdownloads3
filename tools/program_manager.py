@@ -6,6 +6,8 @@ import shutil
 from datetime import datetime
 
 token = os.getenv("GITHUB_TOKEN")
+if not token:
+    raise EnvironmentError("GITHUB_TOKEN environment variable not found. Please set it in your system environment variables.")
 
 class ProgramManagerApp:
     def __init__(self, root):
@@ -96,7 +98,7 @@ class ProgramManagerApp:
 
             # Modificar las rutas para GitHub Pages
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            repo_dir = os.path.dirname(os.path.dirname(base_dir))
+            repo_dir = os.path.dirname(base_dir)
             
             # Las rutas deben ser relativas a la raíz del repositorio
             data_dir = os.path.join(repo_dir, "data")
@@ -154,26 +156,37 @@ class ProgramManagerApp:
 
             messagebox.showinfo("Éxito", "Programa guardado correctamente")
             
+            # Get the correct repository directory
+            tools_dir = os.path.dirname(os.path.abspath(__file__))
+            repo_dir = os.path.dirname(tools_dir)  # Go up one level from tools directory
+            
+            print(f"Repository directory: {repo_dir}")  # Debug
+
             # Actualizar repositorio
             print("\nActualizando repositorio...")
             import subprocess
 
             # Configurar el token y la URL del repositorio
-            repo_url = f"https://%GITHUB_TOKEN%@github.com/feede333/premiumdownloads3.git"
+            repo_url = "https://%GITHUB_TOKEN%@github.com/feede333/premiumdownloads3.git"
 
             try:
+                # Verificar que estamos en un repositorio Git
+                if not os.path.exists(os.path.join(repo_dir, '.git')):
+                    print("Initializing Git repository...")
+                    subprocess.run(['git', 'init'], cwd=repo_dir, check=True)
+                    subprocess.run(['git', 'remote', 'add', 'origin', repo_url], cwd=repo_dir, check=True)
+
                 # Sincronizar con el remoto
                 print("Sincronizando con remoto...")
-                subprocess.run(['git', 'fetch', repo_url], cwd=repo_dir, check=True)
-                subprocess.run(['git', 'pull', repo_url, 'main'], cwd=repo_dir, check=True)
-
-                # Agregar y subir cambios
-                print("Subiendo cambios...")
-                subprocess.run(['git', 'add', 'data/programs.json'], cwd=repo_dir, check=True)
-                if hasattr(self, 'image_path'):
-                    subprocess.run(['git', 'add', 'images/*'], cwd=repo_dir, check=True)
+                subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
                 subprocess.run(['git', 'commit', '-m', f'Update: Nuevo programa {data["title"]}'], cwd=repo_dir, check=True)
-                subprocess.run(['git', 'push', repo_url, 'main'], cwd=repo_dir, check=True)
+                
+                # Pull antes de push para evitar conflictos
+                subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=repo_dir, check=True)
+                
+                # Push de los cambios
+                print("Subiendo cambios...")
+                subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_dir, check=True)
 
                 print("Repositorio actualizado exitosamente")
                 messagebox.showinfo("Éxito", "Programa guardado y sincronizado correctamente")
@@ -181,11 +194,11 @@ class ProgramManagerApp:
 
             except subprocess.CalledProcessError as git_error:
                 print(f"Error en Git: {str(git_error)}")
-                raise git_error
+                messagebox.showerror("Error", f"Error en Git: {str(git_error)}\nTus cambios están guardados localmente.")
 
         except Exception as e:
             print(f"Error: {str(e)}")
-            messagebox.showerror("Error", "No se pudo actualizar el repositorio.\nTus cambios están guardados localmente.")
+            messagebox.showerror("Error", f"Error: {str(e)}\nTus cambios están guardados localmente.")
 
 if __name__ == "__main__":
     root = tk.Tk()
