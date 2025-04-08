@@ -3,6 +3,25 @@ import json
 
 def verify_setup():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    frontend_dir = os.path.join(base_dir, 'frontend', 'public')
+    
+    # Verificar que el index.html existe en frontend/public
+    if not os.path.exists(os.path.join(frontend_dir, 'index.html')):
+        print("❌ Error: index.html no encontrado en frontend/public")
+        return False
+        
+    # Crear un enlace simbólico al index.html en la raíz si no existe
+    root_index = os.path.join(base_dir, 'index.html')
+    if not os.path.exists(root_index):
+        try:
+            os.symlink(
+                os.path.join(frontend_dir, 'index.html'),
+                root_index
+            )
+            print("✅ Enlace simbólico a index.html creado en la raíz")
+        except Exception as e:
+            print(f"❌ Error creando enlace simbólico: {str(e)}")
+            return False
     
     # Verificar estructura de directorios
     paths_to_check = [
@@ -34,6 +53,7 @@ def verify_setup():
             print("❌ Error: programs.json no es un JSON válido")
     
     print("\nVerificación completada.")
+    return True
 
 if __name__ == "__main__":
     verify_setup()

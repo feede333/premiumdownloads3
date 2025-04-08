@@ -63,6 +63,44 @@
         "disk": "p",
         "display": "p"
       }
+    },
+    {
+      "id": "fgd",
+      "title": "b",
+      "category": "Diseñob",
+      "version": "b",
+      "fileSize": "b",
+      "downloadLink": "b",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "b",
+      "requirements": {
+        "os": "b",
+        "processor": "b",
+        "ram": "b",
+        "disk": "b",
+        "display": "b"
+      },
+      "instructions": "b"
+    },
+    {
+      "id": "v",
+      "title": "v",
+      "category": "Diseño",
+      "version": "",
+      "fileSize": "",
+      "downloadLink": "",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "",
+      "requirements": {
+        "os": "",
+        "processor": "",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
