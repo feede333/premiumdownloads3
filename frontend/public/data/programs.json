@@ -1,22 +1,6 @@
 {
   "programs": [
     {
-      "id": "y",
-      "title": "y",
-      "category": "y",
-      "fileSize": "y",
-      "date": "08.04.2025",
-      "image": "images/default.png",
-      "description": "y",
-      "requirements": {
-        "os": "y",
-        "processor": "y",
-        "ram": "y",
-        "disk": "y",
-        "display": "y"
-      }
-    },
-    {
       "id": "p",
       "title": "p",
       "category": "p",
