@@ -163,9 +163,14 @@ class ProgramManagerApp:
 
         if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este programa?"):
             try:
+                # Obtener ID del programa seleccionado
                 program_id = self.programs_tree.item(selected_item[0])['values'][0]
+                
+                # Obtener ruta del JSON
                 json_path = self.get_json_path()
+                print(f"Eliminando programa {program_id} de {json_path}")
 
+                # Leer JSON actual
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
 
@@ -179,14 +184,16 @@ class ProgramManagerApp:
                 new_count = len(data['programs'])
                 print(f"Programas antes: {prev_count}, después: {new_count}")
 
-                # Guardar JSON
+                # Guardar JSON actualizado
                 with open(json_path, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
 
                 # Eliminar imagen si existe
-                image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'public', 'images', f"{program_id}.png")
+                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                image_path = os.path.join(base_dir, 'frontend', 'public', 'images', f"{program_id}.png")
                 if os.path.exists(image_path):
                     os.remove(image_path)
+                    print(f"Imagen eliminada: {image_path}")
 
                 # Actualizar lista
                 self.load_existing_programs()
@@ -202,6 +209,7 @@ class ProgramManagerApp:
                 messagebox.showinfo("Éxito", "Programa eliminado correctamente")
 
             except Exception as e:
+                print(f"Error al eliminar programa: {str(e)}")
                 messagebox.showerror("Error", f"Error al eliminar programa: {str(e)}")
 
     def sync_with_github(self, commit_message):
@@ -211,15 +219,24 @@ class ProgramManagerApp:
             if not token:
                 raise EnvironmentError("Token de GitHub no encontrado")
 
+            # Obtener el directorio raíz del repositorio
+            repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            print(f"Sincronizando desde: {repo_dir}")
+
             repo_url = f"https://{token}@github.com/feede333/premiumdownloads3.git"
-            subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
-            subprocess.run(['git', 'add', '.'], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
-            subprocess.run(['git', 'commit', '-m', commit_message], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
-            subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
-            subprocess.run(['git', 'push', 'origin', 'main'], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
+            
+            # Usar repo_dir como directorio de trabajo
+            subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'commit', '-m', commit_message], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_dir, check=True)
+            
+            print("✅ Cambios sincronizados con GitHub")
 
         except Exception as e:
-            raise Exception(f"Error sincronizando con GitHub: {str(e)}")
+            print(f"❌ Error sincronizando con GitHub: {str(e)}")
+            raise
 
     def select_image(self):
         self.image_path = filedialog.askopenfilename(
