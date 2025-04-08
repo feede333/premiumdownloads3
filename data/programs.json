@@ -95,6 +95,22 @@
         "disk": "b",
         "display": "b"
       }
+    },
+    {
+      "id": "dfgb",
+      "title": "dfbfdbdfb",
+      "category": "bfdbf",
+      "fileSize": "dbfd",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "bfbd",
+      "requirements": {
+        "os": "bbbb",
+        "processor": "bbfb",
+        "ram": "bbbbb",
+        "disk": "b",
+        "display": "b"
+      }
     }
   ]
 }
