@@ -134,16 +134,14 @@ class ProgramManagerApp:
             for item in self.programs_tree.get_children():
                 self.programs_tree.delete(item)
 
-            # Corregir ruta del JSON
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            json_path = os.path.join(base_dir, 'frontend', 'public', 'data', 'programs.json')
-            print(f"Cargando programas desde: {json_path}")  # Debug
+            json_path = self.get_json_path()
+            print(f"Cargando programas desde: {json_path}")
 
             if os.path.exists(json_path):
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     programs = data.get('programs', [])
-                    print(f"Programas encontrados: {len(programs)}")  # Debug
+                    print(f"Programas encontrados: {len(programs)}")
                     
                     for program in programs:
                         self.programs_tree.insert('', tk.END, values=(
@@ -152,10 +150,7 @@ class ProgramManagerApp:
                             program['category'],
                             program.get('date', 'N/A')
                         ))
-                        print(f"Programa cargado: {program['title']}")  # Debug
-            else:
-                print(f"Archivo JSON no encontrado en: {json_path}")
-                
+                        print(f"Programa cargado: {program['title']}")
         except Exception as e:
             print(f"Error cargando programas: {str(e)}")
             messagebox.showerror("Error", f"Error cargando programas: {str(e)}")
@@ -168,16 +163,21 @@ class ProgramManagerApp:
 
         if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este programa?"):
             try:
-                # Obtener ID del programa seleccionado
                 program_id = self.programs_tree.item(selected_item[0])['values'][0]
+                json_path = self.get_json_path()
 
-                # Cargar JSON
-                json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'public', 'data', 'programs.json')
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
 
+                # Guardar cantidad anterior
+                prev_count = len(data.get('programs', []))
+
                 # Filtrar programa
                 data['programs'] = [p for p in data['programs'] if p['id'] != program_id]
+                
+                # Verificar eliminación
+                new_count = len(data['programs'])
+                print(f"Programas antes: {prev_count}, después: {new_count}")
 
                 # Guardar JSON
                 with open(json_path, 'w', encoding='utf-8') as f:
@@ -359,6 +359,10 @@ class ProgramManagerApp:
             print(f"\n❌ Error: {str(e)}")
             messagebox.showerror("Error", f"Error: {str(e)}")
             raise
+
+    def get_json_path(self):
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(base_dir, 'frontend', 'public', 'data', 'programs.json')
 
 if __name__ == "__main__":
     root = tk.Tk()
