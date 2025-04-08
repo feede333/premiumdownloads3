@@ -101,25 +101,6 @@
         "display": ""
       },
       "instructions": ""
-    },
-    {
-      "id": "f",
-      "title": "f",
-      "category": "Diseño",
-      "version": "ff",
-      "fileSize": "f",
-      "downloadLink": "f",
-      "date": "08.04.2025",
-      "image": "images/default.png",
-      "description": "f",
-      "requirements": {
-        "os": "f",
-        "processor": "f",
-        "ram": "f",
-        "disk": "f",
-        "display": "f"
-      },
-      "instructions": "f"
     }
   ]
 }
