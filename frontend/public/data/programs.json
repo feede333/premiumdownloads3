@@ -1,22 +1,6 @@
 {
   "programs": [
     {
-      "id": "p",
-      "title": "p",
-      "category": "p",
-      "fileSize": "p",
-      "date": "08.04.2025",
-      "image": "images/default.png",
-      "description": "p",
-      "requirements": {
-        "os": "p",
-        "processor": "p",
-        "ram": "p",
-        "disk": "p",
-        "display": "p"
-      }
-    },
-    {
       "id": "fgd",
       "title": "b",
       "category": "Diseñob",
