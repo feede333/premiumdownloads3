@@ -68,8 +68,6 @@ header {
     padding: 0 2rem !important;  /* Aumenta el padding horizontal */
 }
 
-
-
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -289,158 +287,86 @@ nav a.active {
 /* GRID DE PROGRAMAS */
 .download-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Fuerza 3 columnas */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
-    width: 100%;
+    margin: 2rem 0;
 }
 
 /* TARJETAS DE PROGRAMA */
 .download-card {
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
+    background: white;
+    border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.5s ease-out;
-    min-height: 450px;  /* Altura mínima para que todos tengan el mismo alto */
-}
-
-/* CONTENIDO DE LAS TARJETAS: Aseguramos distribución usando flex */
-.card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.5rem;
-}
-
-/* Título del programa: limitar a 2 líneas */
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--text-primary);
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;       /* Máximo 2 líneas */
-    line-clamp: 2;               /* Máximo 2 líneas (estándar) */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 2.4em;         /* Ajusta según la altura de línea deseada */
-}
-
-/* Meta-info y botón siempre al fondo */
-.meta-info,
-.download-button {
-    margin-top: auto;
-}
-
-/* Alinear títulos, descripción y meta-info */
-.card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-/* Título del programa */
-.card-content h3,
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var (--text-primary);
-    margin: 0;
-}
-
-/* "Coso de utilidad" o subtítulo (puedes asignarle una clase específica) */
-.program-utility {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-}
-
-/* Descripción o lo que hace el programa */
-.program-description {
-    flex: 1;  /* Ocupa el espacio disponible para empujar el meta-info al fondo */
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
-
-/* Meta-info: descargas, estrellas, etc. */
-.meta-info {
-    margin-top: auto; /* Se posiciona en la parte inferior del contenedor */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
 }
 
 .download-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    animation: hoverGlow 0.3s ease-in-out;
+    transform: translateY(-5px);
 }
 
 .card-image {
     width: 100%;
-    height: 180px;
-    background: var(--light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid var(--border-color);
-    border-radius: 16px 16px 0 0;
+    height: 200px;
+    overflow: hidden;
 }
 
 .card-image img {
-    max-width: 80%;
-    max-height: 80%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.card-content h3 {
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-title {
+    margin: 0 0 0.5rem;
     font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--text-primary);
+    color: #333;
 }
 
 .category-badge {
     display: inline-block;
-    padding: 0.5rem 1rem;
-    background: var(--primary);
-    color: white;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    align-self: flex-start;
+    padding: 0.3rem 0.8rem;
+    background: #f0f0f0;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    color: #666;
 }
 
 .card-meta {
+    margin: 1rem 0;
     display: flex;
     justify-content: space-between;
-    color: var(--text-secondary);
+    color: #666;
     font-size: 0.9rem;
 }
 
-/* BOTÓN DEL PROGRAMA */
 .download-button {
-    padding: 0.75rem;
-    background: var(--secondary);
+    display: inline-block;
+    background: #4CAF50;
     color: white;
-    text-align: center;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
     text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background 0.3s ease;
-    margin-top: auto;  /* Empuja el botón hacia el fondo */
+    transition: background 0.3s;
 }
 
 .download-button:hover {
-    background: #e68900;
+    background: #45a049;
+}
+
+/* Sección de programas nuevos */
+.programs-section {
+    margin-top: 3rem;
+}
+
+.programs-section h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.8rem;
 }
 
 /* SECCIÓN DE ANUNCIOS */
