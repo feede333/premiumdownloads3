@@ -15,12 +15,27 @@ class ProgramManagerApp:
         self.root.title("Gestor de Programas - PremiumDownloads")
         self.root.geometry("600x800")
 
-        # Crear el formulario
+        # Crear notebook para pestañas
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+        # Pestaña para agregar programas
+        self.add_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.add_tab, text="Agregar Programa")
+
+        # Pestaña para gestionar programas
+        self.manage_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.manage_tab, text="Gestionar Programas")
+
+        # Crear el formulario en la pestaña de agregar
         self.create_form()
+        
+        # Crear la lista de programas en la pestaña de gestionar
+        self.create_programs_list()
 
     def create_form(self):
         # Frame principal con scroll
-        main_frame = ttk.Frame(self.root)
+        main_frame = ttk.Frame(self.add_tab)
         main_frame.pack(fill=tk.BOTH, expand=1, padx=10, pady=10)
 
         canvas = tk.Canvas(main_frame)
@@ -83,6 +98,117 @@ class ProgramManagerApp:
 
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+    def create_programs_list(self):
+        # Frame con scroll para la lista
+        list_frame = ttk.Frame(self.manage_tab)
+        list_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+        # Crear Treeview
+        columns = ('ID', 'Título', 'Categoría', 'Fecha')
+        self.programs_tree = ttk.Treeview(list_frame, columns=columns, show='headings')
+        
+        # Configurar columnas
+        for col in columns:
+            self.programs_tree.heading(col, text=col)
+            self.programs_tree.column(col, width=100)
+
+        # Agregar scrollbar
+        scrollbar = ttk.Scrollbar(list_frame, orient=tk.VERTICAL, command=self.programs_tree.yview)
+        self.programs_tree.configure(yscrollcommand=scrollbar.set)
+
+        # Empaquetar elementos
+        self.programs_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Botón para eliminar
+        delete_button = ttk.Button(self.manage_tab, text="Eliminar Programa", command=self.delete_program)
+        delete_button.pack(pady=5)
+
+        # Cargar programas existentes
+        self.load_existing_programs()
+
+    def load_existing_programs(self):
+        try:
+            # Limpiar árbol
+            for item in self.programs_tree.get_children():
+                self.programs_tree.delete(item)
+
+            # Cargar JSON
+            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'public', 'data', 'programs.json')
+            if os.path.exists(json_path):
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    for program in data.get('programs', []):
+                        self.programs_tree.insert('', tk.END, values=(
+                            program['id'],
+                            program['title'],
+                            program['category'],
+                            program.get('date', 'N/A')
+                        ))
+        except Exception as e:
+            print(f"Error cargando programas: {str(e)}")
+
+    def delete_program(self):
+        selected_item = self.programs_tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Advertencia", "Seleccione un programa para eliminar")
+            return
+
+        if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este programa?"):
+            try:
+                # Obtener ID del programa seleccionado
+                program_id = self.programs_tree.item(selected_item[0])['values'][0]
+
+                # Cargar JSON
+                json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'public', 'data', 'programs.json')
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+
+                # Filtrar programa
+                data['programs'] = [p for p in data['programs'] if p['id'] != program_id]
+
+                # Guardar JSON
+                with open(json_path, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+
+                # Eliminar imagen si existe
+                image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'public', 'images', f"{program_id}.png")
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+
+                # Actualizar lista
+                self.load_existing_programs()
+
+                # Generar páginas HTML
+                import page_generator
+                generator = page_generator.PageGenerator()
+                generator.update_pages()
+
+                # Sincronizar con GitHub
+                self.sync_with_github(f"Remove: Programa {program_id}")
+
+                messagebox.showinfo("Éxito", "Programa eliminado correctamente")
+
+            except Exception as e:
+                messagebox.showerror("Error", f"Error al eliminar programa: {str(e)}")
+
+    def sync_with_github(self, commit_message):
+        try:
+            import subprocess
+            
+            if not token:
+                raise EnvironmentError("Token de GitHub no encontrado")
+
+            repo_url = f"https://{token}@github.com/feede333/premiumdownloads3.git"
+            subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
+            subprocess.run(['git', 'add', '.'], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
+            subprocess.run(['git', 'commit', '-m', commit_message], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
+            subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
+            subprocess.run(['git', 'push', 'origin', 'main'], cwd=os.path.dirname(os.path.abspath(__file__)), check=True)
+
+        except Exception as e:
+            raise Exception(f"Error sincronizando con GitHub: {str(e)}")
 
     def select_image(self):
         self.image_path = filedialog.askopenfilename(
