@@ -111,6 +111,25 @@
         "disk": "b",
         "display": "b"
       }
+    },
+    {
+      "id": "edfvbfd",
+      "title": "fdvbfdvbdfb",
+      "category": "Utilidades",
+      "version": "fdbfdb",
+      "fileSize": "bbb",
+      "downloadLink": "bbb",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "bb",
+      "requirements": {
+        "os": "b",
+        "processor": "b",
+        "ram": "b",
+        "disk": "b",
+        "display": "b"
+      },
+      "instructions": "b"
     }
   ]
 }

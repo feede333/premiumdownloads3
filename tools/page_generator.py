@@ -23,15 +23,25 @@ class PageGenerator:
         return f"""
         <div class="program-card">
             <img src="{program['image']}" alt="{program['title']}">
-            <h3>{program['title']}</h3>
-            <p class="category">{program['category']}</p>
-            <p class="description">{program.get('description', '')}</p>
-            <div class="requirements">
-                <p><strong>OS:</strong> {program.get('requirements', {}).get('os', '')}</p>
-                <p><strong>RAM:</strong> {program.get('requirements', {}).get('ram', '')}</p>
-                <p><strong>Size:</strong> {program.get('fileSize', '')}</p>
+            <div class="program-info">
+                <h3>{program['title']} <span class="version">{program.get('version', '')}</span></h3>
+                <p class="category">{program['category']}</p>
+                <p class="description">{program.get('description', '')}</p>
+                <div class="requirements">
+                    <p><strong>Sistema:</strong> {program.get('requirements', {}).get('os', '')}</p>
+                    <p><strong>Procesador:</strong> {program.get('requirements', {}).get('processor', '')}</p>
+                    <p><strong>RAM:</strong> {program.get('requirements', {}).get('ram', '')}</p>
+                    <p><strong>Espacio:</strong> {program.get('fileSize', '')}</p>
+                </div>
+                <div class="download-section">
+                    <a href="{program.get('downloadLink', '#')}" class="download-button">Descargar</a>
+                    <p class="instructions-toggle" onclick="toggleInstructions(this)">Ver instrucciones</p>
+                    <div class="instructions" style="display: none;">
+                        {program.get('instructions', 'No hay instrucciones disponibles.')}
+                    </div>
+                </div>
+                <p class="date">Agregado: {program.get('date', '')}</p>
             </div>
-            <p class="date">Added: {program.get('date', '')}</p>
         </div>
         """
 
@@ -83,85 +93,124 @@ class PageGenerator:
 
     def get_default_css(self):
         return """
-/* Estilos generales */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
-}
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
 
-header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-}
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
 
-nav {
-    margin-top: 1rem;
-}
+        nav {
+            margin-top: 1rem;
+        }
 
-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 1rem;
-}
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
 
-/* Grid de programas */
-.programs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-}
+        /* Grid de programas */
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
 
-/* Tarjetas de programa */
-.program-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        /* Tarjetas de programa */
+        .program-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
 
-.program-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 4px;
-}
+        .program-card:hover {
+            transform: translateY(-5px);
+        }
 
-.program-card h3 {
-    margin: 1rem 0;
-    color: #333;
-}
+        .program-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
 
-.category {
-    color: #666;
-    font-style: italic;
-}
+        .program-card h3 {
+            margin: 1rem 0;
+            color: #333;
+        }
 
-.requirements {
-    background: #f9f9f9;
-    padding: 1rem;
-    border-radius: 4px;
-    margin: 1rem 0;
-}
+        .version {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 0.5em;
+        }
 
-.date {
-    color: #999;
-    font-size: 0.9rem;
-    text-align: right;
-}
+        .category {
+            color: #666;
+            font-style: italic;
+        }
 
-/* Footer */
-footer {
-    background: #333;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
-}
+        .requirements {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .download-button {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 0.8em 1.5em;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 1em 0;
+            transition: background 0.3s;
+        }
+
+        .download-button:hover {
+            background: #45a049;
+        }
+
+        .instructions-toggle {
+            color: #2196F3;
+            cursor: pointer;
+            margin: 0.5em 0;
+        }
+
+        .instructions {
+            background: #f5f5f5;
+            padding: 1em;
+            border-radius: 5px;
+            margin-top: 0.5em;
+        }
+
+        .date {
+            color: #999;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
         """
 
     def generate_index_page(self):

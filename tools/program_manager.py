@@ -39,14 +39,17 @@ class ProgramManagerApp:
         fields = [
             ("ID del programa:", "id"),
             ("Título:", "title"),
-            ("Categoría:", "category"),
+            ("Categoría:", "category", "combo", ["Diseño", "Seguridad", "Multimedia", "Utilidades", "Productividad"]),
+            ("Versión:", "version"),
             ("Tamaño del archivo:", "fileSize"),
+            ("Enlace de descarga:", "downloadLink"),
             ("Descripción:", "description", "text"),
             ("Sistema operativo:", "os"),
             ("Procesador:", "processor"),
             ("RAM:", "ram"),
             ("Espacio en disco:", "disk"),
-            ("Pantalla:", "display")
+            ("Pantalla:", "display"),
+            ("Instrucciones:", "instructions", "text")
         ]
 
         self.entries = {}
@@ -58,8 +61,12 @@ class ProgramManagerApp:
             label = ttk.Label(frame, text=field[0])
             label.pack(side=tk.LEFT)
             
-            if len(field) > 2 and field[2] == "text":
-                entry = tk.Text(frame, height=4, width=40)
+            if len(field) > 2:
+                if field[2] == "text":
+                    entry = tk.Text(frame, height=4, width=40)
+                elif field[2] == "combo":
+                    entry = ttk.Combobox(frame, values=field[3], width=37)
+                    entry.set(field[3][0])
             else:
                 entry = ttk.Entry(frame, width=40)
             entry.pack(side=tk.LEFT, padx=5)
@@ -132,7 +139,9 @@ class ProgramManagerApp:
                 "id": data["id"],
                 "title": data["title"],
                 "category": data["category"],
+                "version": data["version"],
                 "fileSize": data["fileSize"],
+                "downloadLink": data["downloadLink"],
                 "date": datetime.now().strftime("%d.%m.%Y"),
                 "image": data.get("image", "images/default.png"),
                 "description": data["description"],
@@ -142,7 +151,8 @@ class ProgramManagerApp:
                     "ram": data["ram"],
                     "disk": data["disk"],
                     "display": data["display"]
-                }
+                },
+                "instructions": data["instructions"]
             })
 
             # Guardar JSON con formato legible
