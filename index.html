@@ -19,16 +19,23 @@
                 const data = await response.json();
                 console.log('Datos cargados:', data);
 
-                const programsGrid = document.getElementById('programsGrid');
+                const programsGrid = document.getElementById('dynamicProgramsGrid');
                 data.programs.forEach(program => {
                     const programCard = document.createElement('div');
-                    programCard.className = 'program-card';
+                    programCard.className = 'download-card'; // Cambiar a download-card para usar el mismo estilo
                     programCard.innerHTML = `
-                        <a href="/premiumdownloads3/detail.html?id=${program.id}">
+                        <div class="card-image">
                             <img src="${program.image}" alt="${program.title}">
-                            <h3>${program.title}</h3>
-                            <span class="category">${program.category}</span>
-                        </a>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">${program.title}</h3>
+                            <span class="category-badge">${program.category}</span>
+                            <div class="card-meta">
+                                <span>${program.fileSize}</span>
+                                <span>${program.version || ''}</span>
+                            </div>
+                            <a href="/premiumdownloads3/detail.html?id=${program.id}" class="download-button">Ver detalles</a>
+                        </div>
                     `;
                     programsGrid.appendChild(programCard);
                 });
@@ -102,7 +109,27 @@
             </aside>
 
             <main class="main-content">
-                <div id="programsGrid" class="programs-grid">
+                <!-- Programas estáticos -->
+                <div class="download-grid">
+                    <!-- Card 1 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/avast.png" alt="Avast">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Avast Premium Security</h3>
+                            <span class="category-badge">Antivirus</span>
+                            <div class="card-meta">
+                                <span>628 MB</span>
+                                <span>1.2K descargas</span>
+                            </div>
+                            <a href="detail.html" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Programas dinámicos -->
+                <div id="dynamicProgramsGrid" class="programs-grid">
                     <!-- Los programas se cargarán aquí dinámicamente -->
                 </div>
             </main>
