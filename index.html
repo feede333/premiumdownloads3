@@ -20,9 +20,11 @@
                 console.log('Datos cargados:', data);
 
                 const programsGrid = document.getElementById('dynamicProgramsGrid');
+                programsGrid.className = 'download-grid'; // Usar la misma clase que los estáticos
+
                 data.programs.forEach(program => {
                     const programCard = document.createElement('div');
-                    programCard.className = 'download-card'; // Cambiar a download-card para usar el mismo estilo
+                    programCard.className = 'download-card';
                     programCard.innerHTML = `
                         <div class="card-image">
                             <img src="${program.image}" alt="${program.title}">
@@ -34,6 +36,7 @@
                                 <span>${program.fileSize}</span>
                                 <span>${program.version || ''}</span>
                             </div>
+                            <p class="program-description">${program.description.substring(0, 100)}...</p>
                             <a href="/premiumdownloads3/detail.html?id=${program.id}" class="download-button">Ver detalles</a>
                         </div>
                     `;
@@ -129,8 +132,11 @@
                 </div>
 
                 <!-- Programas dinámicos -->
-                <div id="dynamicProgramsGrid" class="programs-grid">
-                    <!-- Los programas se cargarán aquí dinámicamente -->
+                <div class="programs-section">
+                    <h2>Programas Nuevos</h2>
+                    <div id="dynamicProgramsGrid" class="download-grid">
+                        <!-- Los programas dinámicos se cargarán aquí -->
+                    </div>
                 </div>
             </main>
 
