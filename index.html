@@ -12,19 +12,19 @@
     <script>
         async function loadPrograms() {
             try {
-                const response = await fetch('/premiumdownloads2/data/programs.json');
+                const response = await fetch('/premiumdownloads3/data/programs.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log('Datos cargados:', data); // Debug
+                console.log('Datos cargados:', data);
 
                 const programsGrid = document.getElementById('programsGrid');
                 data.programs.forEach(program => {
                     const programCard = document.createElement('div');
                     programCard.className = 'program-card';
                     programCard.innerHTML = `
-                        <a href="/premiumdownloads2/detail.html?id=${program.id}">
+                        <a href="/premiumdownloads3/detail.html?id=${program.id}">
                             <img src="${program.image}" alt="${program.title}">
                             <h3>${program.title}</h3>
                             <span class="category">${program.category}</span>
@@ -102,112 +102,17 @@
             </aside>
 
             <main class="main-content">
-                <div class="download-grid" id="programsGrid">
-                    <!-- Card 1 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/avast.png" alt="Avast">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">Avast Premium Security</h3>
-                            <span class="category-badge">Antivirus</span>
-                            <div class="card-meta">
-                                <span>628 MB</span>
-                                <span>1.2K descargas</span>
-                            </div>
-                            <a href="detail.html" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/ccleaner.png" alt="CCleaner">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">CCleaner Professional</h3>
-                            <span class="category-badge">Utilities</span>
-                            <div class="card-meta">
-                                <span>25 MB</span>
-                                <span>2.5K descargas</span>
-                            </div>
-                            <a href="#" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 3 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/winrar.png" alt="WinRAR">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">WinRAR</h3>
-                            <span class="category-badge">File Tools</span>
-                            <div class="card-meta">
-                                <span>3.5 MB</span>
-                                <span>3.1K descargas</span>
-                            </div>
-                            <a href="#" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/idm.png" alt="Internet Download Manager">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">Internet Download Manager</h3>
-                            <span class="category-badge">Internet</span>
-                            <div class="card-meta">
-                                <span>8.7 MB</span>
-                                <span>4.3K descargas</span>
-                            </div>
-                            <a href="#" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 5 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/office.png" alt="Microsoft Office">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">Microsoft Office 2021</h3>
-                            <span class="category-badge">Office</span>
-                            <div class="card-meta">
-                                <span>4.2 GB</span>
-                                <span>5.6K descargas</span>
-                            </div>
-                            <a href="#" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 6 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/vscode.png" alt="Visual Studio Code">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">Visual Studio Code</h3>
-                            <span class="category-badge">Development</span>
-                            <div class="card-meta">
-                                <span>80 MB</span>
-                                <span>1.8K descargas</span>
-                            </div>
-                            <a href="#" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
+                <div id="programsGrid" class="programs-grid">
+                    <!-- Los programas se cargarán aquí dinámicamente -->
                 </div>
             </main>
 
             <aside class="ads-section">
                 <h3>Publicidad</h3>
-                <!-- Espacios para anuncios -->
-                <div class="ad-space" style="min-height: 250px; margin-bottom: 1rem; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                <div class="ad-space" style="min-height: 250px; margin-bottom: 1rem;">
                     Anuncio 1
                 </div>
-                <div class="ad-space" style="min-height: 600px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                <div class="ad-space" style="min-height: 600px;">
                     Anuncio 2
                 </div>
             </aside>
@@ -225,8 +130,6 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
-            <!-- Agregamos el selector de conversaciones -->
             <div class="conversations-selector">
                 <button class="new-chat-btn">
                     <i class="fas fa-plus"></i> Nueva conversación
