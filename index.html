@@ -1,168 +1,30 @@
+
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PremiumDownloads - Descargas Premium</title>
-    <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./css/chat.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="./js/main.js" defer></script>
-    <script src="js/chat.js" defer></script>
-    <script>
-        async function loadPrograms() {
-            try {
-                const response = await fetch('/premiumdownloads3/data/programs.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log('Datos cargados:', data);
-
-                const programsGrid = document.getElementById('programsGrid');
-                data.programs.forEach(program => {
-                    const programCard = document.createElement('div');
-                    programCard.className = 'program-card';
-                    programCard.innerHTML = `
-                        <a href="/premiumdownloads3/detail.html?id=${program.id}">
-                            <img src="${program.image}" alt="${program.title}">
-                            <h3>${program.title}</h3>
-                            <span class="category">${program.category}</span>
-                        </a>
-                    `;
-                    programsGrid.appendChild(programCard);
-                });
-            } catch (error) {
-                console.error('Error cargando programas:', error);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadPrograms);
-    </script>
+    <title>Premium Downloads</title>
+    <link rel="stylesheet" href="subpages/2025.css">
 </head>
 <body>
     <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo">
-                    <span>⬇️</span>
-                    <span>PremiumDownloads</span>
-                </a>
-                <nav>
-                    <ul>
-                        <li><a href="index.html" class="active">Inicio</a></li>
-                        <li><a href="populares.html">Populares</a></li>
-                    </ul>
-                </nav>
-                <div class="theme-language-controls">
-                    <button class="theme-toggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="language-toggle">
-                        <span class="lang-text">ES</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <h1>Premium Downloads</h1>
+        <nav>
+            <a href="subpages/2023.html">2023</a>
+            <a href="subpages/2024.html">2024</a>
+            <a href="subpages/2025.html">2025</a>
+        </nav>
     </header>
-
-    <main class="container">
-        <div class="search-sort-container">
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Buscar software...">
-                <button class="search-button" disabled>
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            <div class="sort-options">
-                <select class="sort-select">
-                    <option value="recent">Más reciente</option>
-                    <option value="downloads">Más descargados</option>
-                    <option value="rating">Mejor valorados</option>
-                    <option value="name">Alfabéticamente</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="content-container">
-            <aside class="sidebar">
-                <h3>Categorías</h3>
-                <div class="category-list">
-                    <a href="#" class="category-link active" data-category="all">Todos</a>
-                    <a href="#" class="category-link" data-category="antivirus">Antivirus</a>
-                    <a href="#" class="category-link" data-category="utilities">Tools & Utilities</a>
-                    <a href="#" class="category-link" data-category="activators">Activators</a>
-                    <a href="#" class="category-link" data-category="file-tools">File Tools</a>
-                    <a href="#" class="category-link" data-category="multimedia">Multimedia</a>
-                    <a href="#" class="category-link" data-category="internet">Internet</a>
-                    <a href="#" class="category-link" data-category="security">Security</a>
-                    <a href="#" class="category-link" data-category="office">Office</a>
-                    <a href="#" class="category-link" data-category="development">Development</a>
-                </div>
-            </aside>
-
-            <main class="main-content">
-                <div id="programsGrid" class="programs-grid">
-                    <!-- Los programas se cargarán aquí dinámicamente -->
-                </div>
-            </main>
-
-            <aside class="ads-section">
-                <h3>Publicidad</h3>
-                <div class="ad-space" style="min-height: 250px; margin-bottom: 1rem;">
-                    Anuncio 1
-                </div>
-                <div class="ad-space" style="min-height: 600px;">
-                    Anuncio 2
-                </div>
-            </aside>
-        </div>
+    
+    <main>
+        <h2>Bienvenido a Premium Downloads</h2>
+        <p>Selecciona un año para ver los programas disponibles.</p>
     </main>
 
-    <div class="ai-chat-widget">
-        <button class="chat-toggle">
-            <i class="fas fa-robot"></i>
-        </button>
-        <div class="chat-container">
-            <div class="chat-header">
-                <h3>Asistente IA</h3>
-                <button class="close-chat">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="conversations-selector">
-                <button class="new-chat-btn">
-                    <i class="fas fa-plus"></i> Nueva conversación
-                </button>
-                <div class="conversations-list">
-                    <!-- Las conversaciones se cargarán aquí -->
-                </div>
-            </div>
-
-            <div class="chat-messages">
-                <div class="message bot">
-                    ¡Hola! Soy el asistente virtual. ¿En qué puedo ayudarte?
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" placeholder="Escribe tu mensaje...">
-                <button class="send-message">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Términos de uso</a>
-                <a href="#">Política de privacidad</a>
-                <a href="#">DMCA</a>
-                <a href="#">Contacto</a>
-            </div>
-            <p>© 2025 PremiumDownloads. Todos los derechos reservados.</p>
-        </div>
+        <p>&copy; 2025 Premium Downloads. All rights reserved.</p>
     </footer>
 </body>
 </html>
+        
