@@ -51,28 +51,10 @@ def verify_setup():
                 print(f"✅ JSON válido con {len(data.get('programs', []))} programas")
         except json.JSONDecodeError:
             print("❌ Error: programs.json no es un JSON válido")
+            return False
     
     print("\nVerificación completada.")
     return True
 
 if __name__ == "__main__":
     verify_setup()
-
-# filepath: c:\Users\Federico\Downloads\downloads site\premiumdownloads2\tools\update_site.bat
-"""
-@echo off
-REM filepath: c:\Users\Federico\Downloads\downloads site\premiumdownloads2\tools\update_site.bat
-echo Verificando estructura...
-python verify_setup.py
-
-echo.
-echo Sincronizando con GitHub...
-git add .
-git commit -m "Actualización de contenido"
-git push origin main
-
-echo.
-echo Proceso completado!
-echo Por favor espera unos minutos para que GitHub Pages se actualice.
-pause
-"""
