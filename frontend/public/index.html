@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PremiumDownloads - Descargas Premium</title>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="./js/main.js" defer></script>
+    <script src="js/chat.js" defer></script>
+    <script src="./js/loadPrograms.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span>⬇️</span>
+                    <span>PremiumDownloads</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="index.html" class="active">Inicio</a></li>
+                        <li><a href="populares.html">Populares</a></li>
+                    </ul>
+                </nav>
+                <div class="theme-language-controls">
+                    <button class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="language-toggle">
+                        <span class="lang-text">ES</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="search-sort-container">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Buscar software...">
+                <button class="search-button" disabled>
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="sort-options">
+                <select class="sort-select">
+                    <option value="recent">Más reciente</option>
+                    <option value="downloads">Más descargados</option>
+                    <option value="rating">Mejor valorados</option>
+                    <option value="name">Alfabéticamente</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <aside class="sidebar">
+                <h3>Categorías</h3>
+                <div class="category-list">
+                    <a href="#" class="category-link active" data-category="all">Todos</a>
+                    <a href="#" class="category-link" data-category="antivirus">Antivirus</a>
+                    <a href="#" class="category-link" data-category="utilities">Tools & Utilities</a>
+                    <a href="#" class="category-link" data-category="activators">Activators</a>
+                    <a href="#" class="category-link" data-category="file-tools">File Tools</a>
+                    <a href="#" class="category-link" data-category="multimedia">Multimedia</a>
+                    <a href="#" class="category-link" data-category="internet">Internet</a>
+                    <a href="#" class="category-link" data-category="security">Security</a>
+                    <a href="#" class="category-link" data-category="office">Office</a>
+                    <a href="#" class="category-link" data-category="development">Development</a>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="download-grid">
+                    <!-- Card 1 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/avast.png" alt="Avast">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Avast Premium Security</h3>
+                            <span class="category-badge">Antivirus</span>
+                            <div class="card-meta">
+                                <span>628 MB</span>
+                                <span>1.2K descargas</span>
+                            </div>
+                            <a href="detail.html" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/ccleaner.png" alt="CCleaner">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">CCleaner Professional</h3>
+                            <span class="category-badge">Utilities</span>
+                            <div class="card-meta">
+                                <span>25 MB</span>
+                                <span>2.5K descargas</span>
+                            </div>
+                            <a href="#" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/winrar.png" alt="WinRAR">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">WinRAR</h3>
+                            <span class="category-badge">File Tools</span>
+                            <div class="card-meta">
+                                <span>3.5 MB</span>
+                                <span>3.1K descargas</span>
+                            </div>
+                            <a href="#" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/idm.png" alt="Internet Download Manager">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Internet Download Manager</h3>
+                            <span class="category-badge">Internet</span>
+                            <div class="card-meta">
+                                <span>8.7 MB</span>
+                                <span>4.3K descargas</span>
+                            </div>
+                            <a href="#" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/office.png" alt="Microsoft Office">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Microsoft Office 2021</h3>
+                            <span class="category-badge">Office</span>
+                            <div class="card-meta">
+                                <span>4.2 GB</span>
+                                <span>5.6K descargas</span>
+                            </div>
+                            <a href="#" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="download-card">
+                        <div class="card-image">
+                            <img src="images/vscode.png" alt="Visual Studio Code">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-title">Visual Studio Code</h3>
+                            <span class="category-badge">Development</span>
+                            <div class="card-meta">
+                                <span>80 MB</span>
+                                <span>1.8K descargas</span>
+                            </div>
+                            <a href="#" class="download-button">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="programs-section">
+                    <h2>Programas Disponibles</h2>
+                    <div id="programsGrid" class="programs-grid">
+                        <!-- Los programas se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+            </main>
+
+            <aside class="ads-section">
+                <h3>Publicidad</h3>
+                <!-- Espacios para anuncios -->
+                <div class="ad-space" style="min-height: 250px; margin-bottom: 1rem; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    Anuncio 1
+                </div>
+                <div class="ad-space" style="min-height: 600px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                    Anuncio 2
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <div class="ai-chat-widget">
+        <button class="chat-toggle">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>Asistente IA</h3>
+                <button class="close-chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Agregamos el selector de conversaciones -->
+            <div class="conversations-selector">
+                <button class="new-chat-btn">
+                    <i class="fas fa-plus"></i> Nueva conversación
+                </button>
+                <div class="conversations-list">
+                    <!-- Las conversaciones se cargarán aquí -->
+                </div>
+            </div>
+
+            <div class="chat-messages">
+                <div class="message bot">
+                    ¡Hola! Soy el asistente virtual. ¿En qué puedo ayudarte?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" placeholder="Escribe tu mensaje...">
+                <button class="send-message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Términos de uso</a>
+                <a href="#">Política de privacidad</a>
+                <a href="#">DMCA</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p>© 2025 PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+    <script src="./js/loadPrograms.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+REM filepath: c:\Users\Federico\Downloads\downloads site\premiumdownloads2\create_nojekyll.bat
+@echo off
+echo. > .nojekyll
+git add .nojekyll
+git commit -m "Add .nojekyll file"
+git push origin main

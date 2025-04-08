@@ -1,0 +1,7 @@
+node_modules/
+backend/
+.env
+decisive-unison-456214-r0-8be65aa316b4.json
+__pycache__/
+*.pyc
+.git/

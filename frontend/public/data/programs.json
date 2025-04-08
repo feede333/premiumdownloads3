@@ -1,0 +1,68 @@
+{
+  "programs": [
+    {
+      "id": "sdcvsdfv",
+      "title": "fdvdfv",
+      "category": "fdvdfv",
+      "fileSize": "fdvdfv",
+      "date": "08.04.2025",
+      "image": "images/sdcvsdfv.jpg",
+      "description": "fdvfdvdf",
+      "requirements": {
+        "os": "fdvdfv",
+        "processor": "fvdfv",
+        "ram": "fvv",
+        "disk": "fvfv",
+        "display": "fvfv"
+      }
+    },
+    {
+      "id": "gg",
+      "title": "g",
+      "category": "gg",
+      "fileSize": "g",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "g",
+      "requirements": {
+        "os": "g",
+        "processor": "g",
+        "ram": "g",
+        "disk": "g",
+        "display": "g"
+      }
+    },
+    {
+      "id": "y",
+      "title": "y",
+      "category": "y",
+      "fileSize": "y",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "y",
+      "requirements": {
+        "os": "y",
+        "processor": "y",
+        "ram": "y",
+        "disk": "y",
+        "display": "y"
+      }
+    },
+    {
+      "id": "p",
+      "title": "p",
+      "category": "p",
+      "fileSize": "p",
+      "date": "08.04.2025",
+      "image": "images/default.png",
+      "description": "p",
+      "requirements": {
+        "os": "p",
+        "processor": "p",
+        "ram": "p",
+        "disk": "p",
+        "display": "p"
+      }
+    }
+  ]
+}
