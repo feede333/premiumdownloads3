@@ -113,7 +113,7 @@ class ProgramManagerApp:
                 image_filename = f"{data['id']}{os.path.splitext(self.image_path)[1]}"
                 image_dest = os.path.join(images_dir, image_filename)
                 shutil.copy2(self.image_path, image_dest)
-                data["image"] = f"/premiumdownloads2/images/{image_filename}"  # Ruta para GitHub Pages
+                data["image"] = f"/premiumdownloads3/images/{image_filename}"  # Ruta para GitHub Pages
 
             # Guardar JSON
             json_path = os.path.join(data_dir, "programs.json")
@@ -156,6 +156,18 @@ class ProgramManagerApp:
 
             messagebox.showinfo("Éxito", "Programa guardado correctamente")
             
+            # Después de guardar el JSON y antes de hacer el commit, genera las páginas
+            print("\nGenerando páginas HTML...")
+            try:
+                # Importar el generador de páginas
+                import page_generator
+                generator = page_generator.PageGenerator()
+                generator.update_pages()
+                print("✅ Páginas HTML generadas correctamente")
+            except Exception as page_error:
+                print(f"❌ Error generando páginas HTML: {str(page_error)}")
+                messagebox.showwarning("Advertencia", "Error al generar páginas HTML")
+
             # Get the correct repository directory
             tools_dir = os.path.dirname(os.path.abspath(__file__))
             repo_dir = os.path.dirname(tools_dir)  # Go up one level from tools directory
@@ -179,7 +191,7 @@ class ProgramManagerApp:
                 # Sincronizar con el remoto
                 print("Sincronizando con remoto...")
                 subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
-                subprocess.run(['git', 'commit', '-m', f'Update: Nuevo programa {data["title"]}'], cwd=repo_dir, check=True)
+                subprocess.run(['git', 'commit', '-m', f'Update: Nuevo programa {data["title"]} y páginas HTML'], cwd=repo_dir, check=True)
                 
                 # Pull antes de push para evitar conflictos
                 subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=repo_dir, check=True)

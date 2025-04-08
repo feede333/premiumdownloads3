@@ -13,6 +13,12 @@ echo.
 echo Generando páginas HTML...
 python tools/page_generator.py
 
+if %errorlevel% neq 0 (
+    echo Error al generar las páginas HTML
+    pause
+    exit /b 1
+)
+
 echo.
 echo Obteniendo cambios remotos...
 git pull origin main --rebase
