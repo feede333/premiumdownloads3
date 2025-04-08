@@ -134,20 +134,31 @@ class ProgramManagerApp:
             for item in self.programs_tree.get_children():
                 self.programs_tree.delete(item)
 
-            # Cargar JSON
-            json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'public', 'data', 'programs.json')
+            # Corregir ruta del JSON
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            json_path = os.path.join(base_dir, 'frontend', 'public', 'data', 'programs.json')
+            print(f"Cargando programas desde: {json_path}")  # Debug
+
             if os.path.exists(json_path):
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    for program in data.get('programs', []):
+                    programs = data.get('programs', [])
+                    print(f"Programas encontrados: {len(programs)}")  # Debug
+                    
+                    for program in programs:
                         self.programs_tree.insert('', tk.END, values=(
                             program['id'],
                             program['title'],
                             program['category'],
                             program.get('date', 'N/A')
                         ))
+                        print(f"Programa cargado: {program['title']}")  # Debug
+            else:
+                print(f"Archivo JSON no encontrado en: {json_path}")
+                
         except Exception as e:
             print(f"Error cargando programas: {str(e)}")
+            messagebox.showerror("Error", f"Error cargando programas: {str(e)}")
 
     def delete_program(self):
         selected_item = self.programs_tree.selection()
