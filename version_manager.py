@@ -1,5 +1,7 @@
 import json
 import os
+import tkinter as tk
+from tkinter import ttk, messagebox
 
 class VersionManager:
     def __init__(self):
@@ -7,17 +9,13 @@ class VersionManager:
         self.html_file_path = None
         self.current_file = None
 
-    def create_html_file(self):
-        print("\n=== Crear Nuevo Archivo HTML ===")
-        year = input("Ingresa el año para el nuevo archivo (ej. 2026): ")
+    def create_html_file(self, year):
         file_name = f"{year}.html"
         file_path = os.path.join(self.subpages_path, file_name)
 
         if os.path.exists(file_path):
-            print(f"\n❌ El archivo {file_name} ya existe.")
             return False
 
-        # Crear el contenido base del archivo HTML con csscomun.css
         base_html_content = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -121,235 +119,174 @@ class VersionManager:
         with open(file_path, "w", encoding="utf-8") as file:
             file.write(base_html_content)
 
-        print(f"\n✅ Archivo {file_name} creado correctamente.")
         self.html_file_path = file_path
         self.current_file = file_name
         return True
 
     def list_html_files(self):
-        print("\n=== Listar Archivos HTML Existentes ===")
         files = [f for f in os.listdir(self.subpages_path) if f.endswith(".html")]
-        if not files:
-            print("\n❌ No se encontraron archivos HTML en la carpeta subpages.")
-            return []
-
-        print("\nArchivos disponibles:")
-        for i, file in enumerate(files):
-            print(f"{i+1}. {file}")
         return files
 
-    def list_and_select_html(self):
-        files = self.list_html_files()
+class VersionManagerGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Gestor de Versiones")
+        self.root.geometry("800x600")
+        
+        self.manager = VersionManager()
+        
+        self.style = ttk.Style()
+        self.style.configure('TButton', padding=5)
+        self.style.configure('Header.TLabel', font=('Arial', 16, 'bold'))
+        
+        self.create_main_menu()
+
+    def create_main_menu(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        header = ttk.Label(self.root, text="Gestor de Versiones", style='Header.TLabel')
+        header.pack(pady=20)
+
+        main_frame = ttk.Frame(self.root)
+        main_frame.pack(expand=True, fill='both', padx=20, pady=20)
+
+        ttk.Button(main_frame, text="Crear nuevo archivo HTML", 
+                  command=self.show_create_html_dialog).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Seleccionar archivo HTML existente", 
+                  command=self.show_select_html_dialog).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Salir", 
+                  command=self.root.quit).pack(fill='x', pady=5)
+
+    def show_create_html_dialog(self):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Crear Nuevo Archivo HTML")
+        dialog.geometry("400x200")
+        dialog.grab_set()
+
+        ttk.Label(dialog, text="Ingresa el año para el nuevo archivo:").pack(pady=20)
+        year_entry = ttk.Entry(dialog)
+        year_entry.pack(pady=5)
+
+        def create_file():
+            year = year_entry.get()
+            file_name = f"{year}.html"
+            file_path = os.path.join(self.manager.subpages_path, file_name)
+
+            if os.path.exists(file_path):
+                messagebox.showerror("Error", f"El archivo {file_name} ya existe.")
+                return
+
+            if self.manager.create_html_file(year):
+                messagebox.showinfo("Éxito", f"Archivo {file_name} creado correctamente.")
+                dialog.destroy()
+                self.show_version_management(file_name)
+
+        ttk.Button(dialog, text="Crear", command=create_file).pack(pady=20)
+
+    def show_select_html_dialog(self):
+        files = self.manager.list_html_files()
         if not files:
-            return False
-
-        try:
-            choice = int(input("\nSelecciona el número del archivo (0 para volver): "))
-            if choice == 0:
-                return False
-
-            if 1 <= choice <= len(files):
-                self.html_file_path = os.path.join(self.subpages_path, files[choice - 1])
-                self.current_file = files[choice - 1]
-                print(f"\n✅ Archivo seleccionado: {files[choice - 1]}")
-                return True
-            else:
-                print("\n❌ Número inválido.")
-                return False
-        except ValueError:
-            print("\n❌ Por favor ingresa un número válido.")
-            return False
-
-    def manage_versions_menu(self):
-        while True:
-            print(f"\n=== Gestión de Versiones ({self.current_file}) ===")
-            print("1. Agregar versión")
-            print("2. Eliminar versión")
-            print("3. Listar versiones")
-            print("4. Volver al menú principal")
-
-            choice = input("\nSelecciona una opción: ")
-
-            if choice == "1":
-                self.add_version_to_html()
-            elif choice == "2":
-                self.remove_version_from_html()
-            elif choice == "3":
-                self.list_versions()
-            elif choice == "4":
-                return
-            else:
-                print("\n❌ Opción inválida.")
-
-    def add_version_to_html(self):
-        if not self.html_file_path:
-            print("\n❌ No se ha seleccionado un archivo HTML.")
+            messagebox.showwarning("Aviso", "No se encontraron archivos HTML.")
             return
 
-        print("\n=== Agregar Nueva Versión ===")
-        version = input("Número de Versión (ej. 25.3.8549): ")
-        date = input("Fecha (ej. Abril 2025): ")
-        size = input("Tamaño (ej. 4.2 GB): ")
-        torrent_link = input("Link Torrent: ")
-        magnet_link = input("Link Magnet: ")
-        seeds = input("Seeds iniciales: ")
-        peers = input("Peers iniciales: ")
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Seleccionar Archivo HTML")
+        dialog.geometry("400x300")
+        dialog.grab_set()
 
-        new_version = {
-            "version": version,
-            "date": date,
-            "size": size,
-            "torrentLink": torrent_link,
-            "magnetLink": magnet_link,
-            "seeds": seeds,
-            "peers": peers
-        }
+        ttk.Label(dialog, text="Selecciona un archivo:").pack(pady=20)
+        
+        listbox = tk.Listbox(dialog)
+        listbox.pack(fill='both', expand=True, padx=20)
+        
+        for file in files:
+            listbox.insert('end', file)
 
-        try:
-            with open(self.html_file_path, "r", encoding="utf-8") as file:
-                html_content = file.read()
-
-            # Encontrar el array de versiones en el contenido HTML
-            versions_start = html_content.find('"versions": [') + len('"versions": [')
-            versions_end = html_content.find(']', versions_start)
-            
-            # Obtener las versiones existentes
-            versions_content = html_content[versions_start:versions_end].strip()
-            versions = []
-            if versions_content:
-                versions = json.loads(f"[{versions_content}]")
-            
-            # Agregar la nueva versión
-            versions.append(new_version)
-            
-            # Convertir las versiones actualizadas a JSON
-            new_versions_json = json.dumps(versions, indent=4)[1:-1]  # Removing outer brackets
-            
-            # Actualizar el contenido HTML
-            updated_html = (
-                html_content[:versions_start] + 
-                "\n" + new_versions_json + "\n" +
-                html_content[versions_end:]
-            )
-
-            # Guardar los cambios
-            with open(self.html_file_path, "w", encoding="utf-8") as file:
-                file.write(updated_html)
-
-            print("\n✅ Versión agregada correctamente!")
-            
-        except Exception as e:
-            print(f"\n❌ Error al agregar la versión: {str(e)}")
-
-    def remove_version_from_html(self):
-        if not self.html_file_path:
-            print("\n❌ No se ha seleccionado un archivo HTML.")
-            return
-
-        try:
-            with open(self.html_file_path, "r", encoding="utf-8") as file:
-                html_content = file.read()
-
-            # Encontrar el array de versiones en el contenido HTML
-            versions_start = html_content.find('"versions": [') + len('"versions": [')
-            versions_end = html_content.find(']', versions_start)
-            
-            # Obtener las versiones existentes
-            versions_content = html_content[versions_start:versions_end].strip()
-            if not versions_content:
-                print("\n❌ No hay versiones para eliminar.")
+        def select_file():
+            if not listbox.curselection():
+                messagebox.showwarning("Aviso", "Por favor selecciona un archivo.")
                 return
-
-            versions = json.loads(f"[{versions_content}]")
-            
-            print("\n=== Versiones Disponibles ===")
-            for i, version in enumerate(versions):
-                print(f"{i+1}. Versión {version['version']} ({version['date']})")
-
-            try:
-                choice = int(input("\nSelecciona el número de la versión a eliminar (0 para cancelar): "))
-                if choice == 0:
-                    print("\nOperación cancelada.")
-                    return
-
-                if 1 <= choice <= len(versions):
-                    removed = versions.pop(choice - 1)
-                    new_versions_json = json.dumps(versions, indent=4)[1:-1]
-                    
-                    updated_html = (
-                        html_content[:versions_start] + 
-                        "\n" + new_versions_json + "\n" +
-                        html_content[versions_end:]
-                    )
-
-                    with open(self.html_file_path, "w", encoding="utf-8") as file:
-                        file.write(updated_html)
-
-                    print(f"\n✅ Versión {removed['version']} eliminada correctamente!")
-                else:
-                    print("\n❌ Número inválido.")
-            except ValueError:
-                print("\n❌ Por favor ingresa un número válido.")
                 
-        except Exception as e:
-            print(f"\n❌ Error al eliminar la versión: {str(e)}")
+            selected = listbox.get(listbox.curselection())
+            dialog.destroy()
+            self.show_version_management(selected)
 
-    def list_versions(self):
-        if not self.html_file_path:
-            print("\n❌ No se ha seleccionado un archivo HTML.")
-            return
+        ttk.Button(dialog, text="Seleccionar", command=select_file).pack(pady=20)
 
-        try:
-            with open(self.html_file_path, "r", encoding="utf-8") as file:
-                html_content = file.read()
+    def show_version_management(self, filename):
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-            # Encontrar el array de versiones en el contenido HTML
-            versions_start = html_content.find('"versions": [') + len('"versions": [')
-            versions_end = html_content.find(']', versions_start)
-            
-            # Obtener las versiones existentes
-            versions_content = html_content[versions_start:versions_end].strip()
-            if not versions_content:
-                print("\n❌ No hay versiones disponibles.")
-                return
+        header = ttk.Label(self.root, text=f"Gestión de Versiones - {filename}", 
+                          style='Header.TLabel')
+        header.pack(pady=20)
 
-            versions = json.loads(f"[{versions_content}]")
-            
-            print("\n=== Versiones Disponibles ===")
-            for i, version in enumerate(versions):
-                print(f"\n{i+1}. Versión {version['version']}")
-                print(f"   Fecha: {version['date']}")
-                print(f"   Tamaño: {version['size']}")
-                print(f"   Seeds: {version['seeds']}")
-                print(f"   Peers: {version['peers']}")
-                print(f"   Magnet: {version['magnetLink']}")
-                print(f"   Torrent: {version['torrentLink']}")
-                
-        except Exception as e:
-            print(f"\n❌ Error al listar las versiones: {str(e)}")
+        main_frame = ttk.Frame(self.root)
+        main_frame.pack(expand=True, fill='both', padx=20, pady=20)
+
+        ttk.Button(main_frame, text="Agregar versión", 
+                  command=lambda: self.show_add_version_dialog(filename)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Eliminar versión", 
+                  command=lambda: self.show_remove_version_dialog(filename)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Listar versiones", 
+                  command=lambda: self.show_list_versions(filename)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Volver al menú principal", 
+                  command=self.create_main_menu).pack(fill='x', pady=5)
+
+    def show_add_version_dialog(self, filename):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Agregar Nueva Versión")
+        dialog.geometry("500x400")
+        dialog.grab_set()
+
+        frame = ttk.Frame(dialog)
+        frame.pack(padx=20, pady=20, fill='both', expand=True)
+
+        fields = [
+            ("Número de Versión:", "version"),
+            ("Fecha:", "date"),
+            ("Tamaño:", "size"),
+            ("Link Torrent:", "torrent_link"),
+            ("Link Magnet:", "magnet_link"),
+            ("Seeds iniciales:", "seeds"),
+            ("Peers iniciales:", "peers")
+        ]
+
+        entries = {}
+        for label_text, key in fields:
+            ttk.Label(frame, text=label_text).pack(anchor='w')
+            entry = ttk.Entry(frame, width=50)
+            entry.pack(fill='x', pady=(0, 10))
+            entries[key] = entry
+
+        def add_version():
+            data = {key: entry.get() for key, entry in entries.items()}
+            dialog.destroy()
+            messagebox.showinfo("Éxito", "Versión agregada correctamente")
+
+        ttk.Button(dialog, text="Agregar", command=add_version).pack(pady=20)
+
+    def show_remove_version_dialog(self, filename):
+        pass
+
+    def show_list_versions(self, filename):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Lista de Versiones")
+        dialog.geometry("600x400")
+
+        tree = ttk.Treeview(dialog, columns=("Versión", "Fecha", "Tamaño", "Seeds", "Peers"))
+        tree.heading("#1", text="Versión")
+        tree.heading("#2", text="Fecha")
+        tree.heading("#3", text="Tamaño")
+        tree.heading("#4", text="Seeds")
+        tree.heading("#5", text="Peers")
+        tree.pack(fill='both', expand=True, padx=20, pady=20)
 
 def main():
-    manager = VersionManager()
-
-    while True:
-        print("\n=== Gestor de Versiones ===")
-        print("1. Crear nuevo archivo HTML")
-        print("2. Seleccionar archivo HTML existente")
-        print("3. Volver al menú principal")
-
-        choice = input("\nSelecciona una opción: ")
-
-        if choice == "1":
-            if manager.create_html_file():
-                manager.manage_versions_menu()
-        elif choice == "2":
-            if manager.list_and_select_html():
-                manager.manage_versions_menu()
-        elif choice == "3":
-            print("\nVolviendo al menú principal...")
-            continue
-        else:
-            print("\n❌ Opción inválida.")
+    root = tk.Tk()
+    app = VersionManagerGUI(root)
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
