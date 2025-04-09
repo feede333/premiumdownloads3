@@ -278,18 +278,17 @@ class ProgramManagerApp:
                 messagebox.showerror("Error", "Los campos ID, título y categoría son obligatorios")
                 return
 
-
-            # Actualizar rutas para usar directorios en la raíz
+            # Usar las mismas rutas que update.bat
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            data_dir = os.path.join(base_dir, 'data')
-            images_dir = os.path.join(base_dir, 'images')
+            data_dir = os.path.join(base_dir, 'data')  # Directamente en la raíz
+            images_dir = os.path.join(base_dir, 'images')  # Directamente en la raíz
             
             print(f"\nDirectorios:")
             print(f"Base: {base_dir}")
             print(f"Data: {data_dir}")
             print(f"Images: {images_dir}")
 
-            # Crear directorios
+            # Crear directorios si no existen
             os.makedirs(data_dir, exist_ok=True)
             os.makedirs(images_dir, exist_ok=True)
 
@@ -314,12 +313,12 @@ class ProgramManagerApp:
                 "instructions": data["instructions"]
             }
 
-            # Manejar imagen si se proporcionó
+            # Actualizar ruta de imagen para que coincida con index.html
             if hasattr(self, 'image_path') and self.image_path:
                 image_filename = f"{data['id']}{os.path.splitext(self.image_path)[1]}"
                 image_dest = os.path.join(images_dir, image_filename)
                 shutil.copy2(self.image_path, image_dest)
-                program_data["image"] = f"./images/{image_filename}"  # Ruta relativa
+                program_data["image"] = f"./images/{image_filename}"  # Usar ruta relativa como en index.html
                 print(f"\nImagen copiada a: {image_dest}")
 
             # Guardar JSON
@@ -393,7 +392,7 @@ class ProgramManagerApp:
 
     def get_json_path(self):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        return os.path.join(base_dir, 'data', 'programs.json')
+        return os.path.join(base_dir, 'data', 'programs.json')  # Directamente en la raíz
 
 if __name__ == "__main__":
     verify_setup()
