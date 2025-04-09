@@ -766,20 +766,20 @@ class ProgramManagerApp:
             }
             
             data = {
-                "model": "deepseek-chat",  # Especificar el modelo
+                "model": "deepseek-chat",
                 "messages": [
                     {
                         "role": "system",
-                        "content": "Eres un experto en software que proporciona información técnica precisa. Responde siempre en formato JSON."
+                        "content": "Eres un experto en software que genera información técnica precisa en formato JSON. Mantén la estructura exacta del JSON solicitado."
                     },
                     {
                         "role": "user",
                         "content": prompt
                     }
                 ],
-                "temperature": 0.7,
-                "max_tokens": 1000,
-                "top_p": 1,
+                "temperature": 0.5,  # Menos aleatorio
+                "max_tokens": 2000,  # Más tokens para respuestas completas
+                "top_p": 0.9,
                 "stream": False
             }
 
