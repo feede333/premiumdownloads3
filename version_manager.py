@@ -127,6 +127,55 @@ class VersionManager:
         files = [f for f in os.listdir(self.subpages_path) if f.endswith(".html")]
         return files
 
+    def read_versions_from_html(self, file_path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                content = file.read()
+                
+            # Buscar el array de versiones en el contenido
+            start = content.find('"versions": [') + len('"versions": [')
+            end = content.find(']', start)
+            versions_json = content[start:end].strip()
+            
+            if versions_json:
+                return json.loads(f"[{versions_json}]")
+            return []
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al leer las versiones: {str(e)}")
+            return []
+
+    def save_versions_to_html(self, file_path, versions):
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                content = file.read()
+            
+            start = content.find('"versions": [') + len('"versions": [')
+            end = content.find(']', start)
+            
+            new_content = (
+                content[:start] + 
+                "\n    " + 
+                json.dumps(versions, indent=4)[1:-1] + 
+                "\n" + 
+                content[end:]
+            )
+            
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(new_content)
+            
+            return True
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al guardar las versiones: {str(e)}")
+            return False
+
+    def delete_html_file(self, file_path, filename):
+        try:
+            os.remove(file_path)
+            return True
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al eliminar el archivo: {str(e)}")
+            return False
+
 class VersionManagerGUI:
     def __init__(self, root):
         self.root = root
@@ -151,16 +200,16 @@ class VersionManagerGUI:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(expand=True, fill='both', padx=20, pady=20)
 
-        ttk.Button(main_frame, text="Crear nuevo archivo HTML", 
+        ttk.Button(main_frame, text="Crear Nuevo Archivo HTML Año", 
                   command=self.show_create_html_dialog).pack(fill='x', pady=5)
-        ttk.Button(main_frame, text="Seleccionar archivo HTML existente", 
+        ttk.Button(main_frame, text="Seleccionar archivo HTML existente AÑO", 
                   command=self.show_select_html_dialog).pack(fill='x', pady=5)
         ttk.Button(main_frame, text="Salir", 
                   command=self.root.quit).pack(fill='x', pady=5)
 
     def show_create_html_dialog(self):
         dialog = tk.Toplevel(self.root)
-        dialog.title("Crear Nuevo Archivo HTML")
+        dialog.title("Crear Nuevo Archivo HTML Año")
         dialog.geometry("400x200")
         dialog.grab_set()
 
@@ -191,7 +240,7 @@ class VersionManagerGUI:
             return
 
         dialog = tk.Toplevel(self.root)
-        dialog.title("Seleccionar Archivo HTML")
+        dialog.title("Seleccionar archivo HTML existente AÑO")
         dialog.geometry("400x300")
         dialog.grab_set()
 
@@ -231,8 +280,27 @@ class VersionManagerGUI:
                   command=lambda: self.show_remove_version_dialog(filename)).pack(fill='x', pady=5)
         ttk.Button(main_frame, text="Listar versiones", 
                   command=lambda: self.show_list_versions(filename)).pack(fill='x', pady=5)
+        
+        ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=10)
+        
+        def confirm_delete_html():
+            if messagebox.askyesno("Confirmar eliminación", 
+                                 f"¿Estás seguro que deseas eliminar el archivo {filename}?\n\nEsta acción no se puede deshacer."):
+                file_path = os.path.join(self.manager.subpages_path, filename)
+                if self.manager.delete_html_file(file_path, filename):
+                    messagebox.showinfo("Éxito", f"Archivo {filename} eliminado correctamente")
+                    self.create_main_menu()
+        
+        ttk.Button(main_frame, text="Eliminar HTML AÑO ENTERO", 
+                  command=confirm_delete_html, 
+                  style='Delete.TButton').pack(fill='x', pady=5)
+        
         ttk.Button(main_frame, text="Volver al menú principal", 
                   command=self.create_main_menu).pack(fill='x', pady=5)
+
+        self.style.configure('Delete.TButton', 
+                            background='red', 
+                            foreground='white')
 
     def show_add_version_dialog(self, filename):
         dialog = tk.Toplevel(self.root)
@@ -247,8 +315,8 @@ class VersionManagerGUI:
             ("Número de Versión:", "version"),
             ("Fecha:", "date"),
             ("Tamaño:", "size"),
-            ("Link Torrent:", "torrent_link"),
-            ("Link Magnet:", "magnet_link"),
+            ("Link Torrent:", "torrentLink"),
+            ("Link Magnet:", "magnetLink"),
             ("Seeds iniciales:", "seeds"),
             ("Peers iniciales:", "peers")
         ]
@@ -262,26 +330,88 @@ class VersionManagerGUI:
 
         def add_version():
             data = {key: entry.get() for key, entry in entries.items()}
-            dialog.destroy()
-            messagebox.showinfo("Éxito", "Versión agregada correctamente")
+            file_path = os.path.join(self.manager.subpages_path, filename)
+            
+            versions = self.manager.read_versions_from_html(file_path)
+            versions.append(data)
+            
+            if self.manager.save_versions_to_html(file_path, versions):
+                messagebox.showinfo("Éxito", "Versión agregada correctamente")
+                dialog.destroy()
 
         ttk.Button(dialog, text="Agregar", command=add_version).pack(pady=20)
 
     def show_remove_version_dialog(self, filename):
-        pass
+        file_path = os.path.join(self.manager.subpages_path, filename)
+        versions = self.manager.read_versions_from_html(file_path)
+        
+        if not versions:
+            messagebox.showinfo("Info", "No hay versiones para eliminar")
+            return
+            
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Eliminar Versión")
+        dialog.geometry("400x300")
+        dialog.grab_set()
+
+        ttk.Label(dialog, text="Selecciona la versión a eliminar:").pack(pady=20)
+        
+        listbox = tk.Listbox(dialog)
+        listbox.pack(fill='both', expand=True, padx=20)
+        
+        for version in versions:
+            listbox.insert('end', f"Versión {version['version']} - {version['date']}")
+
+        def remove_version():
+            if not listbox.curselection():
+                messagebox.showwarning("Aviso", "Por favor selecciona una versión")
+                return
+                
+            idx = listbox.curselection()[0]
+            versions.pop(idx)
+            
+            if self.manager.save_versions_to_html(file_path, versions):
+                messagebox.showinfo("Éxito", "Versión eliminada correctamente")
+                dialog.destroy()
+
+        ttk.Button(dialog, text="Eliminar", command=remove_version).pack(pady=20)
 
     def show_list_versions(self, filename):
         dialog = tk.Toplevel(self.root)
         dialog.title("Lista de Versiones")
-        dialog.geometry("600x400")
+        dialog.geometry("800x400")
 
         tree = ttk.Treeview(dialog, columns=("Versión", "Fecha", "Tamaño", "Seeds", "Peers"))
-        tree.heading("#1", text="Versión")
-        tree.heading("#2", text="Fecha")
-        tree.heading("#3", text="Tamaño")
-        tree.heading("#4", text="Seeds")
-        tree.heading("#5", text="Peers")
+        tree.heading("#0", text="")
+        tree.heading("Versión", text="Versión")
+        tree.heading("Fecha", text="Fecha")
+        tree.heading("Tamaño", text="Tamaño")
+        tree.heading("Seeds", text="Seeds")
+        tree.heading("Peers", text="Peers")
+        
+        tree.column("#0", width=0, stretch=tk.NO)
+        tree.column("Versión", width=150)
+        tree.column("Fecha", width=150)
+        tree.column("Tamaño", width=100)
+        tree.column("Seeds", width=100)
+        tree.column("Peers", width=100)
+        
         tree.pack(fill='both', expand=True, padx=20, pady=20)
+
+        # Cargar versiones
+        file_path = os.path.join(self.manager.subpages_path, filename)
+        versions = self.manager.read_versions_from_html(file_path)
+        
+        for version in versions:
+            tree.insert("", "end", values=(
+                version["version"],
+                version["date"],
+                version["size"],
+                version["seeds"],
+                version["peers"]
+            ))
+
+        ttk.Button(dialog, text="Cerrar", command=dialog.destroy).pack(pady=10)
 
 def main():
     root = tk.Tk()
