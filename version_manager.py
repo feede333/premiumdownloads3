@@ -6,6 +6,84 @@ class VersionManager:
         self.subpages_path = r"c:\Users\Federico\Downloads\downloads site\premiumdownloads2\subpages"
         self.html_file_path = None
 
+    def create_html_file(self):
+        print("\n=== Crear Nuevo Archivo HTML ===")
+        year = input("Ingresa el año para el nuevo archivo (ej. 2026): ")
+        file_name = f"{year}.html"
+        file_path = os.path.join(self.subpages_path, file_name)
+
+        if os.path.exists(file_path):
+            print(f"\n❌ El archivo {file_name} ya existe.")
+            return
+
+        # Crear el contenido base del archivo HTML
+        base_html_content = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avast Premium Security {year} - Versiones</title>
+    <link rel="stylesheet" href="../css/csscomun.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="../index.html" class="logo">
+                <span>⬇️</span>
+                <span>PremiumDownloads</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="../detail.html" class="back-link">
+            <i class="fa fa-arrow-left"></i> Volver a detalles
+        </a>
+
+        <div class="download-detail">
+            <h2>Versiones de {year}</h2>
+            
+            <div class="version-list">
+                <!-- Las versiones se cargarán dinámicamente -->
+            </div>
+
+            <div class="torrent-note">
+                <p><i class="fas fa-info-circle"></i> Para usar estos enlaces necesitas:</p>
+                <ul>
+                    <li>• qBittorrent (Recomendado)</li>
+                    <li>• uTorrent</li>
+                    <li>• BitTorrent</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Términos de uso</a>
+                <a href="#">Política de privacidad</a>
+                <a href="#">DMCA</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p>© {year} PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>
+"""
+        # Crear el archivo HTML
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(base_html_content)
+
+        print(f"\n✅ Archivo {file_name} creado correctamente.")
+
     def select_html_file(self):
         print("\n=== Seleccionar Archivo HTML ===")
         files = [f for f in os.listdir(self.subpages_path) if f.endswith(".html")]
@@ -210,26 +288,29 @@ def main():
 
     while True:
         print("\n=== Gestor de Versiones ===")
-        print("1. Seleccionar archivo HTML")
-        print("2. Agregar versión al archivo HTML")
-        print("3. Eliminar versión del archivo HTML")
-        print("4. Listar versiones")
-        print("5. Asegurar enlace a csscomun.css")
-        print("6. Salir")
+        print("1. Crear nuevo archivo HTML")
+        print("2. Seleccionar archivo HTML existente")
+        print("3. Agregar versión al archivo HTML")
+        print("4. Eliminar versión del archivo HTML")
+        print("5. Listar versiones")
+        print("6. Asegurar enlace a csscomun.css")
+        print("7. Salir")
 
         choice = input("\nSelecciona una opción: ")
 
         if choice == "1":
-            manager.select_html_file()
+            manager.create_html_file()
         elif choice == "2":
-            manager.add_version_to_html()
+            manager.select_html_file()
         elif choice == "3":
-            manager.remove_version_from_html()
+            manager.add_version_to_html()
         elif choice == "4":
-            manager.list_versions()
+            manager.remove_version_from_html()
         elif choice == "5":
-            manager.ensure_common_css()
+            manager.list_versions()
         elif choice == "6":
+            manager.ensure_common_css()
+        elif choice == "7":
             print("\n¡Hasta luego!")
             break
         else:
