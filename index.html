@@ -12,7 +12,7 @@
     <script>
         async function loadPrograms() {
             try {
-                const response = await fetch('/premiumdownloads3/data/programs.json');
+                const response = await fetch('./data/programs.json');  // Ruta relativa
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -20,7 +20,7 @@
                 console.log('Datos cargados:', data);
 
                 const programsGrid = document.getElementById('dynamicProgramsGrid');
-                programsGrid.className = 'download-grid'; // Usar la misma clase que los estáticos
+                programsGrid.className = 'download-grid';
 
                 data.programs.forEach(program => {
                     const programCard = document.createElement('div');
@@ -37,7 +37,7 @@
                                 <span>${program.version || ''}</span>
                             </div>
                             <p class="program-description">${program.description.substring(0, 100)}...</p>
-                            <a href="/premiumdownloads3/detail.html?id=${program.id}" class="download-button">Ver detalles</a>
+                            <a href="./detail.html?id=${program.id}" class="download-button">Ver detalles</a>
                         </div>
                     `;
                     programsGrid.appendChild(programCard);

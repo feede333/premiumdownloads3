@@ -319,7 +319,7 @@ class ProgramManagerApp:
                 image_filename = f"{data['id']}{os.path.splitext(self.image_path)[1]}"
                 image_dest = os.path.join(images_dir, image_filename)
                 shutil.copy2(self.image_path, image_dest)
-                program_data["image"] = f"/premiumdownloads3/images/{image_filename}"
+                program_data["image"] = f"./images/{image_filename}"  # Ruta relativa
                 print(f"\nImagen copiada a: {image_dest}")
 
             # Guardar JSON
