@@ -1,56 +1,43 @@
 async function loadPrograms() {
     try {
-        console.log('Intentando cargar programas...'); // Debug
-        
-        // Usar ruta relativa
-        const response = await fetch('./data/programs.json');
-        console.log('Response status:', response.status); // Debug
-        
+        const response = await fetch('/premiumdownloads3/data/programs.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const data = await response.json();
-        console.log('Datos cargados:', data); // Debug
+        console.log('Datos cargados:', data);
 
         const programsGrid = document.getElementById('programsGrid');
         if (!programsGrid) {
-            throw new Error('No se encontró el elemento programsGrid');
+            console.error('No se encontró el elemento programsGrid');
+            return;
         }
 
-        // Limpiar el grid
+        // Limpiar grid existente
         programsGrid.innerHTML = '';
 
         data.programs.forEach(program => {
             const programCard = document.createElement('div');
-            programCard.className = 'program-card';
-            
+            programCard.className = 'download-card';
             programCard.innerHTML = `
-                <a href="detail.html?id=${program.id}">
+                <div class="card-image">
                     <img src="${program.image}" alt="${program.title}">
-                    <div class="program-info">
-                        <h3>${program.title}</h3>
-                        <span class="category">${program.category}</span>
-                        <div class="meta">
-                            <span class="size">${program.fileSize}</span>
-                            <span class="date">${program.date}</span>
-                        </div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${program.title}</h3>
+                    <span class="category-badge">${program.category}</span>
+                    <div class="card-meta">
+                        <span>${program.fileSize}</span>
+                        <span>${program.version || ''}</span>
                     </div>
-                </a>
+                    <a href="/premiumdownloads3/detail.html?id=${program.id}" class="download-button">Ver detalles</a>
+                </div>
             `;
             programsGrid.appendChild(programCard);
         });
     } catch (error) {
         console.error('Error cargando programas:', error);
-        const programsGrid = document.getElementById('programsGrid');
-        if (programsGrid) {
-            programsGrid.innerHTML = `<p class="error">Error cargando programas: ${error.message}</p>`;
-        }
     }
 }
 
-// Cargar programas cuando el documento esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM cargado, iniciando carga de programas...'); // Debug
-    loadPrograms();
-});
+document.addEventListener('DOMContentLoaded', loadPrograms);
