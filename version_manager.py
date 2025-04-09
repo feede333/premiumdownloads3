@@ -121,6 +121,9 @@ class VersionManager:
 
         self.html_file_path = file_path
         self.current_file = file_name
+        
+        # Actualizar detail.html
+        self.update_detail_html()
         return True
 
     def list_html_files(self):
@@ -171,9 +174,64 @@ class VersionManager:
     def delete_html_file(self, file_path, filename):
         try:
             os.remove(file_path)
+            # Actualizar detail.html después de eliminar
+            self.update_detail_html()
             return True
         except Exception as e:
             messagebox.showerror("Error", f"Error al eliminar el archivo: {str(e)}")
+            return False
+
+    def update_detail_html(self):
+        """Actualiza detail.html con los enlaces a los archivos de años disponibles"""
+        detail_path = os.path.join(os.path.dirname(self.subpages_path), "detail.html")
+        
+        try:
+            # Obtener lista de años ordenados
+            years = sorted([f.replace('.html', '') for f in os.listdir(self.subpages_path) 
+                           if f.endswith('.html')], reverse=True)
+            
+            # Leer el contenido actual de detail.html
+            with open(detail_path, "r", encoding="utf-8") as file:
+                content = file.read()
+                
+            # Encontrar la sección donde se insertan los años
+            start_marker = '<ul class="version-years">'
+            end_marker = '</ul>'
+            start = content.find(start_marker) + len(start_marker)
+            end = content.find(end_marker, start)
+            
+            if start == -1 or end == -1:
+                messagebox.showerror("Error", "No se encontraron los marcadores en detail.html")
+                return False
+                
+            # Generar el nuevo contenido HTML para los años
+            years_html = '\n'.join([
+                f'''                    <li class="year-item">
+                            <a href="./subpages/{year}.html" class="year-link">
+                                <span class="year">{year}</span>
+                                <span class="version-count">(0 versiones)</span>
+                                {' <span class="latest-badge">Última versión</span>' if year == years[0] else ''}
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>'''
+                for year in years
+            ])
+            
+            # Actualizar el contenido
+            new_content = (
+                content[:start] + 
+                '\n' + years_html + '\n                ' +
+                content[end:]
+            )
+            
+            # Guardar los cambios
+            with open(detail_path, "w", encoding="utf-8") as file:
+                file.write(new_content)
+                
+            return True
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al actualizar detail.html: {str(e)}")
             return False
 
 class VersionManagerGUI:
