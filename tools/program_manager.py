@@ -123,7 +123,7 @@ class ProgramManagerApp:
 
         # Crear Treeview
         columns = ('ID', 'Título', 'Categoría', 'Fecha')
-        self.programs_tree = ttk.Treeview(list_frame, columns=columns, show='headings')
+        self.programs_tree = ttk.Treeview(list_frame, columns=columns, show='headings', selectmode='extended')
         
         # Configurar columnas
         for col in columns:
@@ -138,9 +138,15 @@ class ProgramManagerApp:
         self.programs_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Botón para eliminar
-        delete_button = ttk.Button(self.manage_tab, text="Eliminar Programa", command=self.delete_program)
-        delete_button.pack(pady=5)
+        # Botones para eliminar
+        buttons_frame = ttk.Frame(self.manage_tab)
+        buttons_frame.pack(pady=5)
+        
+        delete_button = ttk.Button(buttons_frame, text="Eliminar Seleccionados", command=self.delete_program)
+        delete_button.pack(side=tk.LEFT, padx=5)
+        
+        delete_all_button = ttk.Button(buttons_frame, text="Eliminar Todo", command=self.delete_all_programs)
+        delete_all_button.pack(side=tk.LEFT, padx=5)
 
         # Cargar programas existentes
         self.load_existing_programs()
@@ -173,65 +179,86 @@ class ProgramManagerApp:
             messagebox.showerror("Error", f"Error cargando programas: {str(e)}")
 
     def delete_program(self):
-        selected_item = self.programs_tree.selection()
-        if not selected_item:
-            messagebox.showwarning("Advertencia", "Seleccione un programa para eliminar")
+        selected_items = self.programs_tree.selection()
+        if not selected_items:
+            messagebox.showwarning("Advertencia", "Seleccione al menos un programa para eliminar")
             return
 
-        if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este programa?"):
+        programs_to_delete = len(selected_items)
+        if programs_to_delete == 1:
+            message = "¿Está seguro de eliminar este programa?"
+        else:
+            message = f"¿Está seguro de eliminar estos {programs_to_delete} programas?"
+
+        if messagebox.askyesno("Confirmar", message):
             try:
-                # Obtener ID del programa seleccionado
-                program_id = self.programs_tree.item(selected_item[0])['values'][0]
-                print(f"Intentando eliminar programa con ID: {program_id}")
-                
                 # Obtener ruta del JSON desde la raíz
                 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 json_path = os.path.join(base_dir, 'data', 'programs.json')
-                print(f"Leyendo JSON desde: {json_path}")
-
+                
                 # Leer JSON actual
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     programs = data.get('programs', [])
                     
-                    # Debug: mostrar todos los IDs
-                    print("IDs en el JSON:", [p.get('id') for p in programs])
-
+                # Obtener IDs de programas seleccionados
+                program_ids = [self.programs_tree.item(item)['values'][0] for item in selected_items]
+                print(f"Intentando eliminar programas con IDs: {program_ids}")
+                
                 # Guardar cantidad anterior
                 prev_count = len(programs)
-
-                # Filtrar programa - usar str() para asegurar comparación de strings
-                data['programs'] = [p for p in programs if str(p.get('id', '')).strip() != str(program_id).strip()]
+                
+                # Filtrar programas
+                data['programs'] = [p for p in programs if str(p.get('id', '')).strip() not in 
+                                  [str(pid).strip() for pid in program_ids]]
                 
                 # Verificar eliminación
                 new_count = len(data['programs'])
+                deleted_count = prev_count - new_count
                 print(f"Programas antes: {prev_count}, después: {new_count}")
-
-                if prev_count == new_count:
-                    print(f"⚠️ Advertencia: No se encontró el programa {program_id} para eliminar")
+                
+                if deleted_count == 0:
+                    print("⚠️ No se encontraron programas para eliminar")
                     return
-
+                
                 # Guardar JSON actualizado
                 with open(json_path, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 print("✅ JSON actualizado")
-
-                # Eliminar imagen si existe
-                image_path = os.path.join(base_dir, 'images', f"{program_id}.png")
-                if os.path.exists(image_path):
-                    os.remove(image_path)
-                    print(f"✅ Imagen eliminada: {image_path}")
-
+                
+                # Eliminar imágenes
+                for program_id in program_ids:
+                    image_path = os.path.join(base_dir, 'images', f"{program_id}.png")
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+                        print(f"✅ Imagen eliminada: {image_path}")
+                
                 # Actualizar lista
                 self.load_existing_programs()
                 print("✅ Lista actualizada")
-
+                
                 # Sincronizar con GitHub
-                self.sync_with_github(f"Remove: Programa {program_id}")
-                messagebox.showinfo("Éxito", "Programa eliminado correctamente")
-
+                commit_msg = f"Remove: {deleted_count} programa{'s' if deleted_count > 1 else ''}"
+                self.sync_with_github(commit_msg)
+                
+                messagebox.showinfo("Éxito", 
+                    f"{deleted_count} programa{'s' if deleted_count > 1 else ''} eliminado{'s' if deleted_count > 1 else ''} correctamente")
+                
             except Exception as e:
-                error_msg = f"Error al eliminar programa: {str(e)}"
+                error_msg = f"Error al eliminar programas: {str(e)}"
+                print(f"❌ {error_msg}")
+                messagebox.showerror("Error", error_msg)
+
+    def delete_all_programs(self):
+        if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar TODOS los programas?",
+                              icon='warning'):
+            try:
+                # Seleccionar todos los items
+                self.programs_tree.selection_set(self.programs_tree.get_children())
+                # Usar el método existente para eliminar
+                self.delete_program()
+            except Exception as e:
+                error_msg = f"Error al eliminar todos los programas: {str(e)}"
                 print(f"❌ {error_msg}")
                 messagebox.showerror("Error", error_msg)
 
