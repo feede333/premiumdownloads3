@@ -22,7 +22,7 @@ class VersionManager:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avast Premium Security {year} - Versiones</title>
-    <link rel="stylesheet" href="../css/csscomun.css">
+    <link rel="stylesheet" href="csscomun.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -291,16 +291,20 @@ class VersionManagerGUI:
                     messagebox.showinfo("Éxito", f"Archivo {filename} eliminado correctamente")
                     self.create_main_menu()
         
-        ttk.Button(main_frame, text="Eliminar HTML AÑO ENTERO", 
-                  command=confirm_delete_html, 
-                  style='Delete.TButton').pack(fill='x', pady=5)
-        
+        delete_button = tk.Button(
+            main_frame, 
+            text="Eliminar HTML AÑO ENTERO",
+            command=confirm_delete_html,
+            bg='red',          # Color de fondo
+            fg='white',        # Color del texto
+            font=('Arial', 10),
+            height=2,          # Altura del botón
+            relief='raised'    # Estilo del borde
+        )
+        delete_button.pack(fill='x', pady=5)
+
         ttk.Button(main_frame, text="Volver al menú principal", 
                   command=self.create_main_menu).pack(fill='x', pady=5)
-
-        self.style.configure('Delete.TButton', 
-                            background='red', 
-                            foreground='white')
 
     def show_add_version_dialog(self, filename):
         dialog = tk.Toplevel(self.root)
