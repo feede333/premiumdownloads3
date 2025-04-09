@@ -94,6 +94,59 @@ class VersionManager:
             print(f"   Seeds: {version['seeds']}")
             print(f"   Peers: {version['peers']}")
 
+    def add_version_to_html(self, html_file_path):
+        print("\n=== Agregar Nueva Versión al Archivo HTML ===")
+        version = input("Número de Versión (ej. 25.3.8549): ")
+        date = input("Fecha (ej. Abril 2025): ")
+        size = input("Tamaño (ej. 4.2 GB): ")
+        torrent_link = input("Link Torrent: ")
+        magnet_link = input("Link Magnet: ")
+        seeds = input("Seeds iniciales: ")
+        peers = input("Peers iniciales: ")
+
+        new_version = {
+            "version": version,
+            "date": date,
+            "size": size,
+            "torrentLink": torrent_link,
+            "magnetLink": magnet_link,
+            "seeds": seeds,
+            "peers": peers
+        }
+
+        try:
+            with open(html_file_path, "r", encoding="utf-8") as file:
+                html_content = file.read()
+
+            start_marker = '"versions": ['
+            end_marker = ']'
+
+            start_index = html_content.find(start_marker) + len(start_marker)
+            end_index = html_content.find(end_marker, start_index)
+
+            existing_data = html_content[start_index:end_index].strip()
+            if existing_data:
+                versions = json.loads(f"[{existing_data}]")
+            else:
+                versions = []
+
+            versions.append(new_version)
+
+            new_data = json.dumps(versions, indent=4)[1:-1]
+
+            updated_html_content = (
+                html_content[:start_index] + "\n" + new_data + "\n" + html_content[end_index:]
+            )
+
+            with open(html_file_path, "w", encoding="utf-8") as file:
+                file.write(updated_html_content)
+
+            print("\n✅ Nueva versión agregada al archivo HTML correctamente!")
+        except FileNotFoundError:
+            print("\n❌ Archivo HTML no encontrado")
+        except json.JSONDecodeError:
+            print("\n❌ Error al procesar los datos JSON en el archivo HTML")
+
 def main():
     manager = VersionManager()
     
@@ -102,7 +155,8 @@ def main():
         print("1. Agregar versión")
         print("2. Eliminar versión")
         print("3. Listar versiones")
-        print("4. Salir")
+        print("4. Agregar versión al archivo HTML")
+        print("5. Salir")
         
         choice = input("\nSelecciona una opción: ")
         
@@ -113,6 +167,9 @@ def main():
         elif choice == "3":
             manager.list_versions()
         elif choice == "4":
+            html_file_path = input("\nIngresa la ruta del archivo HTML: ")
+            manager.add_version_to_html(html_file_path)
+        elif choice == "5":
             print("\n¡Hasta luego!")
             break
         else:
