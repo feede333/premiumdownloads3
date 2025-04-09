@@ -216,35 +216,56 @@ class ProgramManagerApp:
         self.chat_input.delete(0, tk.END)
 
         try:
-            # Llamar a la API de DeepSeek
+            # Llamar a la API de DeepSeek con el formato correcto
             headers = {
                 "Authorization": f"Bearer {self.deepseek_api_key}",
                 "Content-Type": "application/json"
             }
             
             data = {
+                "model": "deepseek-chat",  # Especificar el modelo
                 "messages": [
-                    {"role": "system", "content": "Eres un asistente experto en software y tecnología."},
-                    {"role": "user", "content": message}
+                    {
+                        "role": "system",
+                        "content": "Eres un asistente experto en software y tecnología que ayuda a los usuarios con información sobre programas, descargas y soporte técnico."
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
                 ],
                 "temperature": 0.7,
-                "max_tokens": 500
+                "max_tokens": 500,
+                "top_p": 1,
+                "stream": False
             }
 
+            print("Enviando solicitud a DeepSeek...")
             response = requests.post(
                 "https://api.deepseek.com/v1/chat/completions",
                 headers=headers,
-                json=data
+                json=data,
+                timeout=30  # Agregar timeout
             )
 
+            print(f"Código de respuesta: {response.status_code}")
             response.raise_for_status()
-            result = response.json()
-            bot_response = result['choices'][0]['message']['content']
             
+            result = response.json()
+            print("Respuesta recibida:", result)
+            
+            bot_response = result['choices'][0]['message']['content']
             self.add_bot_message(bot_response)
 
+        except requests.exceptions.RequestException as e:
+            error_msg = f"Error de conexión: {str(e)}"
+            print(f"❌ {error_msg}")
+            self.add_bot_message(f"Lo siento, hubo un problema de conexión. Por favor, intenta de nuevo.")
+        
         except Exception as e:
-            self.add_bot_message(f"Lo siento, ocurrió un error: {str(e)}")
+            error_msg = f"Error: {str(e)}"
+            print(f"❌ {error_msg}")
+            self.add_bot_message(f"Lo siento, ocurrió un error. Por favor, intenta de nuevo más tarde.")
 
     def load_existing_programs(self):
         try:
