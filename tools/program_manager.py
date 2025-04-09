@@ -170,61 +170,163 @@ class ProgramManagerApp:
 
     def create_chatbot(self):
         # Frame principal del chat con estilo moderno
-        chat_frame = ttk.Frame(self.chat_tab)
-        chat_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        chat_frame = ttk.Frame(self.chat_tab, style='Modern.TFrame')
+        chat_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=10)
 
-        # Título del chat
-        title_frame = ttk.Frame(chat_frame)
-        title_frame.pack(fill=tk.X, padx=5, pady=5)
+        # Título del chat con fondo y bordes redondeados
+        title_frame = tk.Frame(chat_frame, bg='#2196F3', height=50)
+        title_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
+        title_frame.pack_propagate(False)
         
-        title_label = ttk.Label(title_frame, text="🤖 Asistente PremiumDownloads", font=('Helvetica', 12, 'bold'))
-        title_label.pack(side=tk.LEFT)
+        title_label = tk.Label(
+            title_frame, 
+            text="🤖 Asistente PremiumDownloads",
+            font=('Segoe UI', 14, 'bold'),
+            fg='white',
+            bg='#2196F3'
+        )
+        title_label.pack(side=tk.LEFT, padx=10, pady=10)
 
-        # Status indicator
-        self.status_label = ttk.Label(title_frame, text="🟢 En línea", foreground='green')
-        self.status_label.pack(side=tk.RIGHT)
+        # Status indicator con animación
+        self.status_label = tk.Label(
+            title_frame,
+            text="🟢 En línea",
+            font=('Segoe UI', 10),
+            fg='#E8F5E9',
+            bg='#2196F3'
+        )
+        self.status_label.pack(side=tk.RIGHT, padx=10)
 
-        # Área de mensajes con estilo
+        # Área de mensajes con estilo mejorado
+        chat_container = tk.Frame(chat_frame, bg='#F5F5F5')
+        chat_container.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
         self.chat_area = tk.Text(
-            chat_frame, 
+            chat_container, 
             wrap=tk.WORD, 
             height=20, 
             state='disabled',
-            font=('Helvetica', 10),
-            bg='#f5f5f5',
-            padx=10,
-            pady=10
+            font=('Segoe UI', 11),
+            bg='#FFFFFF',
+            fg='#212121',
+            padx=15,
+            pady=15,
+            spacing2=10,  # Espacio entre párrafos
+            relief=tk.FLAT,
+            borderwidth=0
         )
-        self.chat_area.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        self.chat_area.pack(fill=tk.BOTH, expand=True, padx=(0, 10))
 
-        # Frame para entrada y botones
-        input_frame = ttk.Frame(chat_frame)
+        # Scrollbar personalizado
+        scrollbar = ttk.Scrollbar(chat_container, orient="vertical", command=self.chat_area.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.chat_area.configure(yscrollcommand=scrollbar.set)
+
+        # Frame para entrada con fondo
+        input_container = tk.Frame(chat_frame, bg='#F5F5F5', height=100)
+        input_container.pack(fill=tk.X, pady=10)
+
+        input_frame = tk.Frame(input_container, bg='#F5F5F5')
         input_frame.pack(fill=tk.X, padx=5, pady=5)
 
-        # Campo de entrada con placeholder
-        self.chat_input = ttk.Entry(input_frame, width=50)
+        # Campo de entrada mejorado
+        self.chat_input = tk.Entry(
+            input_frame,
+            font=('Segoe UI', 11),
+            bg='#FFFFFF',
+            fg='#757575',
+            relief=tk.FLAT,
+            bd=10
+        )
+        self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 10), ipady=8)
         self.chat_input.insert(0, "Escribe tu mensaje aquí...")
-        self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
-        
-        # Efecto placeholder
-        self.chat_input.bind('<FocusIn>', self.on_entry_click)
-        self.chat_input.bind('<FocusOut>', self.on_focus_out)
 
-        # Botones con emojis
-        emoji_button = ttk.Button(input_frame, text="😊", width=3, command=self.show_emoji_picker)
+        # Frame para botones
+        buttons_frame = tk.Frame(input_frame, bg='#F5F5F5')
+        buttons_frame.pack(side=tk.RIGHT, padx=5)
+
+        # Botones con estilo moderno
+        button_style = {
+            'font': ('Segoe UI', 10),
+            'bd': 0,
+            'relief': tk.FLAT,
+            'padx': 15,
+            'pady': 8,
+            'cursor': 'hand2'
+        }
+
+        emoji_button = tk.Button(
+            buttons_frame,
+            text="😊",
+            command=self.show_emoji_picker,
+            bg='#E3F2FD',
+            fg='#212121',
+            **button_style
+        )
         emoji_button.pack(side=tk.LEFT, padx=2)
 
-        send_button = ttk.Button(input_frame, text="📤 Enviar", command=self.send_message)
+        send_button = tk.Button(
+            buttons_frame,
+            text="📤 Enviar",
+            command=self.send_message,
+            bg='#2196F3',
+            fg='white',
+            **button_style
+        )
         send_button.pack(side=tk.LEFT, padx=2)
 
-        clear_button = ttk.Button(input_frame, text="🗑️ Limpiar", command=self.clear_chat)
+        clear_button = tk.Button(
+            buttons_frame,
+            text="🗑️ Limpiar",
+            command=self.clear_chat,
+            bg='#FF5252',
+            fg='white',
+            **button_style
+        )
         clear_button.pack(side=tk.LEFT, padx=2)
 
-        # Bind Enter key
+        # Efectos hover para botones
+        for button in (emoji_button, send_button, clear_button):
+            button.bind('<Enter>', lambda e, b=button: b.configure(bg='#1976D2' if b == send_button else '#D32F2F' if b == clear_button else '#BBDEFB'))
+            button.bind('<Leave>', lambda e, b=button: b.configure(bg='#2196F3' if b == send_button else '#FF5252' if b == clear_button else '#E3F2FD'))
+
+        # Bindings
+        self.chat_input.bind('<FocusIn>', self.on_entry_click)
+        self.chat_input.bind('<FocusOut>', self.on_focus_out)
         self.chat_input.bind('<Return>', lambda e: self.send_message())
 
-        # Mensaje inicial con emojis
-        self.add_bot_message("👋 ¡Hola! Soy el asistente de PremiumDownloads. \n\n💡 Puedo ayudarte con:\n• ℹ️ Información sobre programas\n• 📥 Descargas\n• 🛠️ Soporte técnico\n\n¿En qué puedo ayudarte hoy?")
+        # Mensajes con estilos mejorados
+        def configure_tags(self):
+            self.chat_area.tag_configure(
+                'bot',
+                background='#E3F2FD',
+                lmargin1=20,
+                lmargin2=20,
+                rmargin=20,
+                spacing1=10,
+                spacing3=10
+            )
+            self.chat_area.tag_configure(
+                'user',
+                background='#F5F5F5',
+                lmargin1=20,
+                lmargin2=20,
+                rmargin=20,
+                spacing1=10,
+                spacing3=10
+            )
+
+        configure_tags(self)
+
+        # Mensaje inicial con estilo mejorado
+        self.add_bot_message(
+            "👋 ¡Hola! Soy el asistente de PremiumDownloads.\n\n" +
+            "💡 Puedo ayudarte con:\n" +
+            "• ℹ️ Información sobre programas\n" +
+            "• 📥 Descargas y actualizaciones\n" +
+            "• 🛠️ Soporte técnico\n\n" +
+            "¿En qué puedo ayudarte hoy?"
+        )
 
     def on_entry_click(self, event):
         """Función para manejar el placeholder del input"""
