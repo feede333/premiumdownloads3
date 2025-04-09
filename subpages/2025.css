@@ -1,6 +1,6 @@
 /* Variables */
 :root {
-    --primary: #2563eb; /* Azul más vibrante */
+    --primary: #2563eb;
     --accent: #3498db;
     --danger: #ef4444;
     --success: #22c55e;
@@ -8,6 +8,7 @@
     --text: #0f172a;
     --gray: #64748b;
     --border: #e2e8f0;
+    --bg-tertiary: #f8fafc; /* Agregar esta variable */
 }
 
 /* Reset básico */
