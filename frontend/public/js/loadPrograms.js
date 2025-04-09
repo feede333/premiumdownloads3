@@ -1,7 +1,7 @@
 async function loadPrograms() {
     try {
-        // Cambiar la ruta para que apunte a la ubicación correcta del JSON
-        const response = await fetch('./data/programs.json');  // <-- Cambiado
+        console.log('Iniciando carga de programas...');
+        const response = await fetch('./data/programs.json'); 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -17,7 +17,7 @@ async function loadPrograms() {
         // Limpiar grid existente
         programsGrid.innerHTML = '';
 
-        // Ajustar rutas de imágenes también
+        // Crear las cards de programas con rutas relativas
         data.programs.forEach(program => {
             const programCard = document.createElement('div');
             programCard.className = 'download-card';
@@ -32,6 +32,7 @@ async function loadPrograms() {
                         <span>${program.fileSize}</span>
                         <span>${program.version || ''}</span>
                     </div>
+                    <p class="program-description">${program.description.substring(0, 100)}...</p>
                     <a href="./detail.html?id=${program.id}" class="download-button">Ver detalles</a>
                 </div>
             `;
