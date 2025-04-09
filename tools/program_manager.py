@@ -734,19 +734,29 @@ class ProgramManagerApp:
             
             # Crear el prompt
             prompt = f"""
-            Genera información detallada para un programa de software:
-            {"ID: " + program_id if program_id else ""}
-            {"Título: " + program_title if program_title else ""}
-            
-            Incluye:
-            - Descripción técnica y beneficios
-            - Categoría (entre: Diseño, Seguridad, Multimedia, Utilidades, Productividad)
-            - Versión actual
-            - Tamaño aproximado
-            - Requisitos del sistema (OS, CPU, RAM, Disco)
-            - Instrucciones de instalación paso a paso
-            
-            Formato JSON.
+            Genera un JSON con la siguiente estructura para el programa de software:
+            {{"id": "{program_id}",
+             "title": "{program_title}",
+             "category": "Diseño",
+             "version": "string",
+             "fileSize": "string",
+             "description": "string",
+             "requirements": {{
+                "os": "string",
+                "processor": "string",
+                "ram": "string",
+                "disk": "string",
+                "display": "string"
+             }},
+             "instructions": "string"
+            }}
+
+            Proporciona información detallada y técnica, incluyendo:
+            - Descripción técnica completa con características y beneficios
+            - Versión más reciente
+            - Tamaño aproximado del instalador
+            - Requisitos mínimos y recomendados
+            - Instrucciones paso a paso para instalación y activación
             """
 
             # Llamar a la API de DeepSeek con el formato correcto
