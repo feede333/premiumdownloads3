@@ -312,27 +312,100 @@ class VersionManagerGUI:
 
         dialog = tk.Toplevel(self.root)
         dialog.title("Seleccionar archivo HTML existente AÑO")
-        dialog.geometry("400x300")
+        dialog.geometry("500x400")
         dialog.grab_set()
 
-        ttk.Label(dialog, text="Selecciona un archivo:").pack(pady=20)
+        ttk.Label(dialog, text="Selecciona archivo(s):", style='Header.TLabel').pack(pady=20)
         
-        listbox = tk.Listbox(dialog)
-        listbox.pack(fill='both', expand=True, padx=20)
+        # Frame para la lista y scrollbar
+        list_frame = ttk.Frame(dialog)
+        list_frame.pack(fill='both', expand=True, padx=20)
         
-        for file in files:
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(list_frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        # Listbox con selección múltiple
+        listbox = tk.Listbox(list_frame, selectmode='extended', yscrollcommand=scrollbar.set)
+        listbox.pack(side='left', fill='both', expand=True)
+        
+        # Configurar scrollbar
+        scrollbar.config(command=listbox.yview)
+        
+        for file in sorted(files, key=lambda x: int(x.replace('.html', '')), reverse=True):
             listbox.insert('end', file)
 
-        def select_file():
-            if not listbox.curselection():
-                messagebox.showwarning("Aviso", "Por favor selecciona un archivo.")
+        # Frame para botones
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(fill='x', padx=20, pady=10)
+
+        def select_all():
+            listbox.select_set(0, 'end')
+
+        def deselect_all():
+            listbox.selection_clear(0, 'end')
+
+        def confirm_delete_selected():
+            selected = listbox.curselection()
+            if not selected:
+                messagebox.showwarning("Aviso", "Por favor selecciona al menos un archivo.")
                 return
                 
-            selected = listbox.get(listbox.curselection())
-            dialog.destroy()
-            self.show_version_management(selected)
+            files_to_delete = [listbox.get(i) for i in selected]
+            if messagebox.askyesno("Confirmar eliminación", 
+                                 f"¿Estás seguro que deseas eliminar los siguientes archivos?\n\n" +
+                                 "\n".join(files_to_delete) +
+                                 "\n\nEsta acción no se puede deshacer."):
+                
+                for file in files_to_delete:
+                    file_path = os.path.join(self.manager.subpages_path, file)
+                    self.manager.delete_html_file(file_path, file)
+                
+                messagebox.showinfo("Éxito", "Archivos eliminados correctamente")
+                dialog.destroy()
+                self.create_main_menu()
 
-        ttk.Button(dialog, text="Seleccionar", command=select_file).pack(pady=20)
+        def select_files():
+            selected = listbox.curselection()
+            if not selected:
+                messagebox.showwarning("Aviso", "Por favor selecciona al menos un archivo.")
+                return
+                
+            dialog.destroy()
+            if len(selected) == 1:
+                self.show_version_management(listbox.get(selected[0]))
+            else:
+                # Mostrar diálogo para gestión múltiple
+                self.show_multiple_version_management([listbox.get(i) for i in selected])
+
+        # Frame para botones de selección
+        select_frame = ttk.Frame(button_frame)
+        select_frame.pack(fill='x', pady=5)
+        
+        ttk.Button(select_frame, text="Seleccionar Todo", 
+                  command=select_all).pack(side='left', padx=5)
+        ttk.Button(select_frame, text="Deseleccionar Todo", 
+                  command=deselect_all).pack(side='left', padx=5)
+
+        # Frame para botones de acción
+        action_frame = ttk.Frame(button_frame)
+        action_frame.pack(fill='x', pady=5)
+
+        # Botón rojo para eliminar
+        delete_button = tk.Button(
+            action_frame,
+            text="Eliminar Seleccionados",
+            command=confirm_delete_selected,
+            bg='red',
+            fg='white',
+            font=('Arial', 10),
+            height=2
+        )
+        delete_button.pack(side='left', padx=5, fill='x', expand=True)
+
+        # Botón normal para seleccionar
+        ttk.Button(action_frame, text="Gestionar Seleccionados", 
+                  command=select_files).pack(side='left', padx=5, fill='x', expand=True)
 
     def show_version_management(self, filename):
         for widget in self.root.winfo_children():
