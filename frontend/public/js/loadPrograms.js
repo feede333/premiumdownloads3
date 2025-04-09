@@ -1,6 +1,7 @@
 async function loadPrograms() {
     try {
-        const response = await fetch('/premiumdownloads3/data/programs.json');
+        // Cambiar la ruta para que apunte a la ubicación correcta del JSON
+        const response = await fetch('./data/programs.json');  // <-- Cambiado
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -16,12 +17,13 @@ async function loadPrograms() {
         // Limpiar grid existente
         programsGrid.innerHTML = '';
 
+        // Ajustar rutas de imágenes también
         data.programs.forEach(program => {
             const programCard = document.createElement('div');
             programCard.className = 'download-card';
             programCard.innerHTML = `
                 <div class="card-image">
-                    <img src="${program.image}" alt="${program.title}">
+                    <img src="./images/${program.id}.png" alt="${program.title}">
                 </div>
                 <div class="card-content">
                     <h3 class="card-title">${program.title}</h3>
@@ -30,7 +32,7 @@ async function loadPrograms() {
                         <span>${program.fileSize}</span>
                         <span>${program.version || ''}</span>
                     </div>
-                    <a href="/premiumdownloads3/detail.html?id=${program.id}" class="download-button">Ver detalles</a>
+                    <a href="./detail.html?id=${program.id}" class="download-button">Ver detalles</a>
                 </div>
             `;
             programsGrid.appendChild(programCard);
