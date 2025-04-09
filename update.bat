@@ -2,6 +2,9 @@ REM filepath: c:\Users\Federico\Downloads\downloads site\premiumdownloads2\updat
 @echo off
 echo Verificando token de GitHub...
 
+REM Asegurarse de estar en el directorio raíz
+cd /d %~dp0
+
 REM Verificar la variable de entorno GITHUB_TOKEN
 if "%GITHUB_TOKEN%" == "" (
     echo [ERROR] Variable GITHUB_TOKEN no encontrada
@@ -16,8 +19,7 @@ echo [OK] Token encontrado
 
 echo.
 echo Verificando rutas y archivos...
-cd tools
-python verify_setup.py
+python tools/verify_setup.py
 
 if %errorlevel% neq 0 (
     echo [ERROR] Error en la verificación de la estructura
@@ -27,12 +29,14 @@ if %errorlevel% neq 0 (
 
 echo.
 echo Actualizando repositorio...
-git add .
+git add ./data/programs.json
+git add ./images/*
+git add ./*.html
 git status
 
 echo.
 echo Confirmando cambios...
-git commit -m "Update: Nuevos programas agregados %date% %time%"
+git commit -m "Update: Actualización de programas %date% %time%"
 
 echo.
 echo Configurando remote con token...
