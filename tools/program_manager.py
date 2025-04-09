@@ -749,33 +749,48 @@ class ProgramManagerApp:
             Formato JSON.
             """
 
-            # Llamar a la API de DeepSeek
+            # Llamar a la API de DeepSeek con el formato correcto
             headers = {
                 "Authorization": f"Bearer {self.deepseek_api_key}",
                 "Content-Type": "application/json"
             }
             
             data = {
+                "model": "deepseek-chat",  # Especificar el modelo
                 "messages": [
-                    {"role": "system", "content": "Eres un experto en software que proporciona información técnica precisa."},
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "system",
+                        "content": "Eres un experto en software que proporciona información técnica precisa. Responde siempre en formato JSON."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
                 ],
                 "temperature": 0.7,
-                "max_tokens": 1000
+                "max_tokens": 1000,
+                "top_p": 1,
+                "stream": False
             }
 
+            print("Enviando solicitud con datos:", data)  # Debug
             response = requests.post(
                 "https://api.deepseek.com/v1/chat/completions",
                 headers=headers,
-                json=data
+                json=data,
+                timeout=30
             )
 
+            print(f"Código de respuesta: {response.status_code}")  # Debug
             response.raise_for_status()
+            
             result = response.json()
-
+            print("Respuesta recibida:", result)  # Debug
+            
             # Procesar la respuesta
             try:
                 generated_data = json.loads(result['choices'][0]['message']['content'])
+                print("Datos generados:", generated_data)  # Debug
                 
                 # Rellenar los campos
                 for key, value in generated_data.items():
@@ -796,13 +811,18 @@ class ProgramManagerApp:
 
                 messagebox.showinfo("Éxito", "Datos generados correctamente")
 
-            except json.JSONDecodeError:
-                print("Respuesta no JSON:", result['choices'][0]['message']['content'])
+            except json.JSONDecodeError as e:
+                print("Error decodificando JSON:", str(e))
+                print("Contenido recibido:", result['choices'][0]['message']['content'])
                 messagebox.showerror("Error", "La IA no generó un JSON válido")
 
+        except requests.exceptions.RequestException as e:
+            error_msg = f"Error de conexión: {str(e)}"
+            print(f"❌ {error_msg}")
+            messagebox.showerror("Error", error_msg)
         except Exception as e:
             error_msg = f"Error al autocompletar: {str(e)}"
-            print(error_msg)
+            print(f"❌ {error_msg}")
             messagebox.showerror("Error", error_msg)
 
     def get_json_path(self):
