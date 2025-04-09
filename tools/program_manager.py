@@ -169,51 +169,130 @@ class ProgramManagerApp:
         self.load_existing_programs()
 
     def create_chatbot(self):
-        # Frame principal del chat
+        # Frame principal del chat con estilo moderno
         chat_frame = ttk.Frame(self.chat_tab)
         chat_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-        # Área de mensajes
-        self.chat_area = tk.Text(chat_frame, wrap=tk.WORD, height=20, state='disabled')
+        # Título del chat
+        title_frame = ttk.Frame(chat_frame)
+        title_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        title_label = ttk.Label(title_frame, text="🤖 Asistente PremiumDownloads", font=('Helvetica', 12, 'bold'))
+        title_label.pack(side=tk.LEFT)
+
+        # Status indicator
+        self.status_label = ttk.Label(title_frame, text="🟢 En línea", foreground='green')
+        self.status_label.pack(side=tk.RIGHT)
+
+        # Área de mensajes con estilo
+        self.chat_area = tk.Text(
+            chat_frame, 
+            wrap=tk.WORD, 
+            height=20, 
+            state='disabled',
+            font=('Helvetica', 10),
+            bg='#f5f5f5',
+            padx=10,
+            pady=10
+        )
         self.chat_area.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Frame para entrada y botón
+        # Frame para entrada y botones
         input_frame = ttk.Frame(chat_frame)
         input_frame.pack(fill=tk.X, padx=5, pady=5)
 
-        # Campo de entrada
-        self.chat_input = ttk.Entry(input_frame)
+        # Campo de entrada con placeholder
+        self.chat_input = ttk.Entry(input_frame, width=50)
+        self.chat_input.insert(0, "Escribe tu mensaje aquí...")
         self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        
+        # Efecto placeholder
+        self.chat_input.bind('<FocusIn>', self.on_entry_click)
+        self.chat_input.bind('<FocusOut>', self.on_focus_out)
 
-        # Botón enviar
-        send_button = ttk.Button(input_frame, text="Enviar", command=self.send_message)
-        send_button.pack(side=tk.RIGHT)
+        # Botones con emojis
+        emoji_button = ttk.Button(input_frame, text="😊", width=3, command=self.show_emoji_picker)
+        emoji_button.pack(side=tk.LEFT, padx=2)
+
+        send_button = ttk.Button(input_frame, text="📤 Enviar", command=self.send_message)
+        send_button.pack(side=tk.LEFT, padx=2)
+
+        clear_button = ttk.Button(input_frame, text="🗑️ Limpiar", command=self.clear_chat)
+        clear_button.pack(side=tk.LEFT, padx=2)
 
         # Bind Enter key
         self.chat_input.bind('<Return>', lambda e: self.send_message())
 
-        # Mensaje inicial
-        self.add_bot_message("¡Hola! Soy el asistente de PremiumDownloads. ¿En qué puedo ayudarte?")
+        # Mensaje inicial con emojis
+        self.add_bot_message("👋 ¡Hola! Soy el asistente de PremiumDownloads. \n\n💡 Puedo ayudarte con:\n• ℹ️ Información sobre programas\n• 📥 Descargas\n• 🛠️ Soporte técnico\n\n¿En qué puedo ayudarte hoy?")
+
+    def on_entry_click(self, event):
+        """Función para manejar el placeholder del input"""
+        if self.chat_input.get() == 'Escribe tu mensaje aquí...':
+            self.chat_input.delete(0, tk.END)
+            self.chat_input.config(foreground='black')
+
+    def on_focus_out(self, event):
+        """Función para restaurar el placeholder"""
+        if self.chat_input.get() == '':
+            self.chat_input.insert(0, 'Escribe tu mensaje aquí...')
+            self.chat_input.config(foreground='gray')
+
+    def clear_chat(self):
+        """Función para limpiar el chat"""
+        if messagebox.askyesno("Confirmar", "¿Deseas limpiar todo el historial del chat?"):
+            self.chat_area.config(state='normal')
+            self.chat_area.delete(1.0, tk.END)
+            self.chat_area.config(state='disabled')
+            self.add_bot_message("💬 Chat limpiado. ¿En qué puedo ayudarte?")
+
+    def show_emoji_picker(self):
+        """Muestra un selector de emojis común"""
+        emojis = ["😊", "👍", "❤️", "🎮", "💻", "🔥", "👀", "💡", "⭐", "✅"]
+        
+        # Crear ventana emergente
+        popup = tk.Toplevel(self.root)
+        popup.title("Emojis")
+        popup.geometry("200x150")
+        
+        def insert_emoji(emoji):
+            current = self.chat_input.get()
+            if current == "Escribe tu mensaje aquí...":
+                current = ""
+            self.chat_input.delete(0, tk.END)
+            self.chat_input.insert(0, current + emoji)
+            popup.destroy()
+
+        # Crear grid de emojis
+        for i, emoji in enumerate(emojis):
+            btn = ttk.Button(popup, text=emoji, command=lambda e=emoji: insert_emoji(e))
+            btn.grid(row=i//5, column=i%5, padx=2, pady=2)
 
     def add_bot_message(self, message):
+        """Función mejorada para mensajes del bot"""
         self.chat_area.config(state='normal')
-        self.chat_area.insert(tk.END, "🤖 Bot: " + message + "\n\n")
+        self.chat_area.insert(tk.END, "\n🤖 Bot: " + message + "\n", 'bot')
+        self.chat_area.tag_configure('bot', background='#e3f2fd', lmargin1=20, lmargin2=20, rmargin=20)
         self.chat_area.config(state='disabled')
         self.chat_area.see(tk.END)
 
     def add_user_message(self, message):
+        """Función mejorada para mensajes del usuario"""
         self.chat_area.config(state='normal')
-        self.chat_area.insert(tk.END, "👤 Tú: " + message + "\n\n")
+        self.chat_area.insert(tk.END, "\n👤 Tú: " + message + "\n", 'user')
+        self.chat_area.tag_configure('user', background='#f5f5f5', lmargin1=20, lmargin2=20, rmargin=20)
         self.chat_area.config(state='disabled')
         self.chat_area.see(tk.END)
 
     def send_message(self):
         message = self.chat_input.get().strip()
-        if not message:
+        if not message or message == "Escribe tu mensaje aquí...":
             return
 
         self.add_user_message(message)
         self.chat_input.delete(0, tk.END)
+        self.chat_input.insert(0, "Escribe tu mensaje aquí...")
+        self.chat_input.config(foreground='gray')
 
         try:
             # Llamar a la API de DeepSeek con el formato correcto
