@@ -32,6 +32,9 @@ class ProgramManagerApp:
         self.root = root
         self.root.title("Gestor de Programas - PremiumDownloads")
         self.root.geometry("600x800")
+        
+        # Configurar DeepSeek primero
+        self.deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
 
         # Crear notebook para pestañas
         self.notebook = ttk.Notebook(self.root)
@@ -50,9 +53,6 @@ class ProgramManagerApp:
         
         # Crear la lista de programas en la pestaña de gestionar
         self.create_programs_list()
-
-        # Configurar DeepSeek
-        self.deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
 
     def create_form(self):
         # Frame principal con scroll
