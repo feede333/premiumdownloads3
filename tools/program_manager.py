@@ -182,21 +182,26 @@ class ProgramManagerApp:
             try:
                 # Obtener ID del programa seleccionado
                 program_id = self.programs_tree.item(selected_item[0])['values'][0]
+                print(f"Intentando eliminar programa con ID: {program_id}")
                 
                 # Obtener ruta del JSON desde la raíz
                 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 json_path = os.path.join(base_dir, 'data', 'programs.json')
-                print(f"Eliminando programa {program_id} de {json_path}")
+                print(f"Leyendo JSON desde: {json_path}")
 
                 # Leer JSON actual
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
+                    programs = data.get('programs', [])
+                    
+                    # Debug: mostrar todos los IDs
+                    print("IDs en el JSON:", [p.get('id') for p in programs])
 
                 # Guardar cantidad anterior
-                prev_count = len(data.get('programs', []))
+                prev_count = len(programs)
 
-                # Filtrar programa
-                data['programs'] = [p for p in data['programs'] if p['id'] != program_id]
+                # Filtrar programa - usar str() para asegurar comparación de strings
+                data['programs'] = [p for p in programs if str(p.get('id', '')).strip() != str(program_id).strip()]
                 
                 # Verificar eliminación
                 new_count = len(data['programs'])
@@ -221,28 +226,9 @@ class ProgramManagerApp:
                 self.load_existing_programs()
                 print("✅ Lista actualizada")
 
-                # Sincronizar con GitHub solo si hubo cambios
-                if prev_count != new_count:
-                    print("\n=== Sincronizando con GitHub ===")
-                    try:
-                        import subprocess
-                        
-                        repo_url = f"https://{token}@github.com/feede333/premiumdownloads3.git"
-                        
-                        # Usar el directorio base para los comandos git
-                        subprocess.run(['git', 'add', 'data/programs.json'], cwd=base_dir, check=True)
-                        subprocess.run(['git', 'add', 'images/*'], cwd=base_dir, check=True)
-                        subprocess.run(['git', 'commit', '-m', f'Remove: Programa {program_id}'], cwd=base_dir, check=True)
-                        subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=base_dir, check=True)
-                        subprocess.run(['git', 'push', 'origin', 'main'], cwd=base_dir, check=True)
-                        
-                        print("✅ Cambios sincronizados con GitHub")
-                        messagebox.showinfo("Éxito", "Programa eliminado correctamente")
-                    
-                    except Exception as e:
-                        error_msg = f"Error sincronizando con GitHub: {str(e)}"
-                        print(f"❌ {error_msg}")
-                        messagebox.showerror("Error", error_msg)
+                # Sincronizar con GitHub
+                self.sync_with_github(f"Remove: Programa {program_id}")
+                messagebox.showinfo("Éxito", "Programa eliminado correctamente")
 
             except Exception as e:
                 error_msg = f"Error al eliminar programa: {str(e)}"
