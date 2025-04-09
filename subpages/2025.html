@@ -32,67 +32,7 @@
             <h2>Versiones de 2025</h2>
             
             <div class="version-list">
-                <!-- Versión más reciente -->
-                <div class="version-item">
-                    <div class="version-info">
-                        <h3 class="version-name">Versión 25.3.8549</h3>
-                        <span class="version-date">Abril 2025</span>
-                        <span class="file-size">4.2 GB</span>
-                    </div>
-                    <div class="download-container">
-                        <div class="download-options">
-                            <a href="magnet:?xt=urn:btih:HASH" class="magnet-button">
-                                <i class="fas fa-magnet"></i>
-                                <span>Magnet</span>
-                            </a>
-                            <a href="https://pasteplay.com/TUENLACE" class="torrent-button" target="_blank">
-                                <i class="fas fa-download"></i>
-                                <span>Torrent</span>
-                            </a>
-                        </div>
-                        <div class="torrent-stats" data-torrent-hash="HASH">
-                            <div class="peer-info">
-                                <span class="status-indicator seeds-indicator"></span>
-                                <span>Seeds: 125</span>
-                            </div>
-                            <div class="peer-info">
-                                <span class="status-indicator peers-indicator"></span>
-                                <span>Peers: 45</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Versión anterior -->
-                <div class="version-item">
-                    <div class="version-info">
-                        <h3 class="version-name">Versión 25.2.8523</h3>
-                        <span class="version-date">Marzo 2025</span>
-                        <span class="file-size">4.1 GB</span>
-                    </div>
-                    <div class="download-container">
-                        <div class="download-options">
-                            <a href="magnet:?xt=urn:btih:HASH2" class="magnet-button">
-                                <i class="fas fa-magnet"></i>
-                                <span>Magnet</span>
-                            </a>
-                            <a href="https://pasteplay.com/TUENLACE2" class="torrent-button" target="_blank">
-                                <i class="fas fa-download"></i>
-                                <span>Torrent</span>
-                            </a>
-                        </div>
-                        <div class="torrent-stats" data-torrent-hash="HASH2">
-                            <div class="peer-info">
-                                <span class="status-indicator seeds-indicator"></span>
-                                <span>Seeds: 85</span>
-                            </div>
-                            <div class="peer-info">
-                                <span class="status-indicator peers-indicator"></span>
-                                <span>Peers: 30</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Las versiones se cargarán dinámicamente -->
             </div>
 
             <div class="torrent-note">
@@ -136,6 +76,51 @@
         // Iniciar actualizaciones periódicas
         tracker.startPeriodicUpdate(torrentContainers);
     });
+    </script>
+    <script>
+    async function loadVersions() {
+        try {
+            const response = await fetch('../data/versions.json');
+            const data = await response.json();
+            const versionList = document.querySelector('.version-list');
+            
+            versionList.innerHTML = data.versions.map(version => `
+                <div class="version-item">
+                    <div class="version-info">
+                        <h3 class="version-name">Versión ${version.version}</h3>
+                        <span class="version-date">${version.date}</span>
+                        <span class="file-size">${version.size}</span>
+                    </div>
+                    <div class="download-container">
+                        <div class="download-options">
+                            <a href="${version.magnetLink}" class="magnet-button">
+                                <i class="fas fa-magnet"></i>
+                                <span>Magnet</span>
+                            </a>
+                            <a href="${version.torrentLink}" class="torrent-button" target="_blank">
+                                <i class="fas fa-download"></i>
+                                <span>Torrent</span>
+                            </a>
+                        </div>
+                        <div class="torrent-stats" data-torrent-hash="${version.magnetLink.split(':')[3]}">
+                            <div class="peer-info">
+                                <span class="status-indicator seeds-indicator"></span>
+                                <span>Seeds: ${version.seeds}</span>
+                            </div>
+                            <div class="peer-info">
+                                <span class="status-indicator peers-indicator"></span>
+                                <span>Peers: ${version.peers}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading versions:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadVersions);
     </script>
 </body>
 </html>
