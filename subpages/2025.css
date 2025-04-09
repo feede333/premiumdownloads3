@@ -1,15 +1,13 @@
 /* Variables */
 :root {
-    --primary: #2563eb;
+    --primary: #2563eb; /* Azul más vibrante */
     --accent: #3498db;
     --danger: #ef4444;
     --success: #22c55e;
-    --warning: #f59e0b;
     --background: #f1f5f9;
     --text: #0f172a;
     --gray: #64748b;
     --border: #e2e8f0;
-    --bg-tertiary: #f8fafc;
 }
 
 /* Reset básico */
@@ -19,6 +17,18 @@
     box-sizing: border-box;
 }
 
+.download-detail {
+    margin-top: 3rem;
+}
+
+.download-detail h2 {
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+}
+
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     background: var(--background);
@@ -26,7 +36,8 @@ body {
     line-height: 1.6;
 }
 
-/* Container y layout */
+
+/* Contenedor principal */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -92,76 +103,201 @@ nav a:hover {
     text-decoration: underline;
 }
 
-/* Versiones */
+/* Contenedor de versiones */
 .versions-detail {
-    background: white;
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     padding: 2rem;
-    margin: 2rem 0;
 }
 
-.versions-detail h1 {
-    color: var(--text);
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.version-card {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+/* Item de versión */
+.version-item {
+    background: white;
     padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
     margin-bottom: 1.5rem;
-}
-
-.version-info {
-    margin-bottom: 1.5rem;
-}
-
-.version-meta {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     display: flex;
-    gap: 1.5rem;
+    justify-content: space-between; /* Separa el contenido */
+    align-items: flex-start;
+}
+
+/* Info de la versión (izquierda) */
+.version-info {
+    flex: 1; /* Toma el espacio disponible */
+    margin-bottom: 1.5rem;
+}
+
+/* Contenedor de botones y stats (derecha) */
+.download-container {
+    width: 300px; /* Ancho fijo para los botones */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Alinea a la derecha */
+}
+
+.version-item:last-child {
+    border-bottom: none;
+}
+
+.version-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.version-date,
+.file-size {
     color: var(--gray);
     font-size: 0.9rem;
-    margin: 1rem 0;
+    margin-right: 1rem;
 }
 
-.download-actions {
+/* Botones de descarga */
+.download-options {
     display: flex;
     gap: 1rem;
+    margin-bottom: 1rem;
+    justify-content: flex-end; /* Alinea los botones a la derecha */
 }
 
-.download-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: white;
+.magnet-button,
+.torrent-button {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    color: white;
     transition: all 0.3s ease;
+    min-width: 160px;
 }
 
-.btn-torrent {
-    background: var(--primary);
+.magnet-button {
+    background: #3b82f6;
 }
 
-.btn-torrent:hover {
-    background: var(--accent);
+.torrent-button {
+    background: #2563eb;
+}
+
+.magnet-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Torrent info */
-.torrent-info {
+/* Nuevo hover con gradiente verde solo para el botón torrent */
+.torrent-button:hover {
+    background: linear-gradient(to right, #22c55e, #16a34a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Stats de torrent */
+.torrent-stats {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    color: var(--gray);
+    gap: 1.5rem;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
     font-size: 0.9rem;
+}
+
+.peer-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.seeds-indicator {
+    background: var(--success);
+}
+
+.peers-indicator {
+    background: var(--danger);
+}
+
+.seeds-indicator.active {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.peers-indicator.active {
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+}
+
+.torrent-health {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.torrent-health.healthy {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.torrent-health.medium {
+    background: var(--warning);
+    box-shadow: 0 0 8px var(--warning);
+}
+
+.torrent-health.poor {
+    background: var(--danger);
+    box-shadow: 0 0 8px var(--danger);
+}
+
+/* Animación de actualización */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.updating {
+    animation: pulse 1s infinite;
+}
+
+/* Nota informativa */
+.torrent-note {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: 1px solid var(--border);
+}
+
+.torrent-note p {
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.torrent-note ul {
+    list-style: none;
+    color: var(--gray);
+}
+
+.torrent-note li {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 /* Footer */
@@ -186,19 +322,4 @@ footer {
 
 .footer-links a:hover {
     color: var(--accent);
-}
-
-@media (max-width: 768px) {
-    .download-actions {
-        flex-direction: column;
-    }
-    
-    .version-card {
-        padding: 1.5rem;
-    }
-    
-    .version-meta {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
 }
