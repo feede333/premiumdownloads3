@@ -18,25 +18,6 @@
         "display": "2"
       },
       "instructions": "2"
-    },
-    {
-      "id": "s",
-      "title": "ss",
-      "category": "Diseño",
-      "version": "s",
-      "fileSize": "s",
-      "downloadLink": "s",
-      "date": "09.04.2025",
-      "image": "images/default.png",
-      "description": "s",
-      "requirements": {
-        "os": "s",
-        "processor": "s",
-        "ram": "s",
-        "disk": "s",
-        "display": "s"
-      },
-      "instructions": "s"
     }
   ]
 }
