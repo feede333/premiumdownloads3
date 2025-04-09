@@ -9,6 +9,7 @@
     --gray: #64748b;
     --border: #e2e8f0;
     --bg-tertiary: #f8fafc; /* Agregar esta variable */
+    --warning: #f59e0b; /* También agregar esta que faltaba */
 }
 
 /* Reset básico */
@@ -36,7 +37,6 @@ body {
     color: var(--text);
     line-height: 1.6;
 }
-
 
 /* Contenedor principal */
 .container {
@@ -112,6 +112,13 @@ nav a:hover {
     padding: 2rem;
 }
 
+/* Versiones */
+.version-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 /* Item de versión */
 .version-item {
     background: white;
@@ -152,9 +159,10 @@ nav a:hover {
 
 .version-date,
 .file-size {
+    display: inline-block;
     color: var(--gray);
     font-size: 0.9rem;
-    margin-right: 1rem;
+    margin-right: 1.5rem;
 }
 
 /* Botones de descarga */
@@ -169,8 +177,7 @@ nav a:hover {
 .torrent-button {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     font-weight: 500;
@@ -202,13 +209,12 @@ nav a:hover {
 
 /* Stats de torrent */
 .torrent-stats {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0.75rem;
     background: var(--bg-tertiary);
     border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    gap: 2rem;
 }
 
 .peer-info {
@@ -276,17 +282,17 @@ nav a:hover {
 
 /* Nota informativa */
 .torrent-note {
-    background: #f8fafc;
-    border-radius: 8px;
-    padding: 1.5rem;
     margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
     border: 1px solid var(--border);
 }
 
 .torrent-note p {
-    color: var(--text);
-    margin-bottom: 1rem;
     font-weight: 500;
+    margin-bottom: 1rem;
+    color: var(--text);
 }
 
 .torrent-note ul {
