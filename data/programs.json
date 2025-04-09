@@ -37,6 +37,25 @@
         "display": "s"
       },
       "instructions": "s"
+    },
+    {
+      "id": "3",
+      "title": "3",
+      "category": "Diseño",
+      "version": "3",
+      "fileSize": "3",
+      "downloadLink": "3",
+      "date": "09.04.2025",
+      "image": "images/default.png",
+      "description": "3",
+      "requirements": {
+        "os": "3",
+        "processor": "3",
+        "ram": "3",
+        "disk": "3",
+        "display": "3"
+      },
+      "instructions": "3"
     }
   ]
 }
