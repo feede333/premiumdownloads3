@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 from datetime import datetime
+import requests
 
 token = os.getenv("GITHUB_TOKEN")
 if not token:
@@ -49,6 +50,9 @@ class ProgramManagerApp:
         
         # Crear la lista de programas en la pestaña de gestionar
         self.create_programs_list()
+
+        # Configurar DeepSeek
+        self.deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
 
     def create_form(self):
         # Frame principal con scroll
@@ -108,6 +112,15 @@ class ProgramManagerApp:
         # Botón para seleccionar imagen
         ttk.Button(self.scrollable_frame, text="Seleccionar imagen", 
                   command=self.select_image).pack(pady=5)
+
+        # Agregar botón de autocompletar antes del botón guardar
+        if self.deepseek_api_key:
+            autocomplete_button = ttk.Button(
+                self.scrollable_frame, 
+                text="🤖 Autocompletar con IA", 
+                command=self.autocomplete_with_ai
+            )
+            autocomplete_button.pack(pady=5)
 
         # Botón para guardar
         ttk.Button(self.scrollable_frame, text="Guardar programa", 
@@ -422,6 +435,91 @@ class ProgramManagerApp:
             print(f"\n❌ Error: {str(e)}")
             messagebox.showerror("Error", f"Error: {str(e)}")
             raise
+
+    def autocomplete_with_ai(self):
+        try:
+            # Obtener el ID y título si ya están ingresados
+            program_id = self.entries["id"].get().strip()
+            program_title = self.entries["title"].get().strip()
+
+            if not program_title and not program_id:
+                messagebox.showerror("Error", "Ingresa al menos el ID o título del programa")
+                return
+
+            print("Consultando a DeepSeek...")
+            
+            # Crear el prompt
+            prompt = f"""
+            Genera información detallada para un programa de software:
+            {"ID: " + program_id if program_id else ""}
+            {"Título: " + program_title if program_title else ""}
+            
+            Incluye:
+            - Descripción técnica y beneficios
+            - Categoría (entre: Diseño, Seguridad, Multimedia, Utilidades, Productividad)
+            - Versión actual
+            - Tamaño aproximado
+            - Requisitos del sistema (OS, CPU, RAM, Disco)
+            - Instrucciones de instalación paso a paso
+            
+            Formato JSON.
+            """
+
+            # Llamar a la API de DeepSeek
+            headers = {
+                "Authorization": f"Bearer {self.deepseek_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            data = {
+                "messages": [
+                    {"role": "system", "content": "Eres un experto en software que proporciona información técnica precisa."},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 1000
+            }
+
+            response = requests.post(
+                "https://api.deepseek.com/v1/chat/completions",
+                headers=headers,
+                json=data
+            )
+
+            response.raise_for_status()
+            result = response.json()
+
+            # Procesar la respuesta
+            try:
+                generated_data = json.loads(result['choices'][0]['message']['content'])
+                
+                # Rellenar los campos
+                for key, value in generated_data.items():
+                    if key in self.entries:
+                        if isinstance(self.entries[key], tk.Text):
+                            self.entries[key].delete("1.0", tk.END)
+                            self.entries[key].insert("1.0", str(value))
+                        else:
+                            self.entries[key].delete(0, tk.END)
+                            self.entries[key].insert(0, str(value))
+
+                # Rellenar requisitos del sistema
+                if "requirements" in generated_data:
+                    for req_key, req_value in generated_data["requirements"].items():
+                        if req_key in self.entries:
+                            self.entries[req_key].delete(0, tk.END)
+                            self.entries[req_key].insert(0, str(req_value))
+
+                messagebox.showinfo("Éxito", "Datos generados correctamente")
+
+            except json.JSONDecodeError:
+                print("Respuesta no JSON:", result['choices'][0]['message']['content'])
+                messagebox.showerror("Error", "La IA no generó un JSON válido")
+
+        except Exception as e:
+            error_msg = f"Error al autocompletar: {str(e)}"
+            print(error_msg)
+            messagebox.showerror("Error", error_msg)
 
     def get_json_path(self):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
