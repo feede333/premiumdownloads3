@@ -9,6 +9,23 @@ token = os.getenv("GITHUB_TOKEN")
 if not token:
     raise EnvironmentError("GITHUB_TOKEN environment variable not found. Please set it in your system environment variables.")
 
+def verify_setup():
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # Verificar estructura de directorios en la raíz
+    paths_to_check = [
+        'data',
+        'images',
+        'js',
+        'css'
+    ]
+    
+    for path in paths_to_check:
+        full_path = os.path.join(base_dir, path)
+        if not os.path.exists(full_path):
+            print(f"⚠️ Creando directorio faltante: {path}")
+            os.makedirs(full_path)
+
 class ProgramManagerApp:
     def __init__(self, root):
         self.root = root
@@ -262,17 +279,13 @@ class ProgramManagerApp:
                 return
 
 
-            # Actualizar rutas para usar frontend/public
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            repo_dir = os.path.dirname(base_dir)
-            frontend_dir = os.path.join(repo_dir, 'frontend', 'public')
-            data_dir = os.path.join(frontend_dir, 'data')
-            images_dir = os.path.join(frontend_dir, 'images')
+            # Actualizar rutas para usar directorios en la raíz
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            data_dir = os.path.join(base_dir, 'data')
+            images_dir = os.path.join(base_dir, 'images')
             
             print(f"\nDirectorios:")
             print(f"Base: {base_dir}")
-            print(f"Repo: {repo_dir}")
-            print(f"Frontend: {frontend_dir}")
             print(f"Data: {data_dir}")
             print(f"Images: {images_dir}")
 
@@ -379,9 +392,10 @@ class ProgramManagerApp:
 
     def get_json_path(self):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        return os.path.join(base_dir, 'frontend', 'public', 'data', 'programs.json')
+        return os.path.join(base_dir, 'data', 'programs.json')
 
 if __name__ == "__main__":
+    verify_setup()
     root = tk.Tk()
     app = ProgramManagerApp(root)
     root.mainloop()
