@@ -183,8 +183,9 @@ class ProgramManagerApp:
                 # Obtener ID del programa seleccionado
                 program_id = self.programs_tree.item(selected_item[0])['values'][0]
                 
-                # Obtener ruta del JSON
-                json_path = self.get_json_path()
+                # Obtener ruta del JSON desde la raíz
+                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                json_path = os.path.join(base_dir, 'data', 'programs.json')
                 print(f"Eliminando programa {program_id} de {json_path}")
 
                 # Leer JSON actual
@@ -201,33 +202,52 @@ class ProgramManagerApp:
                 new_count = len(data['programs'])
                 print(f"Programas antes: {prev_count}, después: {new_count}")
 
+                if prev_count == new_count:
+                    print(f"⚠️ Advertencia: No se encontró el programa {program_id} para eliminar")
+                    return
+
                 # Guardar JSON actualizado
                 with open(json_path, 'w', encoding='utf-8') as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
+                print("✅ JSON actualizado")
 
                 # Eliminar imagen si existe
-                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                image_path = os.path.join(base_dir, 'frontend', 'public', 'images', f"{program_id}.png")
+                image_path = os.path.join(base_dir, 'images', f"{program_id}.png")
                 if os.path.exists(image_path):
                     os.remove(image_path)
-                    print(f"Imagen eliminada: {image_path}")
+                    print(f"✅ Imagen eliminada: {image_path}")
 
                 # Actualizar lista
                 self.load_existing_programs()
+                print("✅ Lista actualizada")
 
-                # Generar páginas HTML
-                import page_generator
-                generator = page_generator.PageGenerator()
-                generator.update_pages()
-
-                # Sincronizar con GitHub
-                self.sync_with_github(f"Remove: Programa {program_id}")
-
-                messagebox.showinfo("Éxito", "Programa eliminado correctamente")
+                # Sincronizar con GitHub solo si hubo cambios
+                if prev_count != new_count:
+                    print("\n=== Sincronizando con GitHub ===")
+                    try:
+                        import subprocess
+                        
+                        repo_url = f"https://{token}@github.com/feede333/premiumdownloads3.git"
+                        
+                        # Usar el directorio base para los comandos git
+                        subprocess.run(['git', 'add', 'data/programs.json'], cwd=base_dir, check=True)
+                        subprocess.run(['git', 'add', 'images/*'], cwd=base_dir, check=True)
+                        subprocess.run(['git', 'commit', '-m', f'Remove: Programa {program_id}'], cwd=base_dir, check=True)
+                        subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=base_dir, check=True)
+                        subprocess.run(['git', 'push', 'origin', 'main'], cwd=base_dir, check=True)
+                        
+                        print("✅ Cambios sincronizados con GitHub")
+                        messagebox.showinfo("Éxito", "Programa eliminado correctamente")
+                    
+                    except Exception as e:
+                        error_msg = f"Error sincronizando con GitHub: {str(e)}"
+                        print(f"❌ {error_msg}")
+                        messagebox.showerror("Error", error_msg)
 
             except Exception as e:
-                print(f"Error al eliminar programa: {str(e)}")
-                messagebox.showerror("Error", f"Error al eliminar programa: {str(e)}")
+                error_msg = f"Error al eliminar programa: {str(e)}"
+                print(f"❌ {error_msg}")
+                messagebox.showerror("Error", error_msg)
 
     def sync_with_github(self, commit_message):
         try:
