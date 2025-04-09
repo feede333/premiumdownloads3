@@ -367,6 +367,7 @@ class ProgramManagerApp:
                 
                 # Configurar Git con el token
                 repo_url = f"https://{token}@github.com/feede333/premiumdownloads3.git"
+                repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=repo_dir, check=True)
                 
                 # Sincronizar cambios
