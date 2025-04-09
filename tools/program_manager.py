@@ -33,8 +33,9 @@ class ProgramManagerApp:
         self.root.title("Gestor de Programas - PremiumDownloads")
         self.root.geometry("600x800")
         
-        # Configurar DeepSeek primero
+        # Configurar DeepSeek
         self.deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
+        print(f"API Key encontrada: {'Sí' if self.deepseek_api_key else 'No'}")
 
         # Crear notebook para pestañas
         self.notebook = ttk.Notebook(self.root)
@@ -48,11 +49,14 @@ class ProgramManagerApp:
         self.manage_tab = ttk.Frame(self.notebook)
         self.notebook.add(self.manage_tab, text="Gestionar Programas")
 
-        # Crear el formulario en la pestaña de agregar
+        # Pestaña para el chatbot
+        self.chat_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.chat_tab, text="ChatBot")
+
+        # Crear componentes
         self.create_form()
-        
-        # Crear la lista de programas en la pestaña de gestionar
         self.create_programs_list()
+        self.create_chatbot()
 
     def create_form(self):
         # Frame principal con scroll
@@ -163,6 +167,84 @@ class ProgramManagerApp:
 
         # Cargar programas existentes
         self.load_existing_programs()
+
+    def create_chatbot(self):
+        # Frame principal del chat
+        chat_frame = ttk.Frame(self.chat_tab)
+        chat_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+        # Área de mensajes
+        self.chat_area = tk.Text(chat_frame, wrap=tk.WORD, height=20, state='disabled')
+        self.chat_area.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+        # Frame para entrada y botón
+        input_frame = ttk.Frame(chat_frame)
+        input_frame.pack(fill=tk.X, padx=5, pady=5)
+
+        # Campo de entrada
+        self.chat_input = ttk.Entry(input_frame)
+        self.chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+
+        # Botón enviar
+        send_button = ttk.Button(input_frame, text="Enviar", command=self.send_message)
+        send_button.pack(side=tk.RIGHT)
+
+        # Bind Enter key
+        self.chat_input.bind('<Return>', lambda e: self.send_message())
+
+        # Mensaje inicial
+        self.add_bot_message("¡Hola! Soy el asistente de PremiumDownloads. ¿En qué puedo ayudarte?")
+
+    def add_bot_message(self, message):
+        self.chat_area.config(state='normal')
+        self.chat_area.insert(tk.END, "🤖 Bot: " + message + "\n\n")
+        self.chat_area.config(state='disabled')
+        self.chat_area.see(tk.END)
+
+    def add_user_message(self, message):
+        self.chat_area.config(state='normal')
+        self.chat_area.insert(tk.END, "👤 Tú: " + message + "\n\n")
+        self.chat_area.config(state='disabled')
+        self.chat_area.see(tk.END)
+
+    def send_message(self):
+        message = self.chat_input.get().strip()
+        if not message:
+            return
+
+        self.add_user_message(message)
+        self.chat_input.delete(0, tk.END)
+
+        try:
+            # Llamar a la API de DeepSeek
+            headers = {
+                "Authorization": f"Bearer {self.deepseek_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            data = {
+                "messages": [
+                    {"role": "system", "content": "Eres un asistente experto en software y tecnología."},
+                    {"role": "user", "content": message}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 500
+            }
+
+            response = requests.post(
+                "https://api.deepseek.com/v1/chat/completions",
+                headers=headers,
+                json=data
+            )
+
+            response.raise_for_status()
+            result = response.json()
+            bot_response = result['choices'][0]['message']['content']
+            
+            self.add_bot_message(bot_response)
+
+        except Exception as e:
+            self.add_bot_message(f"Lo siento, ocurrió un error: {str(e)}")
 
     def load_existing_programs(self):
         try:
