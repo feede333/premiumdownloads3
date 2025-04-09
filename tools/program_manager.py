@@ -33,9 +33,9 @@ class ProgramManagerApp:
         self.root.title("Gestor de Programas - PremiumDownloads")
         self.root.geometry("600x800")
         
-        # Configurar DeepSeek
-        self.deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
-        print(f"API Key encontrada: {'Sí' if self.deepseek_api_key else 'No'}")
+        # Configurar DeepSeek con la API key directamente
+        self.deepseek_api_key = "sk-84b4c6e1bd82482cb5c131a45acb7d8b"
+        print(f"API Key configurada: {'Sí' if self.deepseek_api_key else 'No'}")
 
         # Crear notebook para pestañas
         self.notebook = ttk.Notebook(self.root)

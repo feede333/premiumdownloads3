@@ -1,12 +1,8 @@
 @echo off
 cd %~dp0
 
-REM Verificar API key de DeepSeek
-if "%DEEPSEEK_API_KEY%" == "" (
-    echo [AVISO] Variable DEEPSEEK_API_KEY no encontrada
-    echo La función de autocompletar con IA no estará disponible
-    timeout /t 3 >nul
-)
+REM Configurar API key de DeepSeek
+set DEEPSEEK_API_KEY=sk-84b4c6e1bd82482cb5c131a45acb7d8b
 
 python program_manager.py
 pause
