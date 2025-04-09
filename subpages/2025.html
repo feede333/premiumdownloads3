@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avast Premium Security 2025 - Versiones</title>
-    
-    <link rel="stylesheet" href="../subpages/2025.css">
+    <link rel="stylesheet" href="2025.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="js/torrentTrackerversiones.js"></script>
 </head>
 <body>
     <header>
@@ -58,69 +58,86 @@
         </div>
     </footer>
 
-    <!-- Agregar antes de cerrar el body -->
-    <script src="js/torrentTracker.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const tracker = new TorrentTracker();
-        const torrentContainers = document.querySelectorAll('.torrent-stats');
-        
-        // Actualización inicial
-        torrentContainers.forEach(container => {
-            const infoHash = container.dataset.torrentHash;
-            tracker.updateStats(infoHash).then(stats => {
-                if (stats) tracker.updateTorrentDisplay(container, stats);
-            });
-        });
-        
-        // Iniciar actualizaciones periódicas
-        tracker.startPeriodicUpdate(torrentContainers);
-    });
-    </script>
     <script>
     async function loadVersions() {
         try {
-            const response = await fetch('../data/versions.json');
+            console.log('Fetching versions...');
+            const response = await fetch('/data/versions.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
+            console.log('Loaded versions:', data);
+
             const versionList = document.querySelector('.version-list');
-            
-            versionList.innerHTML = data.versions.map(version => `
-                <div class="version-item">
-                    <div class="version-info">
-                        <h3 class="version-name">Versión ${version.version}</h3>
-                        <span class="version-date">${version.date}</span>
-                        <span class="file-size">${version.size}</span>
-                    </div>
-                    <div class="download-container">
-                        <div class="download-options">
-                            <a href="${version.magnetLink}" class="magnet-button">
-                                <i class="fas fa-magnet"></i>
-                                <span>Magnet</span>
-                            </a>
-                            <a href="${version.torrentLink}" class="torrent-button" target="_blank">
-                                <i class="fas fa-download"></i>
-                                <span>Torrent</span>
-                            </a>
+            if (!versionList) {
+                throw new Error('Version list element not found!');
+            }
+
+            versionList.innerHTML = data.versions.map(version => {
+                // Validar y manejar datos faltantes o incorrectos
+                const versionName = version.version || 'Versión desconocida';
+                const versionDate = version.date || 'Fecha no disponible';
+                const fileSize = version.size || 'Tamaño no especificado';
+                const torrentLink = version.torrentLink || '#';
+                const magnetLink = version.magnetLink || '#';
+                const seeds = version.seeds || '0';
+                const peers = version.peers || '0';
+
+                return `
+                    <div class="version-item">
+                        <div class="version-info">
+                            <h3 class="version-name">${versionName}</h3>
+                            <span class="version-date">${versionDate}</span>
+                            <span class="file-size">${fileSize}</span>
                         </div>
-                        <div class="torrent-stats" data-torrent-hash="${version.magnetLink.split(':')[3]}">
-                            <div class="peer-info">
-                                <span class="status-indicator seeds-indicator"></span>
-                                <span>Seeds: ${version.seeds}</span>
+                        <div class="download-container">
+                            <div class="download-options">
+                                <a href="${magnetLink}" class="magnet-button" ${magnetLink === '#' ? 'onclick="return false;"' : ''}>
+                                    <i class="fas fa-magnet"></i>
+                                    <span>Magnet</span>
+                                </a>
+                                <a href="${torrentLink}" class="torrent-button" target="_blank" ${torrentLink === '#' ? 'onclick="return false;"' : ''}>
+                                    <i class="fas fa-download"></i>
+                                    <span>Torrent</span>
+                                </a>
                             </div>
-                            <div class="peer-info">
-                                <span class="status-indicator peers-indicator"></span>
-                                <span>Peers: ${version.peers}</span>
+                            <div class="torrent-stats">
+                                <div class="peer-info">
+                                    <span class="seeds-indicator"></span>
+                                    <span>Seeds: ${seeds}</span>
+                                </div>
+                                <div class="peer-info">
+                                    <span class="peers-indicator"></span>
+                                    <span>Peers: ${peers}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+
         } catch (error) {
             console.error('Error loading versions:', error);
+            const versionList = document.querySelector('.version-list');
+            if (versionList) {
+                versionList.innerHTML = `
+                    <div class="error-message">
+                        Error cargando versiones: ${error.message}
+                    </div>
+                `;
+            }
         }
     }
 
     document.addEventListener('DOMContentLoaded', loadVersions);
+    </script>
+    <script>
+    console.log('Page loaded');
+    window.onerror = function(msg, url, line) {
+        console.error(`Error: ${msg}\nURL: ${url}\nLine: ${line}`);
+        return false;
+    };
     </script>
 </body>
 </html>
