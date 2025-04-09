@@ -94,7 +94,8 @@ class VersionManager:
             print(f"   Seeds: {version['seeds']}")
             print(f"   Peers: {version['peers']}")
 
-    def add_version_to_html(self, html_file_path):
+    def add_version_to_html(self):
+        html_file_path = r"c:\Users\Federico\Downloads\downloads site\premiumdownloads2\subpages\2025.html"
         print("\n=== Agregar Nueva Versión al Archivo HTML ===")
         version = input("Número de Versión (ej. 25.3.8549): ")
         date = input("Fecha (ej. Abril 2025): ")
@@ -167,8 +168,7 @@ def main():
         elif choice == "3":
             manager.list_versions()
         elif choice == "4":
-            html_file_path = input("\nIngresa la ruta del archivo HTML: ")
-            manager.add_version_to_html(html_file_path)
+            manager.add_version_to_html()
         elif choice == "5":
             print("\n¡Hasta luego!")
             break
