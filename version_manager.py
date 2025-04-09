@@ -140,11 +140,18 @@ class VersionManager:
             end = content.find(']', start)
             versions_json = content[start:end].strip()
             
-            if versions_json:
+            if not versions_json:
+                return []  # Retorna lista vacía si no hay versiones
+                
+            try:
                 return json.loads(f"[{versions_json}]")
-            return []
+            except json.JSONDecodeError:
+                return []  # Retorna lista vacía si hay error al decodificar JSON
+                
         except Exception as e:
-            messagebox.showerror("Error", f"Error al leer las versiones: {str(e)}")
+            # Solo mostrar error si no es un archivo recién creado
+            if os.path.getsize(file_path) > 0:
+                messagebox.showerror("Error", f"Error al leer las versiones: {str(e)}")
             return []
 
     def save_versions_to_html(self, file_path, versions):
@@ -186,41 +193,47 @@ class VersionManager:
         detail_path = os.path.join(os.path.dirname(self.subpages_path), "detail.html")
         
         try:
-            # Obtener lista de años ordenados
+            # Obtener lista de años ordenados de manera descendente
             years = sorted([f.replace('.html', '') for f in os.listdir(self.subpages_path) 
-                           if f.endswith('.html')], reverse=True)
+                           if f.endswith('.html')], key=int, reverse=True)
             
             # Leer el contenido actual de detail.html
             with open(detail_path, "r", encoding="utf-8") as file:
                 content = file.read()
                 
             # Encontrar la sección donde se insertan los años
-            start_marker = '<ul class="version-years">'
-            end_marker = '</ul>'
-            start = content.find(start_marker) + len(start_marker)
-            end = content.find(end_marker, start)
+            start_marker = '<!-- AÑOS-START -->'
+            end_marker = '<!-- AÑOS-END -->'
+            start = content.find(start_marker)
+            end = content.find(end_marker)
             
             if start == -1 or end == -1:
                 messagebox.showerror("Error", "No se encontraron los marcadores en detail.html")
                 return False
-                
-            # Generar el nuevo contenido HTML para los años
-            years_html = '\n'.join([
-                f'''                    <li class="year-item">
-                            <a href="./subpages/{year}.html" class="year-link">
-                                <span class="year">{year}</span>
-                                <span class="version-count">(0 versiones)</span>
-                                {' <span class="latest-badge">Última versión</span>' if year == years[0] else ''}
-                                <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </li>'''
-                for year in years
-            ])
             
-            # Actualizar el contenido
+            # Generar el nuevo contenido HTML para los años
+            years_html = []
+            for year in years:
+                # Contar versiones para este año
+                file_path = os.path.join(self.subpages_path, f"{year}.html")
+                versions = self.read_versions_from_html(file_path)
+                version_count = len(versions)
+                
+                years_html.append(f'''
+                            <li class="year-item">
+                                <a href="./subpages/{year}.html" class="year-link">
+                                    <span class="year">{year}</span>
+                                    <span class="version-count">({version_count} versiones)</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>''')
+            
+            # Insertar el nuevo contenido
             new_content = (
-                content[:start] + 
-                '\n' + years_html + '\n                ' +
+                content[:start + len(start_marker)] + 
+                '\n' + 
+                ''.join(years_html) + 
+                '\n                        ' +
                 content[end:]
             )
             
@@ -229,7 +242,7 @@ class VersionManager:
                 file.write(new_content)
                 
             return True
-            
+                
         except Exception as e:
             messagebox.showerror("Error", f"Error al actualizar detail.html: {str(e)}")
             return False
