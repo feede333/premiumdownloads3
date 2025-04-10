@@ -3,6 +3,7 @@ import json
 import tkinter as tk
 from tkinter import ttk, messagebox
 import subprocess
+import shutil
 from datetime import datetime
 
 class VersionManager:
@@ -54,13 +55,21 @@ class VersionManager:
             program_subpages = os.path.join(self.subpages_path, program_id)
             os.makedirs(program_subpages, exist_ok=True)
             
+            # Copiar main.css al directorio del programa
+            main_css_src = os.path.join(self.base_path, "main.css")
+            main_css_dest = os.path.join(program_subpages, "main.css")
+            if os.path.exists(main_css_src):
+                shutil.copy2(main_css_src, main_css_dest)
+                print(f"✅ CSS copiado: {main_css_dest}")
+
             # 2. Crear archivo details específico del programa
             details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
             self.create_details_file(program_name, program_id)
             
             print(f"\n✅ Estructura creada para {program_name}:")
             print(f"  📁 Carpeta: {program_subpages}")
-            print(f"  📄 Details: {details_path}\n")
+            print(f"  📄 Details: {details_path}")
+            print(f"  📄 CSS: {main_css_dest}\n")
             
             # Actualizar index.html
             self.update_index_page()
@@ -129,23 +138,31 @@ class VersionManager:
             file.write(details_content)
 
     def create_html_file(self, program_name, year):
-        """Crea un archivo HTML de versiones para el año especificado"""
         try:
             program_id = program_name.lower().replace(' ', '-')
             program_path = os.path.join(self.subpages_path, program_id)
             file_name = f"{year}.html"
             file_path = os.path.join(program_path, file_name)
 
+            # Copiar csscomun.css si no existe
+            css_src = os.path.join(self.subpages_path, "csscomun.css")
+            css_dest = os.path.join(program_path, "csscomun.css")
+            if not os.path.exists(css_dest) and os.path.exists(css_src):
+                shutil.copy2(css_src, css_dest)
+                print(f"✅ CSS copiado: {css_dest}")
+
             if os.path.exists(file_path):
+                messagebox.showerror("Error", f"El archivo {file_name} ya existe")
                 return False
 
+            # Modificar la plantilla HTML para usar la ruta correcta del CSS
             base_html_content = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{program_name} {year} - Versiones</title>
-    <link rel="stylesheet" href="../../css/csscomun.css">
+    <link rel="stylesheet" href="csscomun.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
