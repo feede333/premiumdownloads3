@@ -92,7 +92,7 @@ class VersionManager:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{program_name} - Detalles | PremiumDownloads</title>
-    <link rel="stylesheet" href="../css/main.css">  <!-- Cambiada la ruta al main.css -->
+    <link rel="stylesheet" href="../css/detail.css">  <!-- Ruta corregida para detail.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -146,18 +146,7 @@ class VersionManager:
             file_name = f"{year}.html"
             file_path = os.path.join(program_path, file_name)
 
-            # Verificar/copiar csscomun.css si no existe
-            css_src = os.path.join(self.subpages_path, "csscomun.css")
-            css_dest = os.path.join(program_path, "csscomun.css")
-            if not os.path.exists(css_dest) and os.path.exists(css_src):
-                shutil.copy2(css_src, css_dest)
-                print(f"✅ CSS común copiado: {css_dest}")
-
-            if os.path.exists(file_path):
-                messagebox.showerror("Error", f"El archivo {file_name} ya existe")
-                return False
-
-            # Crear archivo HTML con referencia al CSS local
+            # Crear archivo HTML con referencia al csscomun.css
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(f"""<!DOCTYPE html>
 <html lang="es">
@@ -165,7 +154,7 @@ class VersionManager:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{program_name} {year} - Versiones</title>
-    <link rel="stylesheet" href="../csscomun.css">  <!-- Cambiada la ruta al csscomun.css -->
+    <link rel="stylesheet" href="../csscomun.css">  <!-- Ruta corregida para csscomun.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -217,55 +206,11 @@ class VersionManager:
             <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
         </div>
     </footer>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {{
-        const data = {{
-            "versions": []
-        }};
-
-        const versionList = document.querySelector('.version-list');
-        versionList.innerHTML = data.versions.map(version => `
-            <div class="version-item">
-                <div class="version-info">
-                    <h3 class="version-name">${{version.version}}</h3>
-                    <span class="version-date">${{version.date}}</span>
-                    <span class="file-size">${{version.size}}</span>
-                </div>
-                <div class="download-container">
-                    <div class="download-options">
-                        <a href="${{version.magnetLink}}" class="magnet-button">
-                            <i class="fas fa-magnet"></i>
-                            <span>Magnet</span>
-                        </a>
-                        <a href="${{version.torrentLink}}" class="torrent-button" target="_blank">
-                            <i class="fas fa-download"></i>
-                            <span>Torrent</span>
-                        </a>
-                    </div>
-                    <div class="torrent-stats">
-                        <div class="peer-info">
-                            <span class="seeds-indicator"></span>
-                            <span>Seeds: ${{version.seeds}}</span>
-                        </div>
-                        <div class="peer-info">
-                            <span class="peers-indicator"></span>
-                            <span>Peers: ${{version.peers}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }});
-    </script>
 </body>
 </html>""")
 
-            # Actualizar details.html y sincronizar
-            self.update_program_details(program_id)
-            self.sync_with_github(f"Add: Nuevo año {year} para {program_name}")
             return True
-            
+
         except Exception as e:
             messagebox.showerror("Error", f"Error al crear archivo: {str(e)}")
             return False
@@ -480,28 +425,9 @@ class VersionManager:
         try:
             index_path = os.path.join(self.base_path, "index.html")
             
-            # Obtener lista de programas
-            programs = []
-            for file in os.listdir(self.programs_path):
-                if file.endswith("-details.html"):
-                    program_id = file.replace("-details.html", "")
-                    program_name = program_id.replace("-", " ").title()
-                    
-                    # Obtener años disponibles
-                    years = self.list_html_files(program_id)
-                    version_count = len(years)
-                    
-                    programs.append({
-                        "id": program_id,
-                        "name": program_name,
-                        "details_url": f"programs/{file}",
-                        "version_count": version_count,
-                        "latest_year": max(years).replace(".html", "") if years else "N/A"
-                    })
-
-            # Leer plantilla del index
-            with open(index_path, "r", encoding="utf-8") as f:
-                content = f.read()
+            # Leer el contenido actual del index.html
+            with open(index_path, "r", encoding="utf-8") as file:
+                content = file.read()
 
             # Encontrar la sección donde se insertan los programas
             start_marker = '<!-- PROGRAMS-START -->'
@@ -514,19 +440,19 @@ class VersionManager:
 
             # Generar HTML para cada programa
             programs_html = []
-            for program in sorted(programs, key=lambda x: x["name"]):
-                programs_html.append(f'''
+            for program in self.get_programs():
+                programs_html.append(f"""
                     <div class="program-card">
-                        <h3>{program["name"]}</h3>
+                        <h3>{program['name']}</h3>
                         <div class="program-meta">
-                            <span>Versiones: {program["version_count"]}</span>
-                            <span>Última: {program["latest_year"]}</span>
+                            <span>Versiones: {program['version_count']}</span>
+                            <span>Última: {program['latest_year']}</span>
                         </div>
-                        <a href="{program["details_url"]}" class="program-link">
+                        <a href="programs/{program['id']}-details.html" class="program-link">
                             Ver versiones <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
-                ''')
+                """)
 
             # Insertar el nuevo contenido
             new_content = (
@@ -538,15 +464,14 @@ class VersionManager:
             )
 
             # Guardar cambios
-            with open(index_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
+            with open(index_path, "w", encoding="utf-8") as file:
+                file.write(new_content)
 
             print("✅ Index.html actualizado correctamente")
             return True
 
         except Exception as e:
             print(f"❌ Error actualizando index.html: {str(e)}")
-            messagebox.showerror("Error", f"Error actualizando index.html: {str(e)}")
             return False
 
 class VersionManagerGUI:
