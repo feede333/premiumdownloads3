@@ -584,6 +584,91 @@ nav a.active {
     }
 }
 
+/* Agregar botón hamburguesa */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1000;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+/* Modificar media queries existentes */
+@media (max-width: 768px) {
+    /* Mostrar botón hamburguesa */
+    .menu-toggle {
+        display: flex;
+    }
+
+    /* Ocultar sidebar por defecto */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        height: 100vh;
+        width: 280px;
+        background: var(--bg-secondary);
+        z-index: 999;
+        transition: left 0.3s ease;
+        padding-top: 60px;
+    }
+
+    /* Cuando el sidebar está activo */
+    .sidebar.active {
+        left: 0;
+        box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    }
+
+    /* Ajustar grid de programas a 2 columnas */
+    .download-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    /* Ajustar las cards */
+    .download-card {
+        min-height: 380px;
+    }
+
+    .card-image {
+        height: 120px;
+    }
+
+    /* Overlay para cuando el menú está abierto */
+    .menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 998;
+    }
+
+    .menu-overlay.active {
+        display: block;
+    }
+
+    /* Ajustar header para el botón de menú */
+    .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+    }
+}
+
+/* Ajustes específicos para móviles pequeños */
 @media (max-width: 480px) {
     .pagination {
         gap: 0.25rem;
@@ -592,6 +677,139 @@ nav a.active {
         width: 35px;
         height: 35px;
         font-size: 0.9rem;
+    }
+}
+
+/* Primero agregamos el viewport meta tag en el HTML */
+/* Asegúrate de tener esto en el <head> de tu HTML: */
+/* <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> */
+
+/* Mejoras para móviles */
+@media (max-width: 768px) {
+    /* Ajustes de contenedor */
+    .container {
+        padding: 0 1rem !important;
+    }
+
+    /* Header móvil */
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    /* Navegación móvil */
+    nav ul {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    nav a {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Controles de tema e idioma */
+    .theme-language-controls {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Búsqueda y filtros */
+    .search-sort-container {
+        flex-direction: column;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    /* Cards de programas */
+    .download-card {
+        min-height: auto;
+    }
+
+    .card-image {
+        height: 140px;
+    }
+}
+
+/* Ajustes específicos para móviles pequeños */
+@media (max-width: 480px) {
+    /* Ajustes de texto */
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .program-description {
+        font-size: 0.9rem;
+    }
+
+    /* Botones más grandes para touch */
+    .download-button {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    /* Footer */
+    footer .footer-links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* Mejoras de touch targets */
+    .category-link,
+    .search-button,
+    .sort-select,
+    .theme-toggle,
+    .language-toggle {
+        min-height: 44px; /* Recomendación de Apple para touch targets */
+    }
+
+    .download-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-content {
+        padding: 1rem;
+    }
+
+    .program-description {
+        display: none; /* Ocultar descripción en móviles muy pequeños */
+    }
+}
+
+/* Ajustes para iPhone X y dispositivos con notch */
+@supports (padding: max(0px)) {
+    .header {
+        padding-top: max(1rem, env(safe-area-inset-top));
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    .footer {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* Optimizaciones de rendimiento para móviles */
+@media (max-width: 768px) {
+    .download-card {
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    /* Deshabilitar animaciones en móvil para mejor rendimiento */
+    .download-card:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+        animation: none;
     }
 }
 
@@ -722,118 +940,23 @@ footer p {
     to { transform: rotate(360deg); }
 }
 
-/* Primero agregamos el viewport meta tag en el HTML */
-/* Asegúrate de tener esto en el <head> de tu HTML: */
-/* <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> */
+/* End of CSS */
 
-/* Mejoras para móviles */
-@media (max-width: 768px) {
-    /* Ajustes de contenedor */
-    .container {
-        padding: 0 1rem !important;
-    }
+// Agregar al final de tu archivo JS
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.menu-overlay');
 
-    /* Header móvil */
-    .header-content {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-    }
+    menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    });
 
-    /* Navegación móvil */
-    nav ul {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    nav a {
-        display: block;
-        width: 100%;
-        text-align: center;
-    }
-
-    /* Controles de tema e idioma */
-    .theme-language-controls {
-        width: 100%;
-        justify-content: center;
-    }
-
-    /* Búsqueda y filtros */
-    .search-sort-container {
-        flex-direction: column;
-    }
-
-    .search-bar {
-        width: 100%;
-    }
-
-    /* Cards de programas */
-    .download-card {
-        min-height: auto;
-    }
-
-    .card-image {
-        height: 140px;
-    }
-}
-
-/* Ajustes específicos para móviles pequeños */
-@media (max-width: 480px) {
-    /* Ajustes de texto */
-    .card-title {
-        font-size: 1.1rem;
-    }
-
-    .program-description {
-        font-size: 0.9rem;
-    }
-
-    /* Botones más grandes para touch */
-    .download-button {
-        padding: 1rem;
-        font-size: 1rem;
-    }
-
-    /* Footer */
-    footer .footer-links {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    /* Mejoras de touch targets */
-    .category-link,
-    .search-button,
-    .sort-select,
-    .theme-toggle,
-    .language-toggle {
-        min-height: 44px; /* Recomendación de Apple para touch targets */
-    }
-}
-
-/* Ajustes para iPhone X y dispositivos con notch */
-@supports (padding: max(0px)) {
-    .header {
-        padding-top: max(1rem, env(safe-area-inset-top));
-        padding-left: max(1rem, env(safe-area-inset-left));
-        padding-right: max(1rem, env(safe-area-inset-right));
-    }
-
-    .footer {
-        padding-bottom: max(1rem, env(safe-area-inset-bottom));
-    }
-}
-
-/* Optimizaciones de rendimiento para móviles */
-@media (max-width: 768px) {
-    .download-card {
-        will-change: transform;
-        backface-visibility: hidden;
-    }
-
-    /* Deshabilitar animaciones en móvil para mejor rendimiento */
-    .download-card:hover {
-        transform: none;
-        box-shadow: var(--shadow);
-        animation: none;
-    }
-}
+    overlay.addEventListener('click', function() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+});
