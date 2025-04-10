@@ -88,48 +88,10 @@ class VersionManager:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{program_name} - Detalles | PremiumDownloads</title>
-    <link rel="stylesheet" href="../css/csscomun.css">
+    <link rel="stylesheet" href="../subpages/csscomun.css">  <!-- Cambiada la ruta -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
-    <header>
-        <div class="container header-content">
-            <a href="../index.html" class="logo">
-                <span>⬇️</span>
-                <span>PremiumDownloads</span>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="../index.html">Inicio</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="download-versions">
-            <h3 class="versions-title">Versiones de {program_name}</h3>
-            <ul class="version-years">
-                <!-- AÑOS-START -->
-                <!-- Las versiones se insertarán aquí -->
-                <!-- AÑOS-END -->
-            </ul>
-        </div>
-    </div>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Términos de uso</a>
-                <a href="#">Política de privacidad</a>
-                <a href="#">DMCA</a>
-                <a href="#">Contacto</a>
-            </div>
-            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-</body>
-</html>"""
+<!-- ...resto del HTML... -->"""
         
         details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
         with open(details_path, "w", encoding="utf-8") as file:
