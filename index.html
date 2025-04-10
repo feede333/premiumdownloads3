@@ -12,7 +12,7 @@
     <script>
         async function loadPrograms() {
             try {
-                const response = await fetch('./data/programs.json');  // Ruta relativa
+                const response = await fetch('./data/programs.json'); // Ruta relativa
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -37,7 +37,7 @@
                                 <span>${program.version || ''}</span>
                             </div>
                             <p class="program-description">${program.description.substring(0, 100)}...</p>
-                            <a href="./detail.html?id=${program.id}" class="download-button">Ver detalles</a>
+                            <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
                         </div>
                     `;
                     programsGrid.appendChild(programCard);

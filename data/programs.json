@@ -1,6 +1,24 @@
 {
   "programs": [
     {
+      "id": "avast-premium-security",
+      "title": "Avast Premium Security",
+      "category": "Antivirus",
+      "fileSize": "628 MB",
+      "version": "25.3.8549",
+      "description": "Avast Premium Security ofrece protección avanzada contra virus, malware, ransomware y amenazas en línea.",
+      "image": "images/avast.png"
+    },
+    {
+      "id": "otro-programa",
+      "title": "Otro Programa",
+      "category": "Utilidades",
+      "fileSize": "120 MB",
+      "version": "1.0.0",
+      "description": "Descripción del otro programa.",
+      "image": "images/otro-programa.png"
+    },
+    {
       "id": "japanese-fashion",
       "title": "aa",
       "category": "Productividad",
