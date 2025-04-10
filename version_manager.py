@@ -11,17 +11,14 @@ class VersionManager:
         self.base_path = r"c:\Users\Federico\Downloads\downloads site\premiumdownloads2"
         self.programs_path = os.path.join(self.base_path, "programs")
         self.subpages_path = os.path.join(self.base_path, "subpages")
+        self.css_path = os.path.join(self.base_path, "css")
         
         # Crear directorios base si no existen
         os.makedirs(self.programs_path, exist_ok=True)
         os.makedirs(self.subpages_path, exist_ok=True)
+        os.makedirs(self.css_path, exist_ok=True)
 
-        # Verificar/copiar csscomun.css a subpages si no existe
-        css_src = os.path.join(self.base_path, "css", "csscomun.css")
-        css_dest = os.path.join(self.subpages_path, "csscomun.css")
-        if os.path.exists(css_src) and not os.path.exists(css_dest):
-            shutil.copy2(css_src, css_dest)
-            print(f"✅ CSS copiado a subpages: {css_dest}")
+        # No es necesario copiar el csscomun.css ya que debe permanecer en subpages
 
         self.token = os.getenv("GITHUB_TOKEN")
         if not self.token:
@@ -95,7 +92,7 @@ class VersionManager:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{program_name} - Detalles | PremiumDownloads</title>
-    <link rel="stylesheet" href="../subpages/csscomun.css">  <!-- Corregida la ruta -->
+    <link rel="stylesheet" href="../css/main.css">  <!-- Cambiada la ruta al main.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -168,7 +165,7 @@ class VersionManager:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{program_name} {year} - Versiones</title>
-    <link rel="stylesheet" href="../../subpages/csscomun.css">  <!-- Corregida la ruta -->
+    <link rel="stylesheet" href="../csscomun.css">  <!-- Cambiada la ruta al csscomun.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -764,7 +761,7 @@ class VersionManagerGUI:
                 
             year = listbox.get(listbox.curselection()[0])
             file_path = os.path.join(self.manager.subpages_path, program_id, f"{year}.html")
-            if self.manager.delete_html_file(file_path, f"{program_id}-{year}.html"):
+            if self.manager.delete_html_file(file_path, f"{program_id}-{year}.html")):
                 messagebox.showinfo("Éxito", f"Año {year} eliminado correctamente.")
                 dialog.destroy()
 
