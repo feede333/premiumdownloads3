@@ -113,6 +113,25 @@
         "display": "2"
       },
       "instructions": "2"
+    },
+    {
+      "id": "cute2",
+      "title": "cute2",
+      "category": "Diseño",
+      "version": "",
+      "fileSize": "",
+      "downloadLink": "",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "",
+      "requirements": {
+        "os": "",
+        "processor": "",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }

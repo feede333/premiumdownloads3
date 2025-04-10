@@ -634,10 +634,14 @@ class ProgramManagerApp:
             )
             details_content = details_content.replace("images/avast.png", data.get("image", "images/default.png"))
             details_content = details_content.replace("./css/detail.css", "../css/detail.css")  # Ruta corregida al CSS
-            details_content = details_content.replace(
-                "<!-- Corrige las rutas de los archivos CSS -->",
-                '<link rel="stylesheet" href="../css/commentcss.css">'  # Agregar el CSS de comentarios
-            )
+
+            # Verificar si el enlace a commentcss.css ya existe
+            if '<link rel="stylesheet" href="../css/commentcss.css">' not in details_content:
+                details_content = details_content.replace(
+                    "<!-- Corrige las rutas de los archivos CSS -->",
+                    '<link rel="stylesheet" href="../css/commentcss.css">'  # Agregar el CSS de comentarios
+                )
+
             details_content = details_content.replace(
                 "<!-- Agregar scripts -->",
                 '<script src="../js/detailuniversal.js" defer></script>'  # Conectar el JS universal
