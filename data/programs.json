@@ -18,6 +18,25 @@
         "display": "b"
       },
       "instructions": "bbb"
+    },
+    {
+      "id": "dsd",
+      "title": "PROBANDO1",
+      "category": "Diseño",
+      "version": "1212",
+      "fileSize": "1GB",
+      "downloadLink": "D",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "D",
+      "requirements": {
+        "os": "D",
+        "processor": "D",
+        "ram": "D",
+        "disk": "D",
+        "display": "D"
+      },
+      "instructions": "D"
     }
   ]
 }
