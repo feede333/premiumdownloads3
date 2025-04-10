@@ -832,6 +832,65 @@ class ProgramManagerApp:
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(base_dir, 'data', 'programs.json')  # Directamente en la raíz
 
+    def add_version(self, program_id, year):
+        try:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            subpages_dir = os.path.join(base_dir, 'subpages', program_id)
+            os.makedirs(subpages_dir, exist_ok=True)
+
+            file_name = f"{year}.html"
+            file_path = os.path.join(subpages_dir, file_name)
+
+            # Crear archivo HTML con referencia al csscomun.css
+            css_path = os.path.join(base_dir, 'subpages', 'csscomun.css')
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{program_id} {year} - Versiones</title>
+    <link rel="stylesheet" href="../csscomun.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="../../index.html" class="logo">
+                <span>⬇️</span>
+                <span>PremiumDownloads</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Versiones de {year}</h2>
+        <div class="version-list">
+            <!-- Las versiones se cargarán dinámicamente -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>""")
+            print(f"✅ Archivo de versión creado: {file_path}")
+
+            messagebox.showinfo("Éxito", f"Versión {year} creada correctamente para {program_id}.")
+
+        except Exception as e:
+            error_msg = f"Error al crear la versión: {str(e)}"
+            print(f"❌ {error_msg}")
+            messagebox.showerror("Error", error_msg)
+
 if __name__ == "__main__":
     verify_setup()
     root = tk.Tk()
