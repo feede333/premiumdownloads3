@@ -517,22 +517,73 @@ class VersionManagerGUI:
         dialog.geometry("500x400")
         dialog.grab_set()
 
-        ttk.Label(dialog, text="Selecciona un programa:", style='Header.TLabel').pack(pady=20)
+        ttk.Label(dialog, text="Selecciona los programas:", style='Header.TLabel').pack(pady=10)
         
-        listbox = tk.Listbox(dialog)
-        listbox.pack(fill='both', expand=True, padx=20)
+        # Frame con scroll para la lista
+        frame = ttk.Frame(dialog)
+        frame.pack(fill='both', expand=True, padx=10, pady=5)
         
+        scrollbar = ttk.Scrollbar(frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        # Listbox con selección múltiple
+        listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set, selectmode='multiple')
+        listbox.pack(side='left', fill='both', expand=True)
+        
+        scrollbar.config(command=listbox.yview)
+        
+        # Cargar programas ordenados
         for program in sorted(programs):
             listbox.insert('end', program)
 
-        def select_program():
+        # Frame para botones
+        button_frame = ttk.Frame(dialog)
+        button_frame.pack(fill='x', padx=10, pady=10)
+
+        def manage_selected():
             if not listbox.curselection():
                 messagebox.showwarning("Aviso", "Por favor selecciona un programa.")
                 return
-                
             program_id = listbox.get(listbox.curselection()[0])
             dialog.destroy()
             self.show_program_management(program_id)
+
+        def delete_selected():
+            selected_indices = listbox.curselection()
+            if not selected_indices:
+                messagebox.showwarning("Aviso", "Por favor selecciona al menos un programa.")
+                return
+            
+            selected_programs = [listbox.get(i) for i in selected_indices]
+            if messagebox.askyesno("Confirmar eliminación", 
+                                 f"¿Estás seguro que deseas eliminar los siguientes programas?\n\n" +
+                                 "\n".join(f"- {p}" for p in selected_programs)):
+                
+                for program_id in selected_programs:
+                    if self.manager.delete_program(program_id):
+                        print(f"✅ Programa eliminado: {program_id}")
+                
+                dialog.destroy()
+                messagebox.showinfo("Éxito", "Programas eliminados correctamente")
+                self.show_select_program_dialog()  # Recargar diálogo
+
+        def select_all():
+            listbox.select_set(0, tk.END)
+
+        def deselect_all():
+            listbox.selection_clear(0, tk.END)
+
+        # Botones de acción
+        ttk.Button(button_frame, text="Gestionar Seleccionado", 
+                  command=manage_selected).pack(side='left', padx=5)
+        ttk.Button(button_frame, text="Eliminar Seleccionados", 
+                  command=delete_selected).pack(side='left', padx=5)
+        ttk.Button(button_frame, text="Seleccionar Todos", 
+                  command=select_all).pack(side='left', padx=5)
+        ttk.Button(button_frame, text="Deseleccionar Todos", 
+                  command=deselect_all).pack(side='left', padx=5)
+        ttk.Button(button_frame, text="Cerrar", 
+                  command=dialog.destroy).pack(side='right', padx=5)
 
     def show_program_management(self, program_id):
         for widget in self.root.winfo_children():
