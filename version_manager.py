@@ -2,27 +2,54 @@ import json
 import os
 import tkinter as tk
 from tkinter import ttk, messagebox
+from datetime import datetime
 
 class VersionManager:
     def __init__(self):
-        self.subpages_path = r"c:\Users\Federico\Downloads\downloads site\premiumdownloads2\subpages"
-        self.html_file_path = None
-        self.current_file = None
+        self.base_path = r"c:\Users\Federico\Downloads\downloads site\premiumdownloads2"
+        self.programs_path = os.path.join(self.base_path, "programs")
+        self.subpages_path = os.path.join(self.base_path, "subpages")
+        
+        # Crear directorios base si no existen
+        os.makedirs(self.programs_path, exist_ok=True)
+        os.makedirs(self.subpages_path, exist_ok=True)
 
-    def create_html_file(self, year):
-        file_name = f"{year}.html"
-        file_path = os.path.join(self.subpages_path, file_name)
-
-        if os.path.exists(file_path):
+    def validate_program_name(self, program_name):
+        """Valida que el nombre del programa no tenga caracteres especiales"""
+        import re
+        # Solo permite letras, números, espacios y guiones
+        if not re.match("^[a-zA-Z0-9\s-]+$", program_name):
+            messagebox.showerror("Error", "El nombre del programa solo puede contener letras, números, espacios y guiones")
             return False
+        return True
 
-        base_html_content = f"""<!DOCTYPE html>
+    def create_program_structure(self, program_name):
+        """Crea la estructura inicial para un nuevo programa"""
+        # Normalizar el nombre del programa para usarlo en rutas
+        program_id = program_name.lower().replace(' ', '-')
+        
+        # Crear carpeta específica del programa en subpages
+        program_subpages = os.path.join(self.subpages_path, program_id)
+        os.makedirs(program_subpages, exist_ok=True)
+        
+        # Crear archivo details específico del programa
+        self.create_details_file(program_name, program_id)
+        
+        print(f"✅ Estructura creada para {program_name}:")
+        print(f"  📁 Carpeta: {program_subpages}")
+        print(f"  📄 Details: {program_id}-details.html")
+        
+        return program_id
+
+    def create_details_file(self, program_name, program_id):
+        """Crea el archivo details.html específico para el programa"""
+        details_content = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avast Premium Security {year} - Versiones</title>
-    <link rel="stylesheet" href="csscomun.css">
+    <title>{program_name} - Detalles | PremiumDownloads</title>
+    <link rel="stylesheet" href="../css/csscomun.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -41,7 +68,70 @@ class VersionManager:
     </header>
 
     <div class="container">
-        <a href="../detail.html" class="back-link">
+        <div class="download-versions">
+            <h3 class="versions-title">Versiones de {program_name}</h3>
+            <ul class="version-years">
+                <!-- AÑOS-START -->
+                <!-- Las versiones se insertarán aquí -->
+                <!-- AÑOS-END -->
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Términos de uso</a>
+                <a href="#">Política de privacidad</a>
+                <a href="#">DMCA</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>"""
+        
+        details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
+        with open(details_path, "w", encoding="utf-8") as file:
+            file.write(details_content)
+
+    def create_html_file(self, program_name, year):
+        """Crea un archivo HTML de versiones para el año especificado"""
+        program_id = program_name.lower().replace(' ', '-')
+        program_path = os.path.join(self.subpages_path, program_id)
+        file_name = f"{year}.html"
+        file_path = os.path.join(program_path, file_name)
+
+        if os.path.exists(file_path):
+            return False
+
+        base_html_content = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{program_name} {year} - Versiones</title>
+    <link rel="stylesheet" href="../../css/csscomun.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="../../index.html" class="logo">
+                <span>⬇️</span>
+                <span>PremiumDownloads</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="../../programs/{program_id}-details.html" class="back-link">
             <i class="fa fa-arrow-left"></i> Volver a detalles
         </a>
 
@@ -116,18 +206,17 @@ class VersionManager:
     </script>
 </body>
 </html>"""
+
         with open(file_path, "w", encoding="utf-8") as file:
             file.write(base_html_content)
 
-        self.html_file_path = file_path
-        self.current_file = file_name
-        
-        # Actualizar detail.html
-        self.update_detail_html()
+        # Actualizar el archivo details del programa
+        self.update_program_details(program_id)
         return True
 
-    def list_html_files(self):
-        files = [f for f in os.listdir(self.subpages_path) if f.endswith(".html")]
+    def list_html_files(self, program_id):
+        program_path = os.path.join(self.subpages_path, program_id)
+        files = [f for f in os.listdir(program_path) if f.endswith(".html")]
         return files
 
     def read_versions_from_html(self, file_path):
@@ -181,24 +270,45 @@ class VersionManager:
     def delete_html_file(self, file_path, filename):
         try:
             os.remove(file_path)
-            # Actualizar detail.html después de eliminar
-            self.update_detail_html()
+            # Actualizar el archivo details del programa después de eliminar
+            program_id = filename.split('-')[0]
+            self.update_program_details(program_id)
             return True
         except Exception as e:
             messagebox.showerror("Error", f"Error al eliminar el archivo: {str(e)}")
             return False
 
-    def update_detail_html(self):
-        """Actualiza detail.html con los enlaces a los archivos de años disponibles"""
-        detail_path = os.path.join(os.path.dirname(self.subpages_path), "detail.html")
+    def delete_program(self, program_id):
+        """Elimina un programa completo (carpeta y details)"""
+        try:
+            # Eliminar carpeta en subpages
+            program_path = os.path.join(self.subpages_path, program_id)
+            if os.path.exists(program_path):
+                import shutil
+                shutil.rmtree(program_path)
+
+            # Eliminar archivo details
+            details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
+            if os.path.exists(details_path):
+                os.remove(details_path)
+
+            return True
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al eliminar el programa: {str(e)}")
+            return False
+
+    def update_program_details(self, program_id):
+        """Actualiza el archivo details.html del programa con los enlaces a los archivos de años disponibles"""
+        details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
+        program_path = os.path.join(self.subpages_path, program_id)
         
         try:
             # Obtener lista de años ordenados de manera descendente
-            years = sorted([f.replace('.html', '') for f in os.listdir(self.subpages_path) 
+            years = sorted([f.replace('.html', '') for f in os.listdir(program_path) 
                            if f.endswith('.html')], key=int, reverse=True)
             
-            # Leer el contenido actual de detail.html
-            with open(detail_path, "r", encoding="utf-8") as file:
+            # Leer el contenido actual del archivo details.html
+            with open(details_path, "r", encoding="utf-8") as file:
                 content = file.read()
                 
             # Encontrar la sección donde se insertan los años
@@ -208,20 +318,20 @@ class VersionManager:
             end = content.find(end_marker)
             
             if start == -1 or end == -1:
-                messagebox.showerror("Error", "No se encontraron los marcadores en detail.html")
+                messagebox.showerror("Error", "No se encontraron los marcadores en el archivo details.html")
                 return False
             
             # Generar el nuevo contenido HTML para los años
             years_html = []
             for year in years:
                 # Contar versiones para este año
-                file_path = os.path.join(self.subpages_path, f"{year}.html")
+                file_path = os.path.join(program_path, f"{year}.html")
                 versions = self.read_versions_from_html(file_path)
                 version_count = len(versions)
                 
                 years_html.append(f'''
                             <li class="year-item">
-                                <a href="./subpages/{year}.html" class="year-link">
+                                <a href="./{program_id}/{year}.html" class="year-link">
                                     <span class="year">{year}</span>
                                     <span class="version-count">({version_count} versiones)</span>
                                     <i class="fas fa-chevron-right"></i>
@@ -238,14 +348,22 @@ class VersionManager:
             )
             
             # Guardar los cambios
-            with open(detail_path, "w", encoding="utf-8") as file:
+            with open(details_path, "w", encoding="utf-8") as file:
                 file.write(new_content)
                 
             return True
                 
         except Exception as e:
-            messagebox.showerror("Error", f"Error al actualizar detail.html: {str(e)}")
+            messagebox.showerror("Error", f"Error al actualizar el archivo details.html: {str(e)}")
             return False
+
+    def log_change(self, action, details):
+        """Registra cambios en un archivo de log"""
+        log_path = os.path.join(self.base_path, "changes.log")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        with open(log_path, "a", encoding="utf-8") as log:
+            log.write(f"[{timestamp}] {action}: {details}\n")
 
 class VersionManagerGUI:
     def __init__(self, root):
@@ -271,16 +389,94 @@ class VersionManagerGUI:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(expand=True, fill='both', padx=20, pady=20)
 
-        ttk.Button(main_frame, text="Crear Nuevo Archivo HTML Año", 
-                  command=self.show_create_html_dialog).pack(fill='x', pady=5)
-        ttk.Button(main_frame, text="Seleccionar archivo HTML existente AÑO", 
-                  command=self.show_select_html_dialog).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Crear Nuevo Programa", 
+                  command=self.show_create_program_dialog).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Seleccionar Programa Existente", 
+                  command=self.show_select_program_dialog).pack(fill='x', pady=5)
         ttk.Button(main_frame, text="Salir", 
                   command=self.root.quit).pack(fill='x', pady=5)
 
-    def show_create_html_dialog(self):
+    def show_create_program_dialog(self):
         dialog = tk.Toplevel(self.root)
-        dialog.title("Crear Nuevo Archivo HTML Año")
+        dialog.title("Crear Nuevo Programa")
+        dialog.geometry("400x200")
+        dialog.grab_set()
+
+        ttk.Label(dialog, text="Ingresa el nombre del programa:").pack(pady=20)
+        program_entry = ttk.Entry(dialog)
+        program_entry.pack(pady=5)
+
+        def create_program():
+            program_name = program_entry.get()
+            if not self.manager.validate_program_name(program_name):
+                return
+            program_id = self.manager.create_program_structure(program_name)
+            messagebox.showinfo("Éxito", f"Programa {program_name} creado correctamente.")
+            dialog.destroy()
+            self.show_program_management(program_id)
+
+        ttk.Button(dialog, text="Crear", command=create_program).pack(pady=20)
+
+    def show_select_program_dialog(self):
+        programs = [f.replace('-details.html', '') for f in os.listdir(self.manager.programs_path) if f.endswith("-details.html")]
+        if not programs:
+            messagebox.showwarning("Aviso", "No se encontraron programas.")
+            return
+
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Seleccionar Programa Existente")
+        dialog.geometry("500x400")
+        dialog.grab_set()
+
+        ttk.Label(dialog, text="Selecciona un programa:", style='Header.TLabel').pack(pady=20)
+        
+        listbox = tk.Listbox(dialog)
+        listbox.pack(fill='both', expand=True, padx=20)
+        
+        for program in sorted(programs):
+            listbox.insert('end', program)
+
+        def select_program():
+            if not listbox.curselection():
+                messagebox.showwarning("Aviso", "Por favor selecciona un programa.")
+                return
+                
+            program_id = listbox.get(listbox.curselection()[0])
+            dialog.destroy()
+            self.show_program_management(program_id)
+
+        ttk.Button(dialog, text="Seleccionar", command=select_program).pack(pady=20)
+
+    def show_program_management(self, program_id):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        header = ttk.Label(self.root, text=f"Gestión de Programa - {program_id}", 
+                          style='Header.TLabel')
+        header.pack(pady=20)
+
+        main_frame = ttk.Frame(self.root)
+        main_frame.pack(expand=True, fill='both', padx=20, pady=20)
+
+        ttk.Button(main_frame, text="Agregar Año", 
+                  command=lambda: self.show_add_year_dialog(program_id)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Eliminar Año", 
+                  command=lambda: self.show_remove_year_dialog(program_id)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Listar Años", 
+                  command=lambda: self.show_list_years(program_id)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Vista Previa Details", 
+                  command=lambda: self.show_details_preview(program_id.replace('-', ' ').title(), program_id)).pack(fill='x', pady=5)
+        ttk.Button(main_frame, text="Eliminar Programa", 
+                  command=lambda: self.delete_program_dialog(program_id)).pack(fill='x', pady=5)
+        
+        ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=10)
+        
+        ttk.Button(main_frame, text="Volver al menú principal", 
+                  command=self.create_main_menu).pack(fill='x', pady=5)
+
+    def show_add_year_dialog(self, program_id):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Agregar Nuevo Año")
         dialog.geometry("400x200")
         dialog.grab_set()
 
@@ -288,278 +484,97 @@ class VersionManagerGUI:
         year_entry = ttk.Entry(dialog)
         year_entry.pack(pady=5)
 
-        def create_file():
+        def add_year():
             year = year_entry.get()
-            file_name = f"{year}.html"
-            file_path = os.path.join(self.manager.subpages_path, file_name)
-
-            if os.path.exists(file_path):
-                messagebox.showerror("Error", f"El archivo {file_name} ya existe.")
-                return
-
-            if self.manager.create_html_file(year):
-                messagebox.showinfo("Éxito", f"Archivo {file_name} creado correctamente.")
-                dialog.destroy()
-                self.show_version_management(file_name)
-
-        ttk.Button(dialog, text="Crear", command=create_file).pack(pady=20)
-
-    def show_select_html_dialog(self):
-        files = self.manager.list_html_files()
-        if not files:
-            messagebox.showwarning("Aviso", "No se encontraron archivos HTML.")
-            return
-
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Seleccionar archivo HTML existente AÑO")
-        dialog.geometry("500x400")
-        dialog.grab_set()
-
-        ttk.Label(dialog, text="Selecciona archivo(s):", style='Header.TLabel').pack(pady=20)
-        
-        # Frame para la lista y scrollbar
-        list_frame = ttk.Frame(dialog)
-        list_frame.pack(fill='both', expand=True, padx=20)
-        
-        # Scrollbar
-        scrollbar = ttk.Scrollbar(list_frame)
-        scrollbar.pack(side='right', fill='y')
-        
-        # Listbox con selección múltiple
-        listbox = tk.Listbox(list_frame, selectmode='extended', yscrollcommand=scrollbar.set)
-        listbox.pack(side='left', fill='both', expand=True)
-        
-        # Configurar scrollbar
-        scrollbar.config(command=listbox.yview)
-        
-        for file in sorted(files, key=lambda x: int(x.replace('.html', '')), reverse=True):
-            listbox.insert('end', file)
-
-        # Frame para botones
-        button_frame = ttk.Frame(dialog)
-        button_frame.pack(fill='x', padx=20, pady=10)
-
-        def select_all():
-            listbox.select_set(0, 'end')
-
-        def deselect_all():
-            listbox.selection_clear(0, 'end')
-
-        def confirm_delete_selected():
-            selected = listbox.curselection()
-            if not selected:
-                messagebox.showwarning("Aviso", "Por favor selecciona al menos un archivo.")
-                return
-                
-            files_to_delete = [listbox.get(i) for i in selected]
-            if messagebox.askyesno("Confirmar eliminación", 
-                                 f"¿Estás seguro que deseas eliminar los siguientes archivos?\n\n" +
-                                 "\n".join(files_to_delete) +
-                                 "\n\nEsta acción no se puede deshacer."):
-                
-                for file in files_to_delete:
-                    file_path = os.path.join(self.manager.subpages_path, file)
-                    self.manager.delete_html_file(file_path, file)
-                
-                messagebox.showinfo("Éxito", "Archivos eliminados correctamente")
-                dialog.destroy()
-                self.create_main_menu()
-
-        def select_files():
-            selected = listbox.curselection()
-            if not selected:
-                messagebox.showwarning("Aviso", "Por favor selecciona al menos un archivo.")
-                return
-                
-            dialog.destroy()
-            if len(selected) == 1:
-                self.show_version_management(listbox.get(selected[0]))
-            else:
-                # Mostrar diálogo para gestión múltiple
-                self.show_multiple_version_management([listbox.get(i) for i in selected])
-
-        # Frame para botones de selección
-        select_frame = ttk.Frame(button_frame)
-        select_frame.pack(fill='x', pady=5)
-        
-        ttk.Button(select_frame, text="Seleccionar Todo", 
-                  command=select_all).pack(side='left', padx=5)
-        ttk.Button(select_frame, text="Deseleccionar Todo", 
-                  command=deselect_all).pack(side='left', padx=5)
-
-        # Frame para botones de acción
-        action_frame = ttk.Frame(button_frame)
-        action_frame.pack(fill='x', pady=5)
-
-        # Botón rojo para eliminar
-        delete_button = tk.Button(
-            action_frame,
-            text="Eliminar Seleccionados",
-            command=confirm_delete_selected,
-            bg='red',
-            fg='white',
-            font=('Arial', 10),
-            height=2
-        )
-        delete_button.pack(side='left', padx=5, fill='x', expand=True)
-
-        # Botón normal para seleccionar
-        ttk.Button(action_frame, text="Gestionar Seleccionados", 
-                  command=select_files).pack(side='left', padx=5, fill='x', expand=True)
-
-    def show_version_management(self, filename):
-        for widget in self.root.winfo_children():
-            widget.destroy()
-
-        header = ttk.Label(self.root, text=f"Gestión de Versiones - {filename}", 
-                          style='Header.TLabel')
-        header.pack(pady=20)
-
-        main_frame = ttk.Frame(self.root)
-        main_frame.pack(expand=True, fill='both', padx=20, pady=20)
-
-        ttk.Button(main_frame, text="Agregar versión", 
-                  command=lambda: self.show_add_version_dialog(filename)).pack(fill='x', pady=5)
-        ttk.Button(main_frame, text="Eliminar versión", 
-                  command=lambda: self.show_remove_version_dialog(filename)).pack(fill='x', pady=5)
-        ttk.Button(main_frame, text="Listar versiones", 
-                  command=lambda: self.show_list_versions(filename)).pack(fill='x', pady=5)
-        
-        ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=10)
-        
-        def confirm_delete_html():
-            if messagebox.askyesno("Confirmar eliminación", 
-                                 f"¿Estás seguro que deseas eliminar el archivo {filename}?\n\nEsta acción no se puede deshacer."):
-                file_path = os.path.join(self.manager.subpages_path, filename)
-                if self.manager.delete_html_file(file_path, filename):
-                    messagebox.showinfo("Éxito", f"Archivo {filename} eliminado correctamente")
-                    self.create_main_menu()
-        
-        delete_button = tk.Button(
-            main_frame, 
-            text="Eliminar HTML AÑO ENTERO",
-            command=confirm_delete_html,
-            bg='red',          # Color de fondo
-            fg='white',        # Color del texto
-            font=('Arial', 10),
-            height=2,          # Altura del botón
-            relief='raised'    # Estilo del borde
-        )
-        delete_button.pack(fill='x', pady=5)
-
-        ttk.Button(main_frame, text="Volver al menú principal", 
-                  command=self.create_main_menu).pack(fill='x', pady=5)
-
-    def show_add_version_dialog(self, filename):
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Agregar Nueva Versión")
-        dialog.geometry("500x400")
-        dialog.grab_set()
-
-        frame = ttk.Frame(dialog)
-        frame.pack(padx=20, pady=20, fill='both', expand=True)
-
-        fields = [
-            ("Número de Versión:", "version"),
-            ("Fecha:", "date"),
-            ("Tamaño:", "size"),
-            ("Link Torrent:", "torrentLink"),
-            ("Link Magnet:", "magnetLink"),
-            ("Seeds iniciales:", "seeds"),
-            ("Peers iniciales:", "peers")
-        ]
-
-        entries = {}
-        for label_text, key in fields:
-            ttk.Label(frame, text=label_text).pack(anchor='w')
-            entry = ttk.Entry(frame, width=50)
-            entry.pack(fill='x', pady=(0, 10))
-            entries[key] = entry
-
-        def add_version():
-            data = {key: entry.get() for key, entry in entries.items()}
-            file_path = os.path.join(self.manager.subpages_path, filename)
-            
-            versions = self.manager.read_versions_from_html(file_path)
-            versions.append(data)
-            
-            if self.manager.save_versions_to_html(file_path, versions):
-                messagebox.showinfo("Éxito", "Versión agregada correctamente")
+            program_name = program_id.replace('-', ' ').title()
+            if self.manager.create_html_file(program_name, year):
+                messagebox.showinfo("Éxito", f"Año {year} agregado correctamente.")
                 dialog.destroy()
 
-        ttk.Button(dialog, text="Agregar", command=add_version).pack(pady=20)
+        ttk.Button(dialog, text="Agregar", command=add_year).pack(pady=20)
 
-    def show_remove_version_dialog(self, filename):
-        file_path = os.path.join(self.manager.subpages_path, filename)
-        versions = self.manager.read_versions_from_html(file_path)
-        
-        if not versions:
-            messagebox.showinfo("Info", "No hay versiones para eliminar")
+    def show_remove_year_dialog(self, program_id):
+        years = self.manager.list_html_files(program_id)
+        if not years:
+            messagebox.showinfo("Info", "No hay años para eliminar")
             return
             
         dialog = tk.Toplevel(self.root)
-        dialog.title("Eliminar Versión")
+        dialog.title("Eliminar Año")
         dialog.geometry("400x300")
         dialog.grab_set()
 
-        ttk.Label(dialog, text="Selecciona la versión a eliminar:").pack(pady=20)
+        ttk.Label(dialog, text="Selecciona el año a eliminar:").pack(pady=20)
         
         listbox = tk.Listbox(dialog)
         listbox.pack(fill='both', expand=True, padx=20)
         
-        for version in versions:
-            listbox.insert('end', f"Versión {version['version']} - {version['date']}")
+        for year in years:
+            listbox.insert('end', year.replace('.html', ''))
 
-        def remove_version():
+        def remove_year():
             if not listbox.curselection():
-                messagebox.showwarning("Aviso", "Por favor selecciona una versión")
+                messagebox.showwarning("Aviso", "Por favor selecciona un año")
                 return
                 
-            idx = listbox.curselection()[0]
-            versions.pop(idx)
-            
-            if self.manager.save_versions_to_html(file_path, versions):
-                messagebox.showinfo("Éxito", "Versión eliminada correctamente")
+            year = listbox.get(listbox.curselection()[0])
+            file_path = os.path.join(self.manager.subpages_path, program_id, f"{year}.html")
+            if self.manager.delete_html_file(file_path, f"{year}.html"):
+                messagebox.showinfo("Éxito", f"Año {year} eliminado correctamente")
                 dialog.destroy()
 
-        ttk.Button(dialog, text="Eliminar", command=remove_version).pack(pady=20)
+        ttk.Button(dialog, text="Eliminar", command=remove_year).pack(pady=20)
 
-    def show_list_versions(self, filename):
+    def show_list_years(self, program_id):
         dialog = tk.Toplevel(self.root)
-        dialog.title("Lista de Versiones")
-        dialog.geometry("800x400")
+        dialog.title("Lista de Años")
+        dialog.geometry("400x300")
 
-        tree = ttk.Treeview(dialog, columns=("Versión", "Fecha", "Tamaño", "Seeds", "Peers"))
-        tree.heading("#0", text="")
-        tree.heading("Versión", text="Versión")
-        tree.heading("Fecha", text="Fecha")
-        tree.heading("Tamaño", text="Tamaño")
-        tree.heading("Seeds", text="Seeds")
-        tree.heading("Peers", text="Peers")
-        
-        tree.column("#0", width=0, stretch=tk.NO)
-        tree.column("Versión", width=150)
-        tree.column("Fecha", width=150)
-        tree.column("Tamaño", width=100)
-        tree.column("Seeds", width=100)
-        tree.column("Peers", width=100)
-        
-        tree.pack(fill='both', expand=True, padx=20, pady=20)
+        listbox = tk.Listbox(dialog)
+        listbox.pack(fill='both', expand=True, padx=20, pady=20)
 
-        # Cargar versiones
-        file_path = os.path.join(self.manager.subpages_path, filename)
-        versions = self.manager.read_versions_from_html(file_path)
-        
-        for version in versions:
-            tree.insert("", "end", values=(
-                version["version"],
-                version["date"],
-                version["size"],
-                version["seeds"],
-                version["peers"]
-            ))
+        years = self.manager.list_html_files(program_id)
+        for year in years:
+            listbox.insert('end', year.replace('.html', ''))
 
         ttk.Button(dialog, text="Cerrar", command=dialog.destroy).pack(pady=10)
+
+    def delete_program_dialog(self, program_id):
+        confirm = messagebox.askyesno("Confirmar", f"¿Estás seguro de que deseas eliminar el programa {program_id}?")
+        if confirm:
+            if self.manager.delete_program(program_id):
+                messagebox.showinfo("Éxito", f"Programa {program_id} eliminado correctamente.")
+                self.create_main_menu()
+
+    def show_details_preview(self, program_name, program_id):
+        """Muestra una vista previa del archivo details"""
+        preview = tk.Toplevel()
+        preview.title("Vista Previa Details")
+        preview.geometry("600x400")
+
+        text = tk.Text(preview, wrap=tk.WORD)
+        text.pack(fill='both', expand=True)
+
+        # Insertar contenido
+        details_content = f"""<!DOCTYPE html>
+<html>
+<head>
+    <title>{program_name} - Detalles</title>
+</head>
+<body>
+    <h1>{program_name}</h1>
+    <div class="versions">
+        <!-- AÑOS-START -->
+        <!-- Las versiones aparecerán aquí -->
+        <!-- AÑOS-END -->
+    </div>
+</body>
+</html>"""
+
+        text.insert('1.0', details_content)
+        text.config(state='disabled')
+
+        ttk.Button(preview, text="Cerrar", command=preview.destroy).pack(pady=10)
 
 def main():
     root = tk.Tk()
