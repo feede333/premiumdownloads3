@@ -282,5 +282,22 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         return card;
     }
+
+    // Agregar al archivo JavaScript existente
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.menu-overlay');
+
+    menuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        sidebar.classList.remove('active');
+        this.classList.remove('active');
+    });
 });
 
