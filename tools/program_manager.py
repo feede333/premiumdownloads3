@@ -597,41 +597,94 @@ class ProgramManagerApp:
             # Recopilar datos del formulario
             data = {}
             for key, entry in self.entries.items():
-                if isinstance(entry, tk.Text):
-                    data[key] = entry.get("1.0", tk.END).strip()
-                else:
-                    data[key] = entry.get().strip()
-                print(f"Campo {key}: {data[key]}")  # Debug
+                data[key] = entry.get().strip()
 
             # Validar campos requeridos
             if not all([data["id"], data["title"], data["category"]]):
-                messagebox.showerror("Error", "Los campos ID, título y categoría son obligatorios")
+                messagebox.showerror("Error", "Los campos ID, Título y Categoría son obligatorios.")
                 return
 
             # Usar las mismas rutas que update.bat
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            data_dir = os.path.join(base_dir, 'data')  # Directamente en la raíz
-            images_dir = os.path.join(base_dir, 'images')  # Directamente en la raíz
-            
-            print(f"\nDirectorios:")
-            print(f"Base: {base_dir}")
-            print(f"Data: {data_dir}")
-            print(f"Images: {images_dir}")
+            programs_dir = os.path.join(base_dir, 'programs')
+            subpages_dir = os.path.join(base_dir, 'subpages')
 
             # Crear directorios si no existen
-            os.makedirs(data_dir, exist_ok=True)
-            os.makedirs(images_dir, exist_ok=True)
+            os.makedirs(programs_dir, exist_ok=True)
+            os.makedirs(subpages_dir, exist_ok=True)
 
             # Preparar datos del programa
-            program_data = {
-                "id": data["id"],
-                "title": data["title"],
+            program_id = data["id"].lower().replace(' ', '-')
+            program_name = data["title"]
+
+            # Crear archivo details.html
+            details_path = os.path.join(programs_dir, f"{program_id}-details.html")
+            details_content = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{program_name} - Detalles | PremiumDownloads</title>
+    <link rel="stylesheet" href="../css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="../index.html" class="logo">
+                <span>⬇️</span>
+                <span>PremiumDownloads</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="download-versions">
+            <h3 class="versions-title">Versiones de {program_name}</h3>
+            <ul class="version-years">
+                <!-- AÑOS-START -->
+                <!-- Las versiones se insertarán aquí -->
+                <!-- AÑOS-END -->
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Términos de uso</a>
+                <a href="#">Política de privacidad</a>
+                <a href="#">DMCA</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>"""
+            with open(details_path, "w", encoding="utf-8") as file:
+                file.write(details_content)
+            print(f"✅ Archivo details.html creado: {details_path}")
+
+            # Guardar datos en el JSON
+            json_path = self.get_json_path()
+            with open(json_path, 'r', encoding='utf-8') as f:
+                programs_data = json.load(f)
+
+            programs_data["programs"].append({
+                "id": program_id,
+                "title": program_name,
                 "category": data["category"],
                 "version": data["version"],
                 "fileSize": data["fileSize"],
                 "downloadLink": data["downloadLink"],
                 "date": datetime.now().strftime("%d.%m.%Y"),
-                "image": "images/default.png",  # Valor por defecto
+                "image": "images/default.png",
                 "description": data["description"],
                 "requirements": {
                     "os": data["os"],
@@ -641,84 +694,24 @@ class ProgramManagerApp:
                     "display": data["display"]
                 },
                 "instructions": data["instructions"]
-            }
+            })
 
-            # Actualizar ruta de imagen para que coincida con index.html
-            if hasattr(self, 'image_path') and self.image_path:
-                image_filename = f"{data['id']}{os.path.splitext(self.image_path)[1]}"
-                image_dest = os.path.join(images_dir, image_filename)
-                shutil.copy2(self.image_path, image_dest)
-                program_data["image"] = f"./images/{image_filename}"  # Usar ruta relativa como en index.html
-                print(f"\nImagen copiada a: {image_dest}")
-
-            # Guardar JSON
-            json_path = os.path.join(data_dir, "programs.json")
-            print(f"\nGuardando en JSON: {json_path}")
-
-            # Cargar o crear JSON
-            if os.path.exists(json_path):
-                with open(json_path, 'r', encoding='utf-8') as f:
-                    programs_data = json.load(f)
-                    print(f"JSON existente cargado con {len(programs_data.get('programs', []))} programas")
-            else:
-                programs_data = {"programs": []}
-                print("Creando nuevo archivo JSON")
-
-            # Añadir nuevo programa
-            programs_data["programs"].append(program_data)
-            
-            # Guardar JSON
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(programs_data, f, indent=2, ensure_ascii=False)
-            
-            print(f"\nJSON guardado. Tamaño: {os.path.getsize(json_path)} bytes")
-            
-            # Generar páginas HTML
-            print("\n=== Generando páginas HTML ===")
-            try:
-                import page_generator
-                generator = page_generator.PageGenerator()
-                generator.update_pages()
-                print("✅ Páginas HTML generadas")
-            except Exception as e:
-                print(f"❌ Error generando páginas HTML: {str(e)}")
-                raise
+            print("✅ Datos guardados en JSON")
+
+            # Actualizar lista de programas
+            self.load_existing_programs()
 
             # Sincronizar con GitHub
-            print("\n=== Sincronizando con GitHub ===")
-            try:
-                import subprocess
-                
-                # Verificar el token
-                if not token:
-                    raise EnvironmentError("Token de GitHub no encontrado")
-                print("✅ Token de GitHub encontrado")
-                
-                # Configurar Git con el token
-                repo_url = f"https://{token}@github.com/feede333/premiumdownloads3.git"
-                repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=repo_dir, check=True)
-                
-                # Sincronizar cambios
-                print("\nSubiendo cambios a GitHub...")
-                subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
-                subprocess.run(['git', 'commit', '-m', f'Add: Nuevo programa {data["title"]}'], cwd=repo_dir, check=True)
-                subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=repo_dir, check=True)
-                subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_dir, check=True)
-                
-                print("✅ Cambios sincronizados con GitHub")
-                
-            except Exception as e:
-                print(f"❌ Error sincronizando con GitHub: {str(e)}")
-                raise
+            self.sync_with_github(f"Add: Nuevo programa {program_name}")
 
-            messagebox.showinfo("Éxito", "Programa guardado y sincronizado correctamente")
-            self.root.quit()
+            messagebox.showinfo("Éxito", f"Programa {program_name} guardado correctamente.")
 
         except Exception as e:
-            print(f"\n❌ Error: {str(e)}")
-            messagebox.showerror("Error", f"Error: {str(e)}")
-            raise
+            error_msg = f"Error al guardar el programa: {str(e)}"
+            print(f"❌ {error_msg}")
+            messagebox.showerror("Error", error_msg)
 
     def autocomplete_with_ai(self):
         try:
