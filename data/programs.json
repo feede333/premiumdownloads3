@@ -56,6 +56,25 @@
         "display": "S"
       },
       "instructions": "S"
+    },
+    {
+      "id": "211",
+      "title": "After effects",
+      "category": "Diseño",
+      "version": "d",
+      "fileSize": "d",
+      "downloadLink": "dd",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "d",
+      "requirements": {
+        "os": "d",
+        "processor": "d",
+        "ram": "d",
+        "disk": "dd",
+        "display": "d"
+      },
+      "instructions": "d"
     }
   ]
 }

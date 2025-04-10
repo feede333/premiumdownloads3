@@ -17,7 +17,10 @@ class VersionManager:
     def validate_program_name(self, program_name):
         """Valida que el nombre del programa no tenga caracteres especiales"""
         import re
-        # Solo permite letras, números, espacios y guiones
+        if not program_name or not program_name.strip():
+            messagebox.showerror("Error", "El nombre del programa no puede estar vacío")
+            return False
+        
         if not re.match("^[a-zA-Z0-9\s-]+$", program_name):
             messagebox.showerror("Error", "El nombre del programa solo puede contener letras, números, espacios y guiones")
             return False
@@ -25,21 +28,31 @@ class VersionManager:
 
     def create_program_structure(self, program_name):
         """Crea la estructura inicial para un nuevo programa"""
+        # Validar nombre del programa
+        if not self.validate_program_name(program_name):
+            return False
+
         # Normalizar el nombre del programa para usarlo en rutas
         program_id = program_name.lower().replace(' ', '-')
         
-        # Crear carpeta específica del programa en subpages
-        program_subpages = os.path.join(self.subpages_path, program_id)
-        os.makedirs(program_subpages, exist_ok=True)
-        
-        # Crear archivo details específico del programa
-        self.create_details_file(program_name, program_id)
-        
-        print(f"✅ Estructura creada para {program_name}:")
-        print(f"  📁 Carpeta: {program_subpages}")
-        print(f"  📄 Details: {program_id}-details.html")
-        
-        return program_id
+        try:
+            # 1. Crear carpeta específica del programa en subpages
+            program_subpages = os.path.join(self.subpages_path, program_id)
+            os.makedirs(program_subpages, exist_ok=True)
+            
+            # 2. Crear archivo details específico del programa
+            details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
+            self.create_details_file(program_name, program_id)
+            
+            print(f"\n✅ Estructura creada para {program_name}:")
+            print(f"  📁 Carpeta: {program_subpages}")
+            print(f"  📄 Details: {details_path}\n")
+            
+            return program_id
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al crear la estructura: {str(e)}")
+            return False
 
     def create_details_file(self, program_name, program_id):
         """Crea el archivo details.html específico para el programa"""
