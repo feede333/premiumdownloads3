@@ -74,6 +74,25 @@
         "display": ""
       },
       "instructions": ""
+    },
+    {
+      "id": "el-dia-de-hoy",
+      "title": "el dia de hoy",
+      "category": "Productividad",
+      "version": "el dia de hoy",
+      "fileSize": "el dia de hoy",
+      "downloadLink": "el dia de hoy",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "el dia de hoy",
+      "requirements": {
+        "os": "el dia de hoy",
+        "processor": "el dia de hoy",
+        "ram": "el dia de hoy",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
