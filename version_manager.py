@@ -18,6 +18,16 @@ class VersionManager:
         self.token = os.getenv("GITHUB_TOKEN")
         if not self.token:
             raise EnvironmentError("GITHUB_TOKEN environment variable not found")
+        
+        # Inicializar repositorio Git si no existe
+        if not os.path.exists(os.path.join(self.base_path, ".git")):
+            try:
+                subprocess.run(['git', 'init'], cwd=self.base_path, check=True)
+                subprocess.run(['git', 'config', '--global', 'user.name', 'feede333'], cwd=self.base_path, check=True)
+                subprocess.run(['git', 'config', '--global', 'user.email', 'your.email@example.com'], cwd=self.base_path, check=True)
+                print("✅ Repositorio Git inicializado")
+            except Exception as e:
+                print(f"❌ Error inicializando Git: {str(e)}")
 
     def validate_program_name(self, program_name):
         """Valida que el nombre del programa no tenga caracteres especiales"""
@@ -26,7 +36,7 @@ class VersionManager:
             messagebox.showerror("Error", "El nombre del programa no puede estar vacío")
             return False
         
-        if not re.match("^[a-zA-Z0-9\s-]+$", program_name):
+        if not re.match("^[a-zA-Z0-9\\s-]+$", program_name):
             messagebox.showerror("Error", "El nombre del programa solo puede contener letras, números, espacios y guiones")
             return False
         return True
@@ -407,23 +417,34 @@ class VersionManager:
     def sync_with_github(self, commit_message):
         """Sincroniza los cambios con GitHub"""
         try:
-            import subprocess
-            
             if not self.token:
                 raise EnvironmentError("Token de GitHub no encontrado")
 
-            # Obtener el directorio raíz del repositorio
-            repo_dir = os.path.dirname(self.base_path)
-            print(f"Sincronizando desde: {repo_dir}")
-
-            repo_url = f"https://{self.token}@github.com/feede333/premiumdownloads3.git"
+            # Inicializar Git si no existe
+            if not os.path.exists(os.path.join(self.base_path, ".git")):
+                print("Inicializando repositorio Git...")
+                subprocess.run(['git', 'init'], cwd=self.base_path, check=True)
+                subprocess.run(['git', 'config', '--global', 'user.name', 'feede333'], cwd=self.base_path, check=True)
+                subprocess.run(['git', 'config', '--global', 'user.email', 'your.email@example.com'], cwd=self.base_path, check=True)
+                
+                # Configurar remote
+                repo_url = f"https://{self.token}@github.com/feede333/premiumdownloads3.git"
+                subprocess.run(['git', 'remote', 'add', 'origin', repo_url], cwd=self.base_path, check=True)
+                
+                # Primera sincronización
+                subprocess.run(['git', 'fetch'], cwd=self.base_path, check=True)
+                subprocess.run(['git', 'checkout', '-b', 'main'], cwd=self.base_path, check=True)
             
-            # Usar repo_dir como directorio de trabajo
-            subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=repo_dir, check=True)
-            subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
-            subprocess.run(['git', 'commit', '-m', commit_message], cwd=repo_dir, check=True)
-            subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=repo_dir, check=True)
-            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_dir, check=True)
+            # Actualizar URL del remote (por si cambió el token)
+            repo_url = f"https://{self.token}@github.com/feede333/premiumdownloads3.git"
+            subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=self.base_path, check=True)
+            
+            # Sincronizar cambios
+            print("\nSubiendo cambios a GitHub...")
+            subprocess.run(['git', 'add', '.'], cwd=self.base_path, check=True)
+            subprocess.run(['git', 'commit', '-m', commit_message], cwd=self.base_path, check=True)
+            subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=self.base_path, check=True)
+            subprocess.run(['git', 'push', 'origin', 'main'], cwd=self.base_path, check=True)
             
             print("✅ Cambios sincronizados con GitHub")
             return True
@@ -562,90 +583,4 @@ class VersionManagerGUI:
     def show_remove_year_dialog(self, program_id):
         years = self.manager.list_html_files(program_id)
         if not years:
-            messagebox.showinfo("Info", "No hay años para eliminar")
-            return
-            
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Eliminar Año")
-        dialog.geometry("400x300")
-        dialog.grab_set()
-
-        ttk.Label(dialog, text="Selecciona el año a eliminar:").pack(pady=20)
-        
-        listbox = tk.Listbox(dialog)
-        listbox.pack(fill='both', expand=True, padx=20)
-        
-        for year in years:
-            listbox.insert('end', year.replace('.html', ''))
-
-        def remove_year():
-            if not listbox.curselection():
-                messagebox.showwarning("Aviso", "Por favor selecciona un año")
-                return
-                
-            year = listbox.get(listbox.curselection()[0])
-            file_path = os.path.join(self.manager.subpages_path, program_id, f"{year}.html")
-            if self.manager.delete_html_file(file_path, f"{year}.html"):
-                messagebox.showinfo("Éxito", f"Año {year} eliminado correctamente")
-                dialog.destroy()
-
-        ttk.Button(dialog, text="Eliminar", command=remove_year).pack(pady=20)
-
-    def show_list_years(self, program_id):
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Lista de Años")
-        dialog.geometry("400x300")
-
-        listbox = tk.Listbox(dialog)
-        listbox.pack(fill='both', expand=True, padx=20, pady=20)
-
-        years = self.manager.list_html_files(program_id)
-        for year in years:
-            listbox.insert('end', year.replace('.html', ''))
-
-        ttk.Button(dialog, text="Cerrar", command=dialog.destroy).pack(pady=10)
-
-    def delete_program_dialog(self, program_id):
-        confirm = messagebox.askyesno("Confirmar", f"¿Estás seguro de que deseas eliminar el programa {program_id}?")
-        if confirm:
-            if self.manager.delete_program(program_id):
-                messagebox.showinfo("Éxito", f"Programa {program_id} eliminado correctamente.")
-                self.create_main_menu()
-
-    def show_details_preview(self, program_name, program_id):
-        """Muestra una vista previa del archivo details"""
-        preview = tk.Toplevel()
-        preview.title("Vista Previa Details")
-        preview.geometry("600x400")
-
-        text = tk.Text(preview, wrap=tk.WORD)
-        text.pack(fill='both', expand=True)
-
-        # Insertar contenido
-        details_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <title>{program_name} - Detalles</title>
-</head>
-<body>
-    <h1>{program_name}</h1>
-    <div class="versions">
-        <!-- AÑOS-START -->
-        <!-- Las versiones aparecerán aquí -->
-        <!-- AÑOS-END -->
-    </div>
-</body>
-</html>"""
-
-        text.insert('1.0', details_content)
-        text.config(state='disabled')
-
-        ttk.Button(preview, text="Cerrar", command=preview.destroy).pack(pady=10)
-
-def main():
-    root = tk.Tk()
-    app = VersionManagerGUI(root)
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
+            messagebox.showinfo("Info", "No hay años disponibles para eliminar")

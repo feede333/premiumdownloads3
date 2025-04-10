@@ -1,4 +1,4 @@
-REM filepath: c:\Users\Federico\Downloads\downloads site\premiumdownloads2\manage_versions.bat
 @echo off
-python version_manager.py
+cd /d "%~dp0"
+python -c "from version_manager import VersionManagerGUI; import tkinter as tk; root = tk.Tk(); app = VersionManagerGUI(root); root.mainloop()"
 pause
