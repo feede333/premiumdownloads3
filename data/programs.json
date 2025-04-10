@@ -37,6 +37,25 @@
         "display": "1"
       },
       "instructions": "1"
+    },
+    {
+      "id": "fin-de-semana",
+      "title": "fin de semana",
+      "category": "Diseño",
+      "version": "fin de semana",
+      "fileSize": "fin de semana",
+      "downloadLink": "fin de semana",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "fin de semana",
+      "requirements": {
+        "os": "fin de semana",
+        "processor": "fin de semana",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
