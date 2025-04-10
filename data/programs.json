@@ -37,6 +37,25 @@
         "display": ""
       },
       "instructions": ""
+    },
+    {
+      "id": "cuatri",
+      "title": "cuatri",
+      "category": "Diseño",
+      "version": "1212",
+      "fileSize": "121",
+      "downloadLink": "121221",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "1cuatri",
+      "requirements": {
+        "os": "",
+        "processor": "",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
