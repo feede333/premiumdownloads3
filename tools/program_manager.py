@@ -610,68 +610,35 @@ class ProgramManagerApp:
             # Usar las mismas rutas que update.bat
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             programs_dir = os.path.join(base_dir, 'programs')
-            subpages_dir = os.path.join(base_dir, 'subpages')
+            detail_template_path = os.path.join(base_dir, 'detail.html')
 
             # Crear directorios si no existen
             os.makedirs(programs_dir, exist_ok=True)
-            os.makedirs(subpages_dir, exist_ok=True)
 
             # Preparar datos del programa
             program_id = data["id"].lower().replace(' ', '-')
             program_name = data["title"]
 
-            # Crear archivo details.html
+            # Leer la plantilla base detail.html
+            with open(detail_template_path, "r", encoding="utf-8") as template_file:
+                template_content = template_file.read()
+
+            # Reemplazar los marcadores en la plantilla con los datos del programa
+            details_content = template_content.replace("Avast Premium Security", program_name)
+            details_content = details_content.replace("ANTIVIRUS", data["category"])
+            details_content = details_content.replace("628 MB", data["fileSize"])
+            details_content = details_content.replace("05.04.2025", datetime.now().strftime("%d.%m.%Y"))
+            details_content = details_content.replace(
+                "Avast Premium Security ofrece protección avanzada contra virus, malware, ransomware y amenazas en línea.",
+                data["description"]
+            )
+            details_content = details_content.replace("images/avast.png", data.get("image", "images/default.png"))
+
+            # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
-            details_content = f"""<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{program_name} - Detalles | PremiumDownloads</title>
-    <link rel="stylesheet" href="../css/detail.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
-    <header>
-        <div class="container header-content">
-            <a href="../index.html" class="logo">
-                <span>⬇️</span>
-                <span>PremiumDownloads</span>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="../index.html">Inicio</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+            with open(details_path, "w", encoding="utf-8") as details_file:
+                details_file.write(details_content)
 
-    <div class="container">
-        <div class="download-versions">
-            <h3 class="versions-title">Versiones de {program_name}</h3>
-            <ul class="version-years">
-                <!-- AÑOS-START -->
-                <!-- Las versiones se insertarán aquí -->
-                <!-- AÑOS-END -->
-            </ul>
-        </div>
-    </div>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Términos de uso</a>
-                <a href="#">Política de privacidad</a>
-                <a href="#">DMCA</a>
-                <a href="#">Contacto</a>
-            </div>
-            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-</body>
-</html>"""
-            with open(details_path, "w", encoding="utf-8") as file:
-                file.write(details_content)
             print(f"✅ Archivo details.html creado: {details_path}")
 
             # Guardar datos en el JSON
@@ -687,7 +654,7 @@ class ProgramManagerApp:
                 "fileSize": data["fileSize"],
                 "downloadLink": data["downloadLink"],
                 "date": datetime.now().strftime("%d.%m.%Y"),
-                "image": "images/default.png",
+                "image": data.get("image", "images/default.png"),
                 "description": data["description"],
                 "requirements": {
                     "os": data["os"],
@@ -960,7 +927,7 @@ class ProgramManagerApp:
             start = content.find(start_marker)
             end = content.find(end_marker)
 
-            if start == -1 or end == -1:
+            if (start == -1) or (end == -1):
                 raise ValueError("No se encontraron los marcadores en index.html")
 
             # Generar HTML para cada programa
