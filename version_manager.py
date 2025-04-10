@@ -42,7 +42,6 @@ class VersionManager:
         return True
 
     def create_program_structure(self, program_name):
-        """Crea la estructura inicial para un nuevo programa"""
         try:
             # Validar nombre del programa
             if not self.validate_program_name(program_name):
@@ -62,6 +61,9 @@ class VersionManager:
             print(f"\n✅ Estructura creada para {program_name}:")
             print(f"  📁 Carpeta: {program_subpages}")
             print(f"  📄 Details: {details_path}\n")
+            
+            # Actualizar index.html
+            self.update_index_page()
             
             # Sincronizar con GitHub
             self.sync_with_github(f"Add: Nuevo programa {program_name}")
@@ -330,6 +332,9 @@ class VersionManager:
             if os.path.exists(details_path):
                 os.remove(details_path)
 
+            # Actualizar index.html
+            self.update_index_page()
+            
             # Sincronizar con GitHub
             self.sync_with_github(f"Remove: Programa {program_id}")
             return True
@@ -452,6 +457,80 @@ class VersionManager:
         except Exception as e:
             print(f"❌ Error sincronizando con GitHub: {str(e)}")
             messagebox.showerror("Error", f"Error sincronizando con GitHub: {str(e)}")
+            return False
+
+    def update_index_page(self):
+        """Actualiza el index.html con los programas y sus enlaces"""
+        try:
+            index_path = os.path.join(self.base_path, "index.html")
+            
+            # Obtener lista de programas
+            programs = []
+            for file in os.listdir(self.programs_path):
+                if file.endswith("-details.html"):
+                    program_id = file.replace("-details.html", "")
+                    program_name = program_id.replace("-", " ").title()
+                    
+                    # Obtener años disponibles
+                    years = self.list_html_files(program_id)
+                    version_count = len(years)
+                    
+                    programs.append({
+                        "id": program_id,
+                        "name": program_name,
+                        "details_url": f"programs/{file}",
+                        "version_count": version_count,
+                        "latest_year": max(years).replace(".html", "") if years else "N/A"
+                    })
+
+            # Leer plantilla del index
+            with open(index_path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # Encontrar la sección donde se insertan los programas
+            start_marker = '<!-- PROGRAMS-START -->'
+            end_marker = '<!-- PROGRAMS-END -->'
+            start = content.find(start_marker)
+            end = content.find(end_marker)
+
+            if start == -1 or end == -1:
+                raise ValueError("No se encontraron los marcadores en index.html")
+
+            # Generar HTML para cada programa
+            programs_html = []
+            for program in sorted(programs, key=lambda x: x["name"]):
+                programs_html.append(f'''
+                    <div class="program-card">
+                        <h3>{program["name"]}</h3>
+                        <div class="program-meta">
+                            <span>Versiones: {program["version_count"]}</span>
+                            <span>Última: {program["latest_year"]}</span>
+                        </div>
+                        <a href="{program["details_url"]}" class="program-link">
+                            Ver versiones <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                ''')
+
+            # Insertar el nuevo contenido
+            new_content = (
+                content[:start + len(start_marker)] +
+                '\n' +
+                ''.join(programs_html) +
+                '\n' +
+                content[end:]
+            )
+
+            # Guardar cambios
+            with open(index_path, "w", encoding="utf-8") as f:
+                f.write(new_content)
+
+            print("✅ Index.html actualizado correctamente")
+            return True
+
+        except Exception as e:
+            print(f"❌ Error actualizando index.html: {str(e)}")
+            messagebox.showerror("Error", f"Error actualizando index.html: {str(e)}")
             return False
 
 class VersionManagerGUI:
