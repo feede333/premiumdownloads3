@@ -761,7 +761,7 @@ class VersionManagerGUI:
                 
             year = listbox.get(listbox.curselection()[0])
             file_path = os.path.join(self.manager.subpages_path, program_id, f"{year}.html")
-            if self.manager.delete_html_file(file_path, f"{program_id}-{year}.html")):
+            if self.manager.delete_html_file(file_path, f"{program_id}-{year}.html"):
                 messagebox.showinfo("Éxito", f"Año {year} eliminado correctamente.")
                 dialog.destroy()
 
