@@ -638,6 +638,10 @@ class ProgramManagerApp:
                 "<!-- Corrige las rutas de los archivos CSS -->",
                 '<link rel="stylesheet" href="../css/commentcss.css">'  # Agregar el CSS de comentarios
             )
+            details_content = details_content.replace(
+                "<!-- Agregar scripts -->",
+                '<script src="../js/details.js" defer></script>'  # Conectar el JS universal
+            )
 
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
