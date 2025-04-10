@@ -584,3 +584,121 @@ class VersionManagerGUI:
         years = self.manager.list_html_files(program_id)
         if not years:
             messagebox.showinfo("Info", "No hay años disponibles para eliminar")
+            return
+
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Eliminar Año")
+        dialog.geometry("400x300")
+        dialog.grab_set()
+
+        ttk.Label(dialog, text=f"Años de {program_id}:", style='Header.TLabel').pack(pady=10)
+        
+        # Frame con scroll para la lista
+        frame = ttk.Frame(dialog)
+        frame.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        scrollbar = ttk.Scrollbar(frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set)
+        listbox.pack(side='left', fill='both', expand=True)
+        
+        scrollbar.config(command=listbox.yview)
+        
+        for year in sorted(years, key=lambda x: x.replace('.html', ''), reverse=True):
+            listbox.insert('end', year.replace('.html', ''))
+        
+        def remove_year():
+            if not listbox.curselection():
+                messagebox.showwarning("Aviso", "Por favor selecciona un año.")
+                return
+                
+            year = listbox.get(listbox.curselection()[0])
+            file_path = os.path.join(self.manager.subpages_path, program_id, f"{year}.html")
+            if self.manager.delete_html_file(file_path, f"{program_id}-{year}.html"):
+                messagebox.showinfo("Éxito", f"Año {year} eliminado correctamente.")
+                dialog.destroy()
+
+        ttk.Button(dialog, text="Eliminar", command=remove_year).pack(pady=10)
+        ttk.Button(dialog, text="Cerrar", command=dialog.destroy).pack(pady=10)
+
+    def show_list_years(self, program_id):
+        """Muestra una lista de años disponibles para el programa"""
+        years = self.manager.list_html_files(program_id)
+        if not years:
+            messagebox.showinfo("Info", "No hay años disponibles")
+            return
+
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Años Disponibles")
+        dialog.geometry("400x300")
+        dialog.grab_set()
+
+        ttk.Label(dialog, text=f"Años de {program_id}:", style='Header.TLabel').pack(pady=10)
+        
+        # Frame con scroll para la lista
+        frame = ttk.Frame(dialog)
+        frame.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        scrollbar = ttk.Scrollbar(frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        listbox = tk.Listbox(frame, yscrollcommand=scrollbar.set)
+        listbox.pack(side='left', fill='both', expand=True)
+        
+        scrollbar.config(command=listbox.yview)
+        
+        for year in sorted(years, key=lambda x: x.replace('.html', ''), reverse=True):
+            listbox.insert('end', year.replace('.html', ''))
+        
+        ttk.Button(dialog, text="Cerrar", command=dialog.destroy).pack(pady=10)
+
+    def show_details_preview(self, program_name, program_id):
+        """Muestra una vista previa del archivo details"""
+        details_path = os.path.join(self.manager.programs_path, f"{program_id}-details.html")
+        
+        try:
+            with open(details_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al leer el archivo: {str(e)}")
+            return
+
+        preview = tk.Toplevel(self.root)
+        preview.title(f"Vista Previa - {program_name}")
+        preview.geometry("800x600")
+
+        # Frame con scroll
+        frame = ttk.Frame(preview)
+        frame.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        scrollbar = ttk.Scrollbar(frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        text = tk.Text(frame, wrap=tk.WORD, yscrollcommand=scrollbar.set)
+        text.pack(side='left', fill='both', expand=True)
+        
+        scrollbar.config(command=text.yview)
+        
+        text.insert('1.0', content)
+        text.config(state='disabled')
+
+        ttk.Button(preview, text="Cerrar", command=preview.destroy).pack(pady=10)
+
+    def delete_program_dialog(self, program_id):
+        """Diálogo para confirmar eliminación de programa"""
+        if messagebox.askyesno("Confirmar eliminación", 
+                             f"¿Estás seguro que deseas eliminar el programa {program_id}?\n\n" +
+                             "Esta acción eliminará:\n" +
+                             f"- La carpeta en subpages/{program_id}\n" +
+                             f"- El archivo {program_id}-details.html\n\n" +
+                             "Esta acción no se puede deshacer."):
+            
+            if self.manager.delete_program(program_id):
+                messagebox.showinfo("Éxito", "Programa eliminado correctamente")
+                self.create_main_menu()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = VersionManagerGUI(root)
+    root.mainloop()
