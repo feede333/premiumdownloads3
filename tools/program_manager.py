@@ -633,6 +633,7 @@ class ProgramManagerApp:
                 data["description"]
             )
             details_content = details_content.replace("images/avast.png", data.get("image", "images/default.png"))
+            details_content = details_content.replace("./css/detail.css", "../css/detail.css")  # Ruta corregida al CSS
 
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
