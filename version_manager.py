@@ -1,7 +1,8 @@
-import json
 import os
+import json
 import tkinter as tk
 from tkinter import ttk, messagebox
+import subprocess
 from datetime import datetime
 
 class VersionManager:
@@ -13,6 +14,10 @@ class VersionManager:
         # Crear directorios base si no existen
         os.makedirs(self.programs_path, exist_ok=True)
         os.makedirs(self.subpages_path, exist_ok=True)
+
+        self.token = os.getenv("GITHUB_TOKEN")
+        if not self.token:
+            raise EnvironmentError("GITHUB_TOKEN environment variable not found")
 
     def validate_program_name(self, program_name):
         """Valida que el nombre del programa no tenga caracteres especiales"""
@@ -28,14 +33,14 @@ class VersionManager:
 
     def create_program_structure(self, program_name):
         """Crea la estructura inicial para un nuevo programa"""
-        # Validar nombre del programa
-        if not self.validate_program_name(program_name):
-            return False
-
-        # Normalizar el nombre del programa para usarlo en rutas
-        program_id = program_name.lower().replace(' ', '-')
-        
         try:
+            # Validar nombre del programa
+            if not self.validate_program_name(program_name):
+                return False
+
+            # Normalizar el nombre del programa para usarlo en rutas
+            program_id = program_name.lower().replace(' ', '-')
+            
             # 1. Crear carpeta específica del programa en subpages
             program_subpages = os.path.join(self.subpages_path, program_id)
             os.makedirs(program_subpages, exist_ok=True)
@@ -48,6 +53,8 @@ class VersionManager:
             print(f"  📁 Carpeta: {program_subpages}")
             print(f"  📄 Details: {details_path}\n")
             
+            # Sincronizar con GitHub
+            self.sync_with_github(f"Add: Nuevo programa {program_name}")
             return program_id
             
         except Exception as e:
@@ -111,15 +118,16 @@ class VersionManager:
 
     def create_html_file(self, program_name, year):
         """Crea un archivo HTML de versiones para el año especificado"""
-        program_id = program_name.lower().replace(' ', '-')
-        program_path = os.path.join(self.subpages_path, program_id)
-        file_name = f"{year}.html"
-        file_path = os.path.join(program_path, file_name)
+        try:
+            program_id = program_name.lower().replace(' ', '-')
+            program_path = os.path.join(self.subpages_path, program_id)
+            file_name = f"{year}.html"
+            file_path = os.path.join(program_path, file_name)
 
-        if os.path.exists(file_path):
-            return False
+            if os.path.exists(file_path):
+                return False
 
-        base_html_content = f"""<!DOCTYPE html>
+            base_html_content = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -220,12 +228,19 @@ class VersionManager:
 </body>
 </html>"""
 
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.write(base_html_content)
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(base_html_content)
 
-        # Actualizar el archivo details del programa
-        self.update_program_details(program_id)
-        return True
+            # Actualizar el archivo details del programa
+            self.update_program_details(program_id)
+            
+            # Sincronizar con GitHub
+            self.sync_with_github(f"Add: Nuevo año {year} para {program_name}")
+            return True
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al crear archivo: {str(e)}")
+            return False
 
     def list_html_files(self, program_id):
         program_path = os.path.join(self.subpages_path, program_id)
@@ -305,7 +320,10 @@ class VersionManager:
             if os.path.exists(details_path):
                 os.remove(details_path)
 
+            # Sincronizar con GitHub
+            self.sync_with_github(f"Remove: Programa {program_id}")
             return True
+            
         except Exception as e:
             messagebox.showerror("Error", f"Error al eliminar el programa: {str(e)}")
             return False
@@ -323,6 +341,14 @@ class VersionManager:
             # Leer el contenido actual del archivo details.html
             with open(details_path, "r", encoding="utf-8") as file:
                 content = file.read()
+        except FileNotFoundError:
+            messagebox.showerror("Error", f"No se encontró el archivo {details_path}")
+            return False
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al leer el archivo details: {str(e)}")
+            return False
+
+        try:
                 
             # Encontrar la sección donde se insertan los años
             start_marker = '<!-- AÑOS-START -->'
@@ -377,6 +403,35 @@ class VersionManager:
         
         with open(log_path, "a", encoding="utf-8") as log:
             log.write(f"[{timestamp}] {action}: {details}\n")
+
+    def sync_with_github(self, commit_message):
+        """Sincroniza los cambios con GitHub"""
+        try:
+            import subprocess
+            
+            if not self.token:
+                raise EnvironmentError("Token de GitHub no encontrado")
+
+            # Obtener el directorio raíz del repositorio
+            repo_dir = os.path.dirname(self.base_path)
+            print(f"Sincronizando desde: {repo_dir}")
+
+            repo_url = f"https://{self.token}@github.com/feede333/premiumdownloads3.git"
+            
+            # Usar repo_dir como directorio de trabajo
+            subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'commit', '-m', commit_message], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], cwd=repo_dir, check=True)
+            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_dir, check=True)
+            
+            print("✅ Cambios sincronizados con GitHub")
+            return True
+
+        except Exception as e:
+            print(f"❌ Error sincronizando con GitHub: {str(e)}")
+            messagebox.showerror("Error", f"Error sincronizando con GitHub: {str(e)}")
+            return False
 
 class VersionManagerGUI:
     def __init__(self, root):
@@ -457,8 +512,6 @@ class VersionManagerGUI:
             program_id = listbox.get(listbox.curselection()[0])
             dialog.destroy()
             self.show_program_management(program_id)
-
-        ttk.Button(dialog, text="Seleccionar", command=select_program).pack(pady=20)
 
     def show_program_management(self, program_id):
         for widget in self.root.winfo_children():
