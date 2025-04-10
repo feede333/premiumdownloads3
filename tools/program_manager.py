@@ -945,7 +945,7 @@ class ProgramManagerApp:
                     programs.append({
                         "id": program_id,
                         "name": program_name,
-                        "details_url": f"programs/{file}",  # Enlace al details.html
+                        "details_url": f"programs/{file}",  # Enlace al details.html específico
                         "version_count": version_count,
                         "latest_year": max(years).replace(".html", "") if years else "N/A"
                     })
