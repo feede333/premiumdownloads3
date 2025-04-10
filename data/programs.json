@@ -94,6 +94,25 @@
         "display": ""
       },
       "instructions": ""
+    },
+    {
+      "id": "marlon",
+      "title": "marlon",
+      "category": "Productividad",
+      "version": "1221",
+      "fileSize": "22",
+      "downloadLink": "2",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "22",
+      "requirements": {
+        "os": "2",
+        "processor": "",
+        "ram": "2",
+        "disk": "2",
+        "display": "2"
+      },
+      "instructions": "2"
     }
   ]
 }
