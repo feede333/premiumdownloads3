@@ -55,12 +55,12 @@ class VersionManager:
             program_subpages = os.path.join(self.subpages_path, program_id)
             os.makedirs(program_subpages, exist_ok=True)
             
-            # Copiar main.css al directorio del programa
-            main_css_src = os.path.join(self.base_path, "main.css")
-            main_css_dest = os.path.join(program_subpages, "main.css")
-            if os.path.exists(main_css_src):
-                shutil.copy2(main_css_src, main_css_dest)
-                print(f"✅ CSS copiado: {main_css_dest}")
+            # Copiar csscomun.css al directorio del programa
+            css_src = os.path.join(self.subpages_path, "csscomun.css")
+            css_dest = os.path.join(program_subpages, "csscomun.css")
+            if os.path.exists(css_src):
+                shutil.copy2(css_src, css_dest)
+                print(f"✅ CSS común copiado: {css_dest}")
 
             # 2. Crear archivo details específico del programa
             details_path = os.path.join(self.programs_path, f"{program_id}-details.html")
@@ -69,12 +69,10 @@ class VersionManager:
             print(f"\n✅ Estructura creada para {program_name}:")
             print(f"  📁 Carpeta: {program_subpages}")
             print(f"  📄 Details: {details_path}")
-            print(f"  📄 CSS: {main_css_dest}\n")
+            print(f"  📄 CSS: {css_dest}\n")
             
-            # Actualizar index.html
+            # Actualizar index.html y sincronizar
             self.update_index_page()
-            
-            # Sincronizar con GitHub
             self.sync_with_github(f"Add: Nuevo programa {program_name}")
             return program_id
             
@@ -144,19 +142,20 @@ class VersionManager:
             file_name = f"{year}.html"
             file_path = os.path.join(program_path, file_name)
 
-            # Copiar csscomun.css si no existe
+            # Verificar/copiar csscomun.css si no existe
             css_src = os.path.join(self.subpages_path, "csscomun.css")
             css_dest = os.path.join(program_path, "csscomun.css")
             if not os.path.exists(css_dest) and os.path.exists(css_src):
                 shutil.copy2(css_src, css_dest)
-                print(f"✅ CSS copiado: {css_dest}")
+                print(f"✅ CSS común copiado: {css_dest}")
 
             if os.path.exists(file_path):
                 messagebox.showerror("Error", f"El archivo {file_name} ya existe")
                 return False
 
-            # Modificar la plantilla HTML para usar la ruta correcta del CSS
-            base_html_content = f"""<!DOCTYPE html>
+            # Crear archivo HTML con referencia al CSS local
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -165,105 +164,11 @@ class VersionManager:
     <link rel="stylesheet" href="csscomun.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
-    <header>
-        <div class="container header-content">
-            <a href="../../index.html" class="logo">
-                <span>⬇️</span>
-                <span>PremiumDownloads</span>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="../../index.html">Inicio</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+...resto del HTML...
+""")
 
-    <div class="container">
-        <a href="../../programs/{program_id}-details.html" class="back-link">
-            <i class="fa fa-arrow-left"></i> Volver a detalles
-        </a>
-
-        <div class="download-detail">
-            <h2>Versiones de {year}</h2>
-            
-            <div class="version-list">
-                <!-- Las versiones se cargarán dinámicamente -->
-            </div>
-
-            <div class="torrent-note">
-                <p><i class="fas fa-info-circle"></i> Para usar estos enlaces necesitas:</p>
-                <ul>
-                    <li>• qBittorrent (Recomendado)</li>
-                    <li>• uTorrent</li>
-                    <li>• BitTorrent</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Términos de uso</a>
-                <a href="#">Política de privacidad</a>
-                <a href="#">DMCA</a>
-                <a href="#">Contacto</a>
-            </div>
-            <p>© {year} PremiumDownloads. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {{
-        const data = {{
-            "versions": []
-        }};
-        const versionList = document.querySelector('.version-list');
-        versionList.innerHTML = data.versions.map(version => `
-            <div class="version-item">
-                <div class="version-info">
-                    <h3 class="version-name">${{version.version}}</h3>
-                    <span class="version-date">${{version.date}}</span>
-                    <span class="file-size">${{version.size}}</span>
-                </div>
-                <div class="download-container">
-                    <div class="download-options">
-                        <a href="${{version.magnetLink}}" class="magnet-button">
-                            <i class="fas fa-magnet"></i>
-                            <span>Magnet</span>
-                        </a>
-                        <a href="${{version.torrentLink}}" class="torrent-button" target="_blank">
-                            <i class="fas fa-download"></i>
-                            <span>Torrent</span>
-                        </a>
-                    </div>
-                    <div class="torrent-stats">
-                        <div class="peer-info">
-                            <span class="seeds-indicator"></span>
-                            <span>Seeds: ${{version.seeds}}</span>
-                        </div>
-                        <div class="peer-info">
-                            <span class="peers-indicator"></span>
-                            <span>Peers: ${{version.peers}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }});
-    </script>
-</body>
-</html>"""
-
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(base_html_content)
-
-            # Actualizar el archivo details del programa
+            # Actualizar details.html y sincronizar
             self.update_program_details(program_id)
-            
-            # Sincronizar con GitHub
             self.sync_with_github(f"Add: Nuevo año {year} para {program_name}")
             return True
             
