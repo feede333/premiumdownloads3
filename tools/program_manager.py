@@ -597,7 +597,10 @@ class ProgramManagerApp:
             # Recopilar datos del formulario
             data = {}
             for key, entry in self.entries.items():
-                data[key] = entry.get().strip()
+                if isinstance(entry, tk.Text):  # Si es un widget Text
+                    data[key] = entry.get("1.0", tk.END).strip()  # Obtener contenido desde el inicio hasta el final
+                else:  # Si es un widget Entry
+                    data[key] = entry.get().strip()
 
             # Validar campos requeridos
             if not all([data["id"], data["title"], data["category"]]):
