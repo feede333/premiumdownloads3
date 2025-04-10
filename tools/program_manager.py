@@ -640,7 +640,7 @@ class ProgramManagerApp:
             )
             details_content = details_content.replace(
                 "<!-- Agregar scripts -->",
-                '<script src="../js/details.js" defer></script>'  # Conectar el JS universal
+                '<script src="../js/detailuniversal.js" defer></script>'  # Conectar el JS universal
             )
 
             # Guardar el archivo details.html
