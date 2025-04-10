@@ -56,6 +56,25 @@
         "display": ""
       },
       "instructions": ""
+    },
+    {
+      "id": "mates",
+      "title": "mates",
+      "category": "Diseño",
+      "version": "12121",
+      "fileSize": "",
+      "downloadLink": "",
+      "date": "10.04.2025",
+      "image": "images/default.png",
+      "description": "",
+      "requirements": {
+        "os": "",
+        "processor": "",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
