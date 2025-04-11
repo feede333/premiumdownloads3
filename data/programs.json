@@ -54,6 +54,25 @@
         "display": ""
       },
       "instructions": ""
+    },
+    {
+      "id": "programa2",
+      "title": "programa2",
+      "category": "Utilidades",
+      "version": "",
+      "fileSize": "",
+      "downloadLink": "",
+      "date": "11.04.2025",
+      "image": "images/default.png",
+      "description": "",
+      "requirements": {
+        "os": "",
+        "processor": "",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
