@@ -1,22 +1,27 @@
-/* Variables */
+/* Variables - Actualizar con la paleta de main.css */
 :root {
-    --primary: #2563eb;
-    --accent: #3498db;
-    --danger: #ef4444;
-    --success: #22c55e;
-    --background: #f1f5f9;
-    --text: #0f172a;
-    --gray: #64748b;
-    --border: #e2e8f0;
-    --bg-tertiary: #f8fafc; /* Agregar esta variable */
-    --warning: #f59e0b; /* También agregar esta que faltaba */
+    --primary: #00ffcc;
+    --secondary: #00bcd4;
+    --accent: #ff4081;
+    --background: #0f1117;
+    --text: #f1f1f1;
+    --text-muted: #9ca3af;
+    --border: #2a2d36;
+    --card: #1c1f26;
+    --shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+    --radius: 12px;
+    --bg-tertiary: #15181f;
 }
 
-/* Reset básico */
+/* Fuente */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* Reset y estilos base */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
 }
 
 .download-detail {
@@ -32,7 +37,6 @@
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
     background: var(--background);
     color: var(--text);
     line-height: 1.6;
@@ -45,30 +49,34 @@ body {
     padding: 2rem;
 }
 
-/* Header mejorado */
+/* Header actualizado */
 header {
-    background: linear-gradient(to right, #1e40af, #3b82f6);
+    background: var(--card);
     padding: 1rem 0;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 2rem;
 }
 
 .logo {
+    font-size: 1.25rem;
+    color: var(--primary);
+    text-decoration: none;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: white;
-    text-decoration: none;
-    font-size: 1.25rem;
     font-weight: 600;
 }
 
+/* Navegación */
 nav ul {
     display: flex;
     list-style: none;
@@ -76,17 +84,18 @@ nav ul {
 }
 
 nav a {
-    color: white;
+    color: var(--text);
     text-decoration: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: var(--radius);
     transition: all 0.3s ease;
-    opacity: 0.9;
+    font-weight: 500;
 }
 
-nav a:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.1);
+nav a:hover,
+nav a.active {
+    background: var(--primary);
+    color: #000;
 }
 
 /* Header y navegación */
@@ -106,10 +115,11 @@ nav a:hover {
 
 /* Contenedor de versiones */
 .versions-detail {
-    background: linear-gradient(145deg, #ffffff, #f8fafc);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
     padding: 2rem;
+    border: 1px solid var(--border);
 }
 
 /* Versiones */
@@ -121,12 +131,12 @@ nav a:hover {
 
 /* Item de versión */
 .version-item {
-    background: white;
+    background: var(--bg-tertiary);
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: var(--radius);
     border: 1px solid var(--border);
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     display: flex;
     justify-content: space-between; /* Separa el contenido */
     align-items: flex-start;
@@ -160,7 +170,7 @@ nav a:hover {
 .version-date,
 .file-size {
     display: inline-block;
-    color: var(--gray);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-right: 1.5rem;
 }
@@ -177,36 +187,142 @@ nav a:hover {
 .torrent-button {
     display: inline-flex;
     align-items: center;
-    justify-content: center; /* Añadir esta línea */
-    text-align: center; /* Añadir esta línea */
+    justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    border-radius: var(--radius);
     font-weight: 500;
     text-decoration: none;
-    color: white;
     transition: all 0.3s ease;
     min-width: 160px;
 }
 
 .magnet-button {
-    background: #3b82f6;
+    background: var(--primary);
+    color: #000;
 }
 
 .torrent-button {
-    background: #2563eb;
+    background: var(--secondary);
+    color: #000;
 }
 
 .magnet-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow);
+    background: var(--accent);
 }
 
 /* Nuevo hover con gradiente verde solo para el botón torrent */
 .torrent-button:hover {
-    background: linear-gradient(to right, #22c55e, #16a34a);
+    background: var(--accent);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow);
+}
+
+/* Stats de torrent */
+.torrent-stats {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.peer-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+}
+
+.peer-info .value {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.seeds {
+    color: #22c55e; /* Color verde para seeds */
+}
+
+.peers {
+    color: #f59e0b; /* Color ámbar para peers */
+}
+
+.download-stats {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+/* Detalles de versión */
+.version-details {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.version-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.version-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.version-date,
+.version-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Botones de descarga específicos */
+.download-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.magnet-btn {
+    background: var(--primary);
+    color: #000;
+}
+
+.torrent-btn {
+    background: var(--secondary);
+    color: #000;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
 /* Stats de torrent */
@@ -289,6 +405,7 @@ nav a:hover {
     background: var(--bg-tertiary);
     border-radius: 8px;
     border: 1px solid var(--border);
+    color: var(--text-muted);
 }
 
 .torrent-note p {
@@ -299,7 +416,7 @@ nav a:hover {
 
 .torrent-note ul {
     list-style: none;
-    color: var(--gray);
+    color: var(--text-muted);
 }
 
 .torrent-note li {
@@ -307,6 +424,113 @@ nav a:hover {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Cards */
+.download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.download-grid.loaded {
+    opacity: 1;
+}
+
+.download-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.download-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow);
+}
+
+/* Loader */
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--card);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+}
+
+/* Animaciones */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .content-container {
+        grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        padding: 0 1rem;
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .version-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .download-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .download-btn {
+        width: 100%;
+    }
+
+    .torrent-stats {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 }
 
 /* Footer */
@@ -332,3 +556,4 @@ footer {
 .footer-links a:hover {
     color: var(--accent);
 }
+
