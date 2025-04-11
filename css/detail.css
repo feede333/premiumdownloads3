@@ -183,7 +183,6 @@ html[data-theme="dark"] header .header-content .logo:hover {
 
 /* CONTENIDO PRINCIPAL DE LA PÁGINA DE DETALLES */
 .download-detail {
-    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
     background: var(--card);
     border-radius: var(--radius);
     border: 1px solid var(--border);

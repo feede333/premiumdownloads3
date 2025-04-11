@@ -666,8 +666,23 @@ class ProgramManagerApp:
                 '<a href="../index.html" class="logo">'
             )
 
-            # Plantilla actualizada para el contenido principal
-            main_content = f"""
+            # Plantilla para el head con los CSS correctos
+            head_template = f"""
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>{program_name} - Descarga | PremiumDownloads</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+                <link rel="stylesheet" href="../css/main.css">
+                <link rel="stylesheet" href="../css/detail.css">
+                <link rel="stylesheet" href="../css/commentcss.css">
+                <script src="../js/main.js" defer></script>
+                <script src="../js/detail.js" defer></script>
+            </head>
+            """
+
+            # Plantilla para el body con la estructura correcta
+            body_template = f"""
             <div class="container">
                 <a href="../index.html" class="back-link">
                     <i class="fas fa-arrow-left"></i> Volver a todos los programas
@@ -717,53 +732,44 @@ class ProgramManagerApp:
                         </div>
                     </div>
                 </div>
-            </div>"""
+            </div>
+            """
 
-            # Plantilla para el header con navegación centrada
-            header_content = """
-            <header>
-                <div class="container">
-                    <div class="header-content">
-                        <a href="../index.html" class="logo">
-                            <span>⬇️</span>
-                            <span>PremiumDownloads</span>
-                        </a>
-                        <div class="nav-container">
-                            <nav>
-                                <ul>
-                                    <li><a href="../index.html">Inicio</a></li>
-                                    <li><a href="../populares.html">Populares</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div class="theme-language-controls">
-                            <button class="theme-toggle">🌙</button>
-                            <button class="language-toggle">ES</button>
-                        </div>
-                    </div>
+            # Crear el HTML completo
+            html_template = f"""<!DOCTYPE html>
+<html lang="es" data-theme="light">
+{head_template}
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="logo">
+                    <span>⬇️</span>
+                    <span>PremiumDownloads</span>
+                </a>
+                <div class="nav-container">
+                    <nav>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="../populares.html">Populares</a></li>
+                        </ul>
+                    </nav>
                 </div>
-            </header>"""
+                <div class="theme-language-controls">
+                    <button class="theme-toggle">🌙</button>
+                    <button class="language-toggle">ES</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    {body_template}
+</body>
+</html>"""
 
-            # Reemplazar el contenido principal y el header
-            details_content = details_content.replace(
-                '<div class="container">',
-                main_content
-            )
-
-            details_content = details_content.replace(
-                '<header>',
-                header_content
-            )
-
-            # Actualizar rutas CSS y JS
-            details_content = details_content.replace("./css/", "../css/")
-            details_content = details_content.replace("./js/", "../js/")
-            details_content = details_content.replace("./images/", "../images/")
-
-            # Guardar el archivo details.html
+            # Guardar el archivo
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
-            with open(details_path, "w", encoding="utf-8") as details_file:
-                details_file.write(details_content)
+            with open(details_path, "w", encoding="utf-8") as f:
+                f.write(html_template)
 
             print(f"✅ Archivo details.html creado con enlaces actualizados: {details_path}")
 
