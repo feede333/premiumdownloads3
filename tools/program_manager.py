@@ -664,6 +664,65 @@ class ProgramManagerApp:
                 '<a href="../index.html" class="logo">'
             )
 
+            # Actualizar el head con las rutas correctas de CSS
+            head_content = """
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} - Descarga | PremiumDownloads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/detail.css">
+    <link rel="stylesheet" href="../css/commentcss.css">
+    <script src="../js/detail.js" defer></script>
+""".format(title=data["title"])
+
+            # Reemplazar el head existente
+            details_content = details_content.replace(
+                """<head>
+    <meta charset="UTF-8">""",
+                f"<head>\n{head_content}"
+            )
+
+            # Actualizar la estructura del header
+            header_content = """
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="logo">
+                    <span>⬇️</span>
+                    <span>PremiumDownloads</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Inicio</a></li>
+                        <li><a href="../populares.html">Populares</a></li>
+                    </ul>
+                </nav>
+                <div class="theme-language-controls">
+                    <button class="theme-toggle">🌙</button>
+                    <button class="language-toggle">ES</button>
+                </div>
+            </div>
+        </div>
+    </header>"""
+
+            # Reemplazar el header existente
+            details_content = details_content.replace(
+                "<header>",
+                header_content
+            )
+
+            # Asegurar que el enlace de "Volver" esté correctamente estructurado
+            details_content = details_content.replace(
+                '<a href="#" class="back-link">',
+                '<a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver a todos los programas</a>'
+            )
+
+            # Eliminar cualquier referencia antigua a CSS
+            details_content = details_content.replace('./css/', '../css/')
+            details_content = details_content.replace('./js/', '../js/')
+            details_content = details_content.replace('./images/', '../images/')
+
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
             with open(details_path, "w", encoding="utf-8") as details_file:
