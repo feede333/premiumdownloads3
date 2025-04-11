@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
-* {
-  font-family: 'Orbitron', sans-serif;
-}
-
+/* Variables */
 :root {
     --bg: #0f1117;
     --card: #1c1f26;
@@ -15,18 +12,15 @@
     --border: #2a2d36;
     --shadow: 0 0 20px rgba(0, 255, 204, 0.2);
     --radius: 12px;
-    --bg-primary: #f8f9fa;
-    --bg-secondary: #ffffff;
     --bg-tertiary: #15181f;
-    --text-primary: #202124;
-    --text-secondary: #5f6368;
-    --border-color: #e0e3e7;
-    --card-bg: #ffffff;
-    --input-bg: #ffffff;
-    --header-bg: #ffffff;
-    --light: #2d2d2d;
-    --dark: #ffffff;
-    --gray: #b0b0b0;
+}
+
+/* Base styles */
+* {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 [data-theme="dark"] {
@@ -992,7 +986,7 @@ footer p {
 
 .requirement-item {
     background: var(--bg-tertiary);
-    border-radius: var(--radius);
+    border-radius: var (--radius);
     padding: 1rem;
     color: var(--text);
     display: flex;
