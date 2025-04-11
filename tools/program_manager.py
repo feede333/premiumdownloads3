@@ -647,22 +647,16 @@ class ProgramManagerApp:
                 '<script src="../js/detailuniversal.js" defer></script>'  # Conectar el JS universal
             )
 
-            # Modificar el contenido del template para los enlaces
+            # Solo actualizar el enlace de "Volver" y las rutas
             details_content = details_content.replace(
                 '<a href="#" class="back-link">',
-                '<a href="../index.html" class="back-link">'
+                '<a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver a todos los programas</a>'
             )
 
-            # Actualizar la navegación en el header
-            details_content = details_content.replace(
-                '<nav>',
-                '''<nav>
-                    <ul>
-                        <li><a href="../index.html">Inicio</a></li>
-                        <li><a href="../populares.html">Populares</a></li>
-                    </ul>
-                </nav>'''
-            )
+            # Actualizar rutas CSS y JS
+            details_content = details_content.replace("./css/", "../css/")
+            details_content = details_content.replace("./js/", "../js/")
+            details_content = details_content.replace("./images/", "../images/")
 
             # Actualizar el logo para que vuelva al index
             details_content = details_content.replace(
