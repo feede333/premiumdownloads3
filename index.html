@@ -85,23 +85,6 @@
     </header>
 
     <main class="container">
-        <div class="search-sort-container">
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Buscar software...">
-                <button class="search-button" disabled>
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            <div class="sort-options">
-                <select class="sort-select">
-                    <option value="recent">Más reciente</option>
-                    <option value="downloads">Más descargados</option>
-                    <option value="rating">Mejor valorados</option>
-                    <option value="name">Alfabéticamente</option>
-                </select>
-            </div>
-        </div>
-
         <div class="content-container">
             <aside class="sidebar">
                 <h3>Categorías</h3>
@@ -119,50 +102,11 @@
                 </div>
             </aside>
 
-            <main class="main-content">
-                <!-- Grid única para todos los programas -->
-                <div id="dynamicProgramsGrid" class="download-grid">
-                    <!-- Card 1 -->
-                    <div class="download-card">
-                        <div class="card-image">
-                            <img src="images/avast.png" alt="Avast">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title">Avast Premium Security</h3>
-                            <span class="category-badge">Antivirus</span>
-                            <div class="card-meta">
-                                <span>628 MB</span>
-                                <span>1.2K descargas</span>
-                            </div>
-                            <a href="detail.html" class="download-button">Ver detalles</a>
-                        </div>
-                    </div>
-                    <!-- Los programas dinámicos se añadirán aquí -->
-                </div>
-            </main>
-
-
-                
-
-                
-
-                
-
-                
-
-                
-
-                
-
-                
-
-                
-
-                
-
-                
-<!-- PROGRAMS-END -->
-    </div>
+            <div id="dynamicProgramsGrid" class="download-grid">
+                <!-- Los programas se cargarán aquí -->
+            </div>
+        </div>
+    </main>
 
     <div class="ai-chat-widget">
         <button class="chat-toggle">

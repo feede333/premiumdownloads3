@@ -303,14 +303,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadPrograms() {
     try {
-        // Mostrar loader
         const loader = document.querySelector('.loader-container');
         const programsGrid = document.getElementById('dynamicProgramsGrid');
-        
+
+        if (!programsGrid) {
+            console.error('Error: No se encontró el elemento dynamicProgramsGrid');
+            return;
+        }
+
+        // Asegurar que el loader sea visible
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+
         // Simular tiempo de carga mínimo
         await Promise.all([
-            fetch('./data/programs.json'),
-            new Promise(resolve => setTimeout(resolve, 800)) // Mínimo 800ms de loader
+            fetch('./data/programs.json').catch(error => {
+                console.error('Error fetching programs.json:', error);
+                return { json: () => ({ programs: [] }) };
+            }),
+            new Promise(resolve => setTimeout(resolve, 800))
         ]);
 
         const response = await fetch('./data/programs.json');
@@ -319,42 +330,46 @@ async function loadPrograms() {
         // Limpiar grid existente
         programsGrid.innerHTML = '';
         
-        // Agregar programas con delay
+        // Agregar programas inmediatamente
         data.programs.forEach((program, index) => {
-            setTimeout(() => {
-                const programCard = document.createElement('div');
-                programCard.className = 'download-card';
-                programCard.style.animationDelay = `${index * 0.1}s`;
-                programCard.innerHTML = `
-                    <div class="card-image">
-                        <img src="${program.image}" alt="${program.title}">
+            const programCard = document.createElement('div');
+            programCard.className = 'download-card';
+            programCard.style.animationDelay = `${index * 0.1}s`;
+            programCard.innerHTML = `
+                <div class="card-image">
+                    <img src="${program.image}" alt="${program.title}">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${program.title}</h3>
+                    <span class="category-badge">${program.category}</span>
+                    <div class="card-meta">
+                        <span>${program.fileSize}</span>
+                        <span>${program.version || ''}</span>
                     </div>
-                    <div class="card-content">
-                        <h3 class="card-title">${program.title}</h3>
-                        <span class="category-badge">${program.category}</span>
-                        <div class="card-meta">
-                            <span>${program.fileSize}</span>
-                            <span>${program.version || ''}</span>
-                        </div>
-                        <p class="program-description">${program.description.substring(0, 100)}...</p>
-                        <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
-                    </div>
-                `;
-                programsGrid.appendChild(programCard);
-            }, index * 100);
+                    <p class="program-description">${program.description?.substring(0, 100) || ''}...</p>
+                    <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
+                </div>
+            `;
+            programsGrid.appendChild(programCard);
         });
 
-        // Ocultar loader y mostrar grid
+        // Ocultar loader
+        loader.style.opacity = '0';
+        loader.style.transition = 'opacity 0.3s ease';
+        
+        // Remover loader y mostrar grid
         setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-                programsGrid.classList.add('loaded');
-            }, 300);
-        }, 800);
+            loader.style.display = 'none';
+            programsGrid.classList.add('loaded');
+        }, 300);
 
     } catch (error) {
         console.error('Error cargando programas:', error);
+        // Asegurar que el loader se oculte incluso si hay error
+        const loader = document.querySelector('.loader-container');
+        if (loader) {
+            loader.style.display = 'none';
+        }
     }
 }
 
