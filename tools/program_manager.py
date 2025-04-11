@@ -663,7 +663,7 @@ class ProgramManagerApp:
             </div>
             """
 
-            # Actualizar el template HTML para usar detailuniversal.js
+            # Actualizar el template HTML para que coincida con program8-details.html
             html_template = f"""<!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head>
@@ -674,6 +674,7 @@ class ProgramManagerApp:
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/detail.css">
     <link rel="stylesheet" href="../css/commentcss.css">
+    <link rel="stylesheet" href="../css/chat.css">
     <script src="../js/detailuniversal.js" defer></script>
     <script src="../js/main.js" defer></script>
 </head>
@@ -685,46 +686,147 @@ class ProgramManagerApp:
                     <span>⬇️</span>
                     <span>PremiumDownloads</span>
                 </a>
-                <div class="nav-container">
-                    <nav>
-                        <ul>
-                            <li><a href="../index.html">Inicio</a></li>
-                            <li><a href="../populares.html">Populares</a></li>
-                        </ul>
-                    </nav>
-                </div>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Inicio</a></li>
+                        <li><a href="../populares.html">Populares</a></li>
+                    </ul>
+                </nav>
                 <div class="theme-language-controls">
-                    <button class="theme-toggle">🌙</button>
-                    <button class="language-toggle">ES</button>
+                    <button class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="language-toggle">
+                        <span class="lang-text">ES</span>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
-    {body_template}
-    <div class="comments-section">
-        <h3>Comentarios</h3>
-        <form id="comment-form" class="comment-form">
-            <div class="form-row">
-                <input type="text" id="comment-name" placeholder="Tu nombre" required>
-                <input type="email" id="user-email" placeholder="Tu email" required>
-            </div>
-            <textarea id="comment-text" class="comment-textarea" placeholder="Escribe tu comentario..." required></textarea>
-            <div class="image-upload">
-                <input type="file" id="comment-image" accept="image/*">
-            </div>
-            <div class="captcha-container">
-                <div class="captcha-box">
-                    <span id="captcha-text"></span>
-                    <button type="button" id="refresh-captcha" class="refresh-captcha">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">
+            <i class="fa fa-arrow-left"></i> Volver a todos los programas
+        </a>
+
+        <div class="download-detail">
+            <div class="download-header">
+                <div class="download-image">
+                    <img src="{program_image_relative}" alt="{program_name}">
                 </div>
-                <input type="text" id="captcha-input" class="captcha-input" placeholder="Ingresa el código" required>
-                <span id="captcha-error" class="error-text"></span>
+                <div class="download-info">
+                    <h1 class="download-title">{program_name}</h1>
+                    <span class="download-category">{data["category"]}</span>
+                    
+                    <div class="download-meta">
+                        <span class="file-size">{data.get("fileSize", "")}</span>
+                        <span class="file-date">{datetime.now().strftime("%d.%m.%Y")}</span>
+                    </div>
+                    
+                    <div class="download-description">
+                        <p>{data.get("description", "")}</p>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="comment-submit">Enviar comentario</button>
-        </form>
-        <div id="comments-list" class="comments-list">
+
+            <div class="download-versions">
+                <h3 class="versions-title">Versiones por año</h3>
+                <ul class="version-years">
+                    <!-- AÑOS-START -->
+                    <!-- Se actualizará dinámicamente -->
+                    <!-- AÑOS-END -->
+                </ul>
+            </div>
+
+            <div class="requirements">
+                <h3>Requisitos del sistema</h3>
+                <ul>
+                    <li>Sistema operativo: {data.get("os", "")}</li>
+                    <li>Procesador: {data.get("processor", "")}</li>
+                    <li>Memoria RAM: {data.get("ram", "")}</li>
+                    <li>Espacio en disco: {data.get("disk", "")}</li>
+                    <li>Resolución de pantalla: {data.get("display", "")}</li>
+                </ul>
+            </div>
+
+            <section class="comments-section">
+                <h3>Comentarios</h3>
+                
+                <form id="comment-form" class="comment-form" aria-label="Formulario de comentarios">
+                    <div class="form-row">
+                        <input type="text" id="comment-name" placeholder="Tu nombre" required
+                            class="comment-input" aria-label="Nombre">
+                        <input type="email" id="user-email" placeholder="Correo electrónico (opcional)" 
+                            class="comment-input email-input" aria-label="Correo electrónico">
+                    </div>
+                
+                    <div class="image-upload-container">
+                        <input type="file" id="comment-image" accept="image/*" hidden>
+                        <label for="comment-image" class="photo-icon">
+                            <i class="fas fa-camera"></i> Agregar foto
+                        </label>
+                        <div class="image-preview"></div>
+                    </div>
+                
+                    <textarea id="comment-text" placeholder="Escribe tu comentario..." required
+                        class="comment-textarea" aria-label="Comentario"></textarea>
+                    
+                    <div class="captcha-container">
+                        <div class="captcha-box">
+                            <span id="captcha-text"></span>
+                            <button type="button" id="refresh-captcha" class="refresh-captcha">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <input type="text" id="captcha-input" placeholder="Ingresa el código" required
+                            class="captcha-input" aria-label="Verificación CAPTCHA">
+                        <span id="captcha-error" class="captcha-error"></span>
+                    </div>
+
+                    <button type="submit" class="comment-submit">Publicar</button>
+                </form>
+                
+                <div id="comments-list" class="comments-list">
+                    <!-- Los comentarios aparecerán aquí -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Términos de uso</a>
+                <a href="#">Política de privacidad</a>
+                <a href="#">DMCA</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="ai-chat-widget">
+        <button class="chat-toggle">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>Asistente IA</h3>
+                <button class="close-chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-messages">
+                <div class="message bot">
+                    ¡Hola! Soy el asistente virtual. ¿En qué puedo ayudarte?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" placeholder="Escribe tu mensaje...">
+                <button class="send-message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
 </body>
