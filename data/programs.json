@@ -1,3 +1,13 @@
 {
-  "programs": []
+    "programs": [
+        {
+            "id": "1",
+            "title": "Avast Premium Security",
+            "category": "antivirus",
+            "fileSize": "500MB",
+            "version": "21.1.2",
+            "description": "Avast Premium Security ofrece protección avanzada...",
+            "image": "images/avast.png"
+        }
+    ]
 }

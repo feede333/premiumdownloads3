@@ -1,3 +1,75 @@
+// Función principal de inicialización
+document.addEventListener('DOMContentLoaded', async () => {
+    // Primero cargar los programas
+    await loadPrograms();
+    
+    // Luego inicializar las demás funcionalidades
+    initializeCategoryFilters();
+    initializeMenuToggle();
+    initializeSearchAndSort();
+});
+
+async function loadPrograms() {
+    try {
+        const loader = document.querySelector('.loader-container');
+        const programsGrid = document.getElementById('dynamicProgramsGrid');
+
+        if (!programsGrid) {
+            console.error('Error: No se encontró el elemento dynamicProgramsGrid');
+            return;
+        }
+
+        // Mostrar loader
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+
+        // Cargar datos
+        const response = await fetch('./data/programs.json');
+        const data = await response.json();
+
+        // Limpiar grid existente
+        programsGrid.innerHTML = '';
+        
+        // Agregar programas
+        data.programs.forEach((program, index) => {
+            const programCard = document.createElement('div');
+            programCard.className = 'download-card';
+            programCard.dataset.category = program.category.toLowerCase();
+            programCard.style.animationDelay = `${index * 0.1}s`;
+            programCard.innerHTML = `
+                <div class="card-image">
+                    <img src="${program.image}" alt="${program.title}">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">${program.title}</h3>
+                    <span class="category-badge">${program.category}</span>
+                    <div class="card-meta">
+                        <span>${program.fileSize}</span>
+                        <span>${program.version || ''}</span>
+                    </div>
+                    <p class="program-description">${program.description?.substring(0, 100) || ''}...</p>
+                    <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
+                </div>
+            `;
+            programsGrid.appendChild(programCard);
+        });
+
+        // Ocultar loader después de cargar
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                programsGrid.classList.add('loaded');
+            }, 300);
+        }, 800);
+
+    } catch (error) {
+        console.error('Error cargando programas:', error);
+        const loader = document.querySelector('.loader-container');
+        if (loader) loader.style.display = 'none';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos del DOM
     const searchInput = document.querySelector('.search-input');
@@ -301,79 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function loadPrograms() {
-    try {
-        const loader = document.querySelector('.loader-container');
-        const programsGrid = document.getElementById('dynamicProgramsGrid');
-
-        if (!programsGrid) {
-            console.error('Error: No se encontró el elemento dynamicProgramsGrid');
-            return;
-        }
-
-        // Mostrar loader
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
-
-        // Simular tiempo de carga mínimo
-        await Promise.all([
-            fetch('./data/programs.json'),
-            new Promise(resolve => setTimeout(resolve, 800))
-        ]);
-
-        const response = await fetch('./data/programs.json');
-        const data = await response.json();
-
-        // Limpiar grid existente
-        programsGrid.innerHTML = '';
-        
-        // Agregar programas con animación
-        data.programs.forEach((program, index) => {
-            const programCard = document.createElement('div');
-            programCard.className = 'download-card';
-            programCard.dataset.category = program.category.toLowerCase();
-            programCard.style.animationDelay = `${index * 0.1}s`;
-            programCard.innerHTML = `
-                <div class="card-image">
-                    <img src="${program.image}" alt="${program.title}">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">${program.title}</h3>
-                    <span class="category-badge">${program.category}</span>
-                    <div class="card-meta">
-                        <span>${program.fileSize}</span>
-                        <span>${program.version || ''}</span>
-                    </div>
-                    <p class="program-description">${program.description?.substring(0, 100) || ''}...</p>
-                    <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
-                </div>
-            `;
-            programsGrid.appendChild(programCard);
-        });
-
-        // Ocultar loader
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-                programsGrid.classList.add('loaded');
-            }, 300);
-        }, 800);
-
-    } catch (error) {
-        console.error('Error cargando programas:', error);
-        const loader = document.querySelector('.loader-container');
-        if (loader) loader.style.display = 'none';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar funcionalidades
-    loadPrograms();
-    initializeCategoryFilters();
-    initializeMenuToggle();
-});
-
 function initializeCategoryFilters() {
     const categoryLinks = document.querySelectorAll('.category-link');
     const programCards = document.querySelectorAll('.download-card');
@@ -419,5 +418,126 @@ function initializeMenuToggle() {
             overlay.classList.remove('active');
         });
     }
+}
+
+function initializeSearchAndSort() {
+    const searchInput = document.querySelector('.search-input');
+    const searchButton = document.querySelector('.search-button');
+    const downloadCards = document.querySelectorAll('.download-card');
+    const downloadGrid = document.querySelector('.download-grid');
+
+    // Actualizar la función de búsqueda
+    function searchPrograms(searchTerm) {
+        searchTerm = searchTerm.toLowerCase().trim();
+        let hasResults = false;
+
+        // Limpiar el grid antes de mostrar resultados
+        downloadGrid.innerHTML = '';
+        
+        // Filtrar y mostrar las cards originales
+        downloadCards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const category = card.querySelector('.category-badge').textContent.toLowerCase();
+            const meta = card.querySelector('.card-meta').textContent.toLowerCase();
+            
+            const matches = title.includes(searchTerm) || 
+                          category.includes(searchTerm) || 
+                          meta.includes(searchTerm);
+            
+            if (matches) {
+                // Clonar la card para no modificar la original
+                const clonedCard = card.cloneNode(true);
+                downloadGrid.appendChild(clonedCard);
+                hasResults = true;
+            }
+        });
+
+        // Mostrar mensaje de no resultados
+        showNoResultsMessage(!hasResults);
+
+        // Importante: Resetear el índice del scroll infinito
+        currentIndex = 0;
+    }
+
+    // Función para mensaje de no resultados
+    function showNoResultsMessage(show) {
+        let message = document.querySelector('.no-results-message');
+        
+        if (!message && show) {
+            message = document.createElement('div');
+            message.className = 'no-results-message';
+            message.style.cssText = `
+                text-align: center;
+                padding: 2rem;
+                color: var(--text-secondary);
+                width: 100%;
+                grid-column: 1/-1;
+            `;
+            message.textContent = 'No se encontraron resultados';
+            downloadGrid.appendChild(message);
+        }
+        
+        if (message) {
+            message.style.display = show ? 'block' : 'none';
+        }
+    }
+
+    // Event listeners
+    if (searchInput && searchButton) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            if (searchButton) searchButton.disabled = !searchTerm.trim();
+            searchPrograms(searchTerm);
+        });
+
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value;
+            if (searchTerm.trim()) {
+                searchPrograms(searchTerm);
+            }
+        });
+
+        // Prevenir envío del formulario si existe
+        const searchForm = searchInput.closest('form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+            });
+        }
+    }
+
+    // Ordenamiento
+    const sortSelect = document.querySelector('.sort-select');
+
+    sortSelect?.addEventListener('change', () => {
+        const cards = Array.from(document.querySelectorAll('.download-card'));
+        const sortBy = sortSelect.value;
+
+        cards.sort((a, b) => {
+            switch(sortBy) {
+                case 'recent':
+                    const dateA = a.querySelector('.file-date')?.textContent || '';
+                    const dateB = b.querySelector('.file-date')?.textContent || '';
+                    return new Date(dateB) - new Date(dateA);
+                
+                case 'downloads':
+                    const downloadsA = parseInt(a.querySelector('.card-meta')?.textContent.match(/\d+/)[0] || '0');
+                    const downloadsB = parseInt(b.querySelector('.card-meta')?.textContent.match(/\d+/)[0] || '0');
+                    return downloadsB - downloadsA;
+                
+                case 'name':
+                    const nameA = a.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const nameB = b.querySelector('h3')?.textContent.toLowerCase() || '';
+                    return nameA.localeCompare(nameB);
+                
+                default:
+                    return 0;
+            }
+        });
+
+        // Limpiar y reinsertar cards ordenadas
+        downloadGrid.innerHTML = '';
+        cards.forEach(card => downloadGrid.appendChild(card));
+    });
 }
 
