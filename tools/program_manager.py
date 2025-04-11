@@ -687,6 +687,18 @@ class ProgramManagerApp:
             details_content = details_content.replace("./js/", "../js/")
             details_content = details_content.replace("./images/", "../images/")
 
+            # Actualizar solo el enlace de "Volver"
+            details_content = details_content.replace(
+                '<a href="#" class="back-link">',
+                '<a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver a todos los programas</a>'
+            )
+
+            # Actualizar el logo
+            details_content = details_content.replace(
+                '<a href="/" class="logo">',
+                '<a href="../index.html" class="logo">'
+            )
+
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
             with open(details_path, "w", encoding="utf-8") as details_file:
