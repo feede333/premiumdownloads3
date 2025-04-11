@@ -1,17 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+* {
+  font-family: 'Orbitron', sans-serif;
+}
+
 :root {
-    --primary: #4caf50; /* Verde vibrante */
-    --secondary: #ff9800; /* Naranja vibrante */
-    --accent: #f44336; /* Rojo vibrante */
-    --light: #f5f5f5; /* Fondo claro */
-    --dark: #212121; /* Fondo oscuro */
-    --gray: #9e9e9e; /* Gris neutro */
+    --primary: #00ffcc;
+    --secondary: #00bcd4;
+    --accent: #ff4081;
+    --bg: #0f1117;
+    --text: #f1f1f1;
+    --text-muted: #9ca3af;
+    --border: #2a2d36;
+    --card: #1c1f26;
+    --shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+    --radius: 12px;
     --bg-primary: #f8f9fa;
     --bg-secondary: #ffffff;
-    --bg-tertiary: #f0f2f5;
+    --bg-tertiary: #15181f;
     --text-primary: #202124;
     --text-secondary: #5f6368;
     --border-color: #e0e3e7;
-    --shadow: 0 2px 10px rgba(0,0,0,0.1);
     --card-bg: #ffffff;
     --input-bg: #ffffff;
     --header-bg: #ffffff;
@@ -45,6 +54,8 @@
 }
 
 [data-theme="dark"] .version-item:hover {
+    background: rgba(0, 255, 204, 0.05);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
     background: rgba(102, 187, 106, 0.1); /* Color verde semitransparente */
     color: var(--text-primary);
 }
@@ -118,6 +129,7 @@
 [data-theme="dark"] .download-detail,
 [data-theme="dark"] .download-versions,
 [data-theme="dark"] .requirements {
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
     background: var(--bg-secondary);
     border-color: var(--border-color);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -216,17 +228,20 @@
 }
 
 /* ESPACIADO GENERAL PARA TODA LA APP */
+/* Actualizar el fondo principal */
 body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    background-color: var(--bg);
+    color: var(--text);
     line-height: 1.6;
+    min-height: 100vh;
     padding: 1rem 0; /* Espacio vertical general */
 }
 
 /* HEADER */
+/* Header */
 header {
-    background: var(--header-bg);
-    box-shadow: var(--shadow);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -234,17 +249,20 @@ header {
 }
 
 /* CONTENEDOR GENERAL */
+/* Contenedor principal */
 .container {
-    max-width: 1800px; /* Aumentado de 1400px */
-    margin: 0 auto;
-    padding: 0 2rem !important;  /* Aumenta el padding horizontal */
+    width: 100%;
+    padding: 2rem 3rem;
+    box-sizing: border-box;
 }
 
 .header-content {
+    background: var(--card);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;  /* Ajusta el padding interno según sea necesario */
+    padding: 1rem 2rem;
+    height: 70px;
 }
 
 /* Logo estilos base */
@@ -255,7 +273,7 @@ header {
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 /* Logo en modo oscuro con máxima especificidad */
@@ -338,65 +356,73 @@ nav a:hover {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-primary);
+    color: var(--text);
     text-decoration: none;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     margin: 1rem 0;
-    font-weight: 500;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .back-link:hover {
+    transform: translateX(-5px);
+    background: var(--primary);
+    color: #000;
+}
+
+.back-link i {
+    transition: transform 0.3s ease;
+}
+
+.back-link:hover i {
     transform: translateX(-3px);
-    color: var(--text-primary); /* Mantiene el mismo color al hacer hover */
 }
 
 /* Para modo oscuro */
 [data-theme="dark"] .back-link {
-    color: var(--text-primary);
+    background: var(--card);
+    color: var(--text);
 }
 
 [data-theme="dark"] .back-link:hover {
-    color: var(--text-primary); /* Mantiene el mismo color en modo oscuro */
+    background: var(--primary);
+    color: #000;
 }
 
 .download-detail {
-    background: rgb(255, 255, 255);
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    overflow: hidden;
-    padding: 2.5rem;
-    margin-bottom: 3rem;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
 }
 
 .download-header {
     display: flex;
-    flex-direction: column;
     gap: 2rem;
-    margin-bottom: 2.5rem;
-}
-
-@media (min-width: 768px) {
-    .download-header {
-        flex-direction: row;
-    }
+    margin-bottom: 2rem;
+    align-items: flex-start;
 }
 
 .download-image {
-    flex: 0 0 350px;
-    height: 220px;
-    background-color: #f0f2f5;
-    border-radius: 8px;
-    overflow: hidden;
+    flex: 0 0 300px;
+    height: 200px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    padding: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    border: 1px solid #e0e3e7;
+    border: 1px solid var(--border);
 }
 
 .download-image img {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
 }
 
@@ -405,9 +431,9 @@ nav a:hover {
 }
 
 .download-title {
-    color: var(--primary);
-    margin-bottom: 0.75rem;
-    font-size: 1.8rem;
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 1rem;
 }
 
 .download-category {
@@ -425,7 +451,7 @@ nav a:hover {
     display: flex;
     gap: 1.5rem;
     margin-bottom: 1.2rem;
-    color: var(--gray);
+    color: var(--text-muted);
     font-size: 0.95rem;
 }
 
@@ -448,19 +474,21 @@ nav a:hover {
 }
 
 .download-versions {
-    margin-bottom: 2.5rem;
-    background: #f9fafc;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e0e3e7;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
 }
 
 .versions-title {
-    color: var(--primary);
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--light);
-    font-size: 1.2rem;
+    color: var(--text);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .version-list {
@@ -477,6 +505,8 @@ nav a:hover {
 }
 
 .version-item:hover {
+    background: rgba(0, 255, 204, 0.05);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
     background: rgba(52, 152, 219, 0.05);
 }
 
@@ -546,30 +576,52 @@ nav a:hover {
 }
 
 .requirements {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f9fafc;
-    border-radius: 8px;
-    border: 1px solid #e0e3e7;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
 }
 
 .requirements h3 {
-    color: var(--primary);
-    margin-bottom: 1rem;
+    color: var(--text);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .requirements ul {
-    padding-left: 1.5rem;
-    color: #444;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.requirements li {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.requirements li::before {
+    content: "•";
+    color: var(--primary);
+    font-size: 1.5rem;
 }
 
 footer {
-    background-color: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    color: var(--text-primary);
-    text-align: center;
-    padding: 2.5rem 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
     margin-top: 3rem;
+    width: 100%;
 }
 
 .footer-links {
@@ -580,13 +632,21 @@ footer {
 }
 
 .footer-links a {
-    color: var(--text-primary);
+    color: var(--text);
     text-decoration: none;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
 }
 
 .footer-links a:hover {
     color: var(--primary);
+    background: var(--bg-tertiary);
+}
+
+footer p {
+    text-align: center;
+    color: var(--text-muted);
 }
 
 /* Ajuste para modo oscuro */
@@ -596,10 +656,12 @@ footer {
 }
 
 [data-theme="dark"] .footer-links a {
-    color: var(--text-primary);
+    background: var(--card);
+    color: var(--text);
 }
 
 [data-theme="dark"] .footer-links a:hover {
+    background: var(--bg-tertiary);
     color: var(--primary);
 }
 
@@ -615,30 +677,40 @@ footer {
 }
 
 /* Estilos para la sección de versiones por año */
+/* Versiones por año grid */
 .version-years {
-    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
 }
 
 .year-item {
-    margin-bottom: 0.5rem;
-}
-
-.year-link {
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--text);
+    background: var(--card);
+    border-radius: var(--radius);
     transition: all 0.3s ease;
 }
 
+/* Corregir los años de versiones */
+.year-link {
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
 .year-link:hover {
-    background: #f8fafc;
-    transform: translateX(5px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    background: var(--primary);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
 .year {
@@ -648,7 +720,7 @@ footer {
 }
 
 .version-count {
-    color: var(--gray);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-right: auto;
 }
@@ -806,5 +878,156 @@ footer {
 
 [data-theme="dark"] .message.bot {
     background: var(--bg-tertiary);
+}
+
+/* Sección de versiones */
+/* Sección de versiones */
+.versions-detail {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
+}
+
+.version-item {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.version-item:hover {
+    background: rgba(0, 255, 204, 0.05);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Información de versión */
+.version-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.version-name {
+    font-size: 1.2rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.version-date,
+.file-size {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Botones de descarga */
+.download-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.download-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.magnet-btn {
+    background: var(--primary);
+    color: #000;
+}
+
+.torrent-btn {
+    background: var(--secondary);
+    color: #000;
+}
+
+.download-btn:hover {
+    box-shadow: 0 0 15px var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Estadísticas de torrent */
+.torrent-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .download-header {
+        flex-direction: column;
+    }
+
+    .download-image {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .download-buttons {
+        flex-direction: column;
+    }
+
+    .download-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .torrent-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .header-content {
+        padding: 0 1rem;
+        height: 60px;
+    }
+
+    .version-years {
+        grid-template-columns: 1fr;
+    }
+
+    .requirements ul {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    .year-link {
+        padding: 0.75rem 1rem;
+    }
 }
 

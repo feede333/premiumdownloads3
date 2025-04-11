@@ -42,12 +42,15 @@ header {
   z-index: 1000;
 }
 
+/* Modify header-content */
 .header-content {
-  display: flex;
-  position: relative;
-
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative; /* Add this */
 }
 
 .logo {
@@ -57,6 +60,18 @@ header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  z-index: 1; /* Add this */
+}
+
+/* Add styles for navigation container */
+.nav-container {
+    position: absolute; /* Add this */
+    left: 50%; /* Add this */
+    transform: translateX(-50%); /* Add this */
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-right: auto; /* Push theme controls to the right */
 }
 
 nav ul {
@@ -78,6 +93,14 @@ nav a:hover,
 nav a.active {
   background: var(--primary);
   color: #000;
+}
+
+/* Update theme-language-controls */
+.theme-language-controls {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto; /* Push to the right */
+    z-index: 1; /* Add this */
 }
 
 .theme-language-controls button {
@@ -313,6 +336,21 @@ footer {
   .search-sort-container {
     flex-direction: column;
   }
+
+  .header-content {
+        padding: 0 1rem;
+    }
+
+    .nav-container {
+        display: none;
+        position: static;
+        transform: none;
+    }
+
+    .theme-language-controls {
+        margin-left: 0;
+        gap: 0.5rem;
+    }
 }
 
 /* Loader */
