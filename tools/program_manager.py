@@ -551,6 +551,9 @@ class ProgramManagerApp:
                               icon='warning'):
             try:
                 # Seleccionar todos los items
+                pass  # evita error de bloque vacío
+            except Exception as e:
+                print(f'Error: {e}')
                 self.programs_tree.selection_set(self.programs_tree.get_children())
                 # Usar el método existente para eliminar
                 self.delete_program()
