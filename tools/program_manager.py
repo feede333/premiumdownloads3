@@ -681,7 +681,45 @@ class ProgramManagerApp:
             </head>
             """
 
-            # Plantilla para el body con la estructura correcta
+            # Agregar sección de comentarios
+            comments_section = """
+            <div class="comments-section">
+                <h3>Comentarios</h3>
+                <form class="comment-form">
+                    <div class="form-row">
+                        <input type="text" id="comment-name" placeholder="Tu nombre" required>
+                        <input type="email" class="email-input" placeholder="Tu email" required>
+                    </div>
+                    <textarea class="comment-textarea" placeholder="Escribe tu comentario..." required></textarea>
+                    
+                    <div class="image-upload-container">
+                        <label class="photo-icon">
+                            <i class="fas fa-camera"></i>
+                            Agregar foto
+                            <input type="file" hidden accept="image/*">
+                        </label>
+                        <div class="image-preview"></div>
+                    </div>
+
+                    <div class="captcha-container">
+                        <div class="captcha-box">
+                            <span class="captcha-text">ABC123</span>
+                            <button type="button" class="refresh-captcha">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="captcha-input" placeholder="Ingresa el código" required>
+                    </div>
+
+                    <button type="submit" class="comment-submit">Enviar comentario</button>
+                </form>
+                
+                <div class="comments-list">
+                    <!-- Los comentarios se cargarán dinámicamente -->
+                </div>
+            </div>"""
+
+            # Modificar la plantilla del body para incluir los comentarios
             body_template = f"""
             <div class="container">
                 <a href="../index.html" class="back-link">
@@ -732,6 +770,8 @@ class ProgramManagerApp:
                         </div>
                     </div>
                 </div>
+
+                {comments_section}
             </div>
             """
 
