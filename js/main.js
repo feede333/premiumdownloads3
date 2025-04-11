@@ -311,16 +311,13 @@ async function loadPrograms() {
             return;
         }
 
-        // Asegurar que el loader sea visible
+        // Mostrar loader
         loader.style.display = 'flex';
         loader.style.opacity = '1';
 
         // Simular tiempo de carga mínimo
         await Promise.all([
-            fetch('./data/programs.json').catch(error => {
-                console.error('Error fetching programs.json:', error);
-                return { json: () => ({ programs: [] }) };
-            }),
+            fetch('./data/programs.json'),
             new Promise(resolve => setTimeout(resolve, 800))
         ]);
 
@@ -330,10 +327,11 @@ async function loadPrograms() {
         // Limpiar grid existente
         programsGrid.innerHTML = '';
         
-        // Agregar programas inmediatamente
+        // Agregar programas con animación
         data.programs.forEach((program, index) => {
             const programCard = document.createElement('div');
             programCard.className = 'download-card';
+            programCard.dataset.category = program.category.toLowerCase();
             programCard.style.animationDelay = `${index * 0.1}s`;
             programCard.innerHTML = `
                 <div class="card-image">
@@ -354,24 +352,72 @@ async function loadPrograms() {
         });
 
         // Ocultar loader
-        loader.style.opacity = '0';
-        loader.style.transition = 'opacity 0.3s ease';
-        
-        // Remover loader y mostrar grid
         setTimeout(() => {
-            loader.style.display = 'none';
-            programsGrid.classList.add('loaded');
-        }, 300);
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                programsGrid.classList.add('loaded');
+            }, 300);
+        }, 800);
 
     } catch (error) {
         console.error('Error cargando programas:', error);
-        // Asegurar que el loader se oculte incluso si hay error
         const loader = document.querySelector('.loader-container');
-        if (loader) {
-            loader.style.display = 'none';
-        }
+        if (loader) loader.style.display = 'none';
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadPrograms);
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar funcionalidades
+    loadPrograms();
+    initializeCategoryFilters();
+    initializeMenuToggle();
+});
+
+function initializeCategoryFilters() {
+    const categoryLinks = document.querySelectorAll('.category-link');
+    const programCards = document.querySelectorAll('.download-card');
+
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const category = link.dataset.category;
+
+            // Actualizar enlaces activos
+            categoryLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            // Filtrar programas
+            programCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+}
+
+function initializeMenuToggle() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.menu-overlay');
+
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+}
 
