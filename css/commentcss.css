@@ -15,15 +15,14 @@
 
 /* COMMENTS SECTION */
 .comments-section {
-    margin: 2rem 0;
-    padding: 2rem;
     background: var(--card);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--primary);
-    transition: all 0.3s ease;
+    padding: 2rem;
+    margin-top: 2rem;
+    border: 1px solid var(--border);
 }
 
+/* El resto de los estilos específicos de comentarios */
 .comments-section h3 {
     color: var(--primary);
     font-size: 1.5rem;

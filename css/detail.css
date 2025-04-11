@@ -182,15 +182,6 @@ html[data-theme="dark"] header .header-content .logo:hover {
 }
 
 /* CONTENIDO PRINCIPAL DE LA PÁGINA DE DETALLES */
-.download-detail {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    padding: 2rem;
-    margin: 2rem 0;
-    box-shadow: var(--shadow);
-}
-
 .download-header {
     display: flex;
     gap: 2rem;
@@ -908,7 +899,7 @@ footer p {
     padding: 0.75rem 1rem;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var (--radius);
     margin-bottom: 2rem;
     transition: all 0.3s ease;
 }
