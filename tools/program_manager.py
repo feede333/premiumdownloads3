@@ -650,45 +650,21 @@ class ProgramManagerApp:
                 '<script src="../js/detailuniversal.js" defer></script>'  # Conectar el JS universal
             )
 
-            # Actualizar enlaces y navegación
+            # Actualizar solo los enlaces necesarios
+            details_content = details_content.replace("./css/", "../css/")
+            details_content = details_content.replace("./js/", "../js/")
+            details_content = details_content.replace("./images/", "../images/")
+
+            # Actualizar solo el enlace de volver y el logo
             details_content = details_content.replace(
                 '<a href="#" class="back-link">',
                 '<a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver a todos los programas</a>'
             )
 
-            # Actualizar la navegación en el header
-            nav_template = '''
-            <header>
-                <div class="container">
-                    <div class="header-content">
-                        <a href="../index.html" class="logo">
-                            <span>⬇️</span>
-                            <span>PremiumDownloads</span>
-                        </a>
-                        <nav>
-                            <ul>
-                                <li><a href="../index.html">Inicio</a></li>
-                                <li><a href="../populares.html">Populares</a></li>
-                            </ul>
-                        </nav>
-                        <div class="theme-language-controls">
-                            <button class="theme-toggle">🌙</button>
-                            <button class="language-toggle">ES</button>
-                        </div>
-                    </div>
-                </div>
-            </header>'''
-
-            # Reemplazar el header completo
             details_content = details_content.replace(
-                '<header>',
-                nav_template
+                '<a href="/" class="logo">',
+                '<a href="../index.html" class="logo">'
             )
-
-            # Actualizar rutas CSS y JS
-            details_content = details_content.replace("./css/", "../css/")
-            details_content = details_content.replace("./js/", "../js/")
-            details_content = details_content.replace("./images/", "../images/")
 
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")

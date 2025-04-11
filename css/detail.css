@@ -112,36 +112,6 @@ html[data-theme="dark"] header .header-content .logo:hover {
     color: var(--primary) !important;
 }
 
-/* NAVEGACIÓN - Actualizada para coincidir con main.css */
-nav {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-nav ul {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-nav a {
-    color: var(--text);
-    text-decoration: none;
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius);
-    transition: 0.3s;
-}
-
-nav a:hover,
-nav a.active {
-    background: var(--primary);
-    color: #000;
-}
-
 /* CONTROLES DE TEMA E IDIOMA - Actualizado */
 .theme-language-controls {
     display: flex;
@@ -786,7 +756,7 @@ footer p {
 .comment-email,
 .comment-date {
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: var (--text-muted);
 }
 
 .comment-actions {
@@ -915,6 +885,157 @@ footer p {
 
     .theme-language-controls {
         margin-left: 0;
+        gap: 0.5rem;
+    }
+}
+
+/* Estilo para el contenedor principal */
+.download-detail {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
+}
+
+/* Botón de volver */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background: var(--primary);
+    color: #000;
+    transform: translateX(-5px);
+}
+
+/* Título del programa y metadatos */
+.program-title {
+    color: var(--text);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.program-meta {
+    display: flex;
+    gap: 1.5rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+/* Descripción */
+.program-description {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Sección de versiones */
+.versions-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.versions-section h2 {
+    color: var(--text);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.versions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.version-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.version-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Requisitos del sistema */
+.requirements-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.requirements-section h2 {
+    color: var(--text);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.requirements-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.requirement-item {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    padding: 1rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Sección de comentarios */
+.comments-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.comments-section h2 {
+    color: var(--text);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .versions-grid,
+    .requirements-list {
+        grid-template-columns: 1fr;
+    }
+
+    .program-meta {
+        flex-direction: column;
         gap: 0.5rem;
     }
 }
