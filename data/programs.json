@@ -111,6 +111,25 @@
         "display": ""
       },
       "instructions": ""
+    },
+    {
+      "id": "program16",
+      "title": "program16",
+      "category": "Diseño",
+      "version": "",
+      "fileSize": "",
+      "downloadLink": "",
+      "date": "11.04.2025",
+      "image": "images/default.png",
+      "description": "",
+      "requirements": {
+        "os": "",
+        "processor": "",
+        "ram": "",
+        "disk": "",
+        "display": ""
+      },
+      "instructions": ""
     }
   ]
 }
