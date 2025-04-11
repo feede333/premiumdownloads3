@@ -663,7 +663,7 @@ class ProgramManagerApp:
             </div>
             """
 
-            # Generar HTML completo
+            # Actualizar el template HTML para usar detailuniversal.js
             html_template = f"""<!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head>
@@ -674,7 +674,7 @@ class ProgramManagerApp:
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/detail.css">
     <link rel="stylesheet" href="../css/commentcss.css">
-    <script src="../js/comments.js" defer></script>
+    <script src="../js/detailuniversal.js" defer></script>
     <script src="../js/main.js" defer></script>
 </head>
 <body>
@@ -703,24 +703,28 @@ class ProgramManagerApp:
     {body_template}
     <div class="comments-section">
         <h3>Comentarios</h3>
-        <form class="comment-form">
+        <form id="comment-form" class="comment-form">
             <div class="form-row">
                 <input type="text" id="comment-name" placeholder="Tu nombre" required>
-                <input type="email" class="email-input" placeholder="Tu email" required>
+                <input type="email" id="user-email" placeholder="Tu email" required>
             </div>
-            <textarea class="comment-textarea" placeholder="Escribe tu comentario..." required></textarea>
+            <textarea id="comment-text" class="comment-textarea" placeholder="Escribe tu comentario..." required></textarea>
+            <div class="image-upload">
+                <input type="file" id="comment-image" accept="image/*">
+            </div>
             <div class="captcha-container">
                 <div class="captcha-box">
-                    <span class="captcha-text"></span>
-                    <button type="button" class="refresh-captcha">
+                    <span id="captcha-text"></span>
+                    <button type="button" id="refresh-captcha" class="refresh-captcha">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
-                <input type="text" class="captcha-input" placeholder="Ingresa el código" required>
+                <input type="text" id="captcha-input" class="captcha-input" placeholder="Ingresa el código" required>
+                <span id="captcha-error" class="error-text"></span>
             </div>
             <button type="submit" class="comment-submit">Enviar comentario</button>
         </form>
-        <div class="comments-list">
+        <div id="comments-list" class="comments-list">
         </div>
     </div>
 </body>
