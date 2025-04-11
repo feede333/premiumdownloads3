@@ -666,6 +666,100 @@ class ProgramManagerApp:
                 '<a href="../index.html" class="logo">'
             )
 
+            # Plantilla actualizada para el contenido principal
+            main_content = f"""
+            <div class="container">
+                <a href="../index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Volver a todos los programas
+                </a>
+
+                <div class="download-detail">
+                    <h1 class="program-title">{program_name}</h1>
+                    <div class="program-meta">
+                        <span class="category-badge">{data["category"]}</span>
+                        <span class="date">{datetime.now().strftime("%d.%m.%Y")}</span>
+                    </div>
+                    
+                    <div class="program-description">
+                        {data["description"]}
+                    </div>
+
+                    <div class="versions-section">
+                        <h2>Versiones por año</h2>
+                        <div class="version-years">
+                            <!-- Años de versiones aquí -->
+                        </div>
+                    </div>
+
+                    <div class="requirements-section">
+                        <h2>Requisitos del sistema</h2>
+                        <div class="requirements-list">
+                            <div class="requirement-item">
+                                <i class="fas fa-desktop"></i>
+                                Sistema operativo: {data["os"]}
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-microchip"></i>
+                                Procesador: {data["processor"]}
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-memory"></i>
+                                Memoria RAM: {data["ram"]}
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-hdd"></i>
+                                Espacio en disco: {data["disk"]}
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-tv"></i>
+                                Resolución de pantalla: {data["display"]}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>"""
+
+            # Plantilla para el header con navegación centrada
+            header_content = """
+            <header>
+                <div class="container">
+                    <div class="header-content">
+                        <a href="../index.html" class="logo">
+                            <span>⬇️</span>
+                            <span>PremiumDownloads</span>
+                        </a>
+                        <div class="nav-container">
+                            <nav>
+                                <ul>
+                                    <li><a href="../index.html">Inicio</a></li>
+                                    <li><a href="../populares.html">Populares</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="theme-language-controls">
+                            <button class="theme-toggle">🌙</button>
+                            <button class="language-toggle">ES</button>
+                        </div>
+                    </div>
+                </div>
+            </header>"""
+
+            # Reemplazar el contenido principal y el header
+            details_content = details_content.replace(
+                '<div class="container">',
+                main_content
+            )
+
+            details_content = details_content.replace(
+                '<header>',
+                header_content
+            )
+
+            # Actualizar rutas CSS y JS
+            details_content = details_content.replace("./css/", "../css/")
+            details_content = details_content.replace("./js/", "../js/")
+            details_content = details_content.replace("./images/", "../images/")
+
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
             with open(details_path, "w", encoding="utf-8") as details_file:
