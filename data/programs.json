@@ -1,13 +1,40 @@
 {
     "programs": [
         {
-            "id": "1",
+            "id": "avast-premium",
             "title": "Avast Premium Security",
             "category": "antivirus",
-            "fileSize": "500MB",
+            "fileSize": "500 MB",
             "version": "21.1.2",
-            "description": "Avast Premium Security ofrece protección avanzada...",
+            "description": "Avast Premium Security ofrece protección avanzada contra virus, malware, ransomware y amenazas en línea.",
             "image": "images/avast.png"
+        },
+        {
+            "id": "winrar",
+            "title": "WinRAR",
+            "category": "file-tools",
+            "fileSize": "3.2 MB",
+            "version": "6.24",
+            "description": "Compresor de archivos líder con soporte para múltiples formatos y encriptación.",
+            "image": "images/winrar.png"
+        },
+        {
+            "id": "photoshop",
+            "title": "Adobe Photoshop 2024",
+            "category": "multimedia",
+            "fileSize": "2.8 GB",
+            "version": "25.0",
+            "description": "Software profesional de edición de imágenes con herramientas avanzadas.",
+            "image": "images/photoshop.png"
+        },
+        {
+            "id": "office",
+            "title": "Microsoft Office 2024",
+            "category": "office",
+            "fileSize": "4.5 GB",
+            "version": "2024",
+            "description": "Suite ofimática completa con Word, Excel, PowerPoint y más.",
+            "image": "images/office.png"
         }
     ]
 }

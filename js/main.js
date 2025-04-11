@@ -32,25 +32,7 @@ async function loadPrograms() {
         
         // Agregar programas
         data.programs.forEach((program, index) => {
-            const programCard = document.createElement('div');
-            programCard.className = 'download-card';
-            programCard.dataset.category = program.category.toLowerCase();
-            programCard.style.animationDelay = `${index * 0.1}s`;
-            programCard.innerHTML = `
-                <div class="card-image">
-                    <img src="${program.image}" alt="${program.title}">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">${program.title}</h3>
-                    <span class="category-badge">${program.category}</span>
-                    <div class="card-meta">
-                        <span>${program.fileSize}</span>
-                        <span>${program.version || ''}</span>
-                    </div>
-                    <p class="program-description">${program.description?.substring(0, 100) || ''}...</p>
-                    <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
-                </div>
-            `;
+            const programCard = createProgramCard(program, index);
             programsGrid.appendChild(programCard);
         });
 
@@ -68,6 +50,31 @@ async function loadPrograms() {
         const loader = document.querySelector('.loader-container');
         if (loader) loader.style.display = 'none';
     }
+}
+
+function createProgramCard(program, index) {
+    const card = document.createElement('div');
+    card.className = 'download-card';
+    card.dataset.category = program.category;
+    card.style.animationDelay = `${index * 0.1}s`;
+    
+    card.innerHTML = `
+        <div class="card-image">
+            <img src="${program.image}" alt="${program.title}">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">${program.title}</h3>
+            <span class="category-badge">${program.category}</span>
+            <div class="card-meta">
+                <span>${program.fileSize}</span>
+                <span>${program.version}</span>
+            </div>
+            <p class="program-description">${program.description}</p>
+            <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
+        </div>
+    `;
+    
+    return card;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
