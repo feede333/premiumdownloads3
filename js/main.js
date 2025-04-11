@@ -301,3 +301,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+async function loadPrograms() {
+    try {
+        // Mostrar loader
+        const loader = document.querySelector('.loader-container');
+        const programsGrid = document.getElementById('dynamicProgramsGrid');
+        
+        // Simular tiempo de carga mínimo
+        await Promise.all([
+            fetch('./data/programs.json'),
+            new Promise(resolve => setTimeout(resolve, 800)) // Mínimo 800ms de loader
+        ]);
+
+        const response = await fetch('./data/programs.json');
+        const data = await response.json();
+
+        // Limpiar grid existente
+        programsGrid.innerHTML = '';
+        
+        // Agregar programas con delay
+        data.programs.forEach((program, index) => {
+            setTimeout(() => {
+                const programCard = document.createElement('div');
+                programCard.className = 'download-card';
+                programCard.style.animationDelay = `${index * 0.1}s`;
+                programCard.innerHTML = `
+                    <div class="card-image">
+                        <img src="${program.image}" alt="${program.title}">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${program.title}</h3>
+                        <span class="category-badge">${program.category}</span>
+                        <div class="card-meta">
+                            <span>${program.fileSize}</span>
+                            <span>${program.version || ''}</span>
+                        </div>
+                        <p class="program-description">${program.description.substring(0, 100)}...</p>
+                        <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
+                    </div>
+                `;
+                programsGrid.appendChild(programCard);
+            }, index * 100);
+        });
+
+        // Ocultar loader y mostrar grid
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                programsGrid.classList.add('loaded');
+            }, 300);
+        }, 800);
+
+    } catch (error) {
+        console.error('Error cargando programas:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadPrograms);
+
