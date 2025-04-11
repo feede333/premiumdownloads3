@@ -647,12 +647,35 @@ class ProgramManagerApp:
                 '<script src="../js/detailuniversal.js" defer></script>'  # Conectar el JS universal
             )
 
+            # Modificar el contenido del template para los enlaces
+            details_content = details_content.replace(
+                '<a href="#" class="back-link">',
+                '<a href="../index.html" class="back-link">'
+            )
+
+            # Actualizar la navegación en el header
+            details_content = details_content.replace(
+                '<nav>',
+                '''<nav>
+                    <ul>
+                        <li><a href="../index.html">Inicio</a></li>
+                        <li><a href="../populares.html">Populares</a></li>
+                    </ul>
+                </nav>'''
+            )
+
+            # Actualizar el logo para que vuelva al index
+            details_content = details_content.replace(
+                '<a href="/" class="logo">',
+                '<a href="../index.html" class="logo">'
+            )
+
             # Guardar el archivo details.html
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
             with open(details_path, "w", encoding="utf-8") as details_file:
                 details_file.write(details_content)
 
-            print(f"✅ Archivo details.html creado: {details_path}")
+            print(f"✅ Archivo details.html creado con enlaces actualizados: {details_path}")
 
             # Guardar datos en el JSON
             json_path = self.get_json_path()
