@@ -474,8 +474,22 @@ class VersionManager:
             # Ejecutar comandos git
             subprocess.run(['git', 'remote', 'set-url', 'origin', repo_url], 
                          cwd=self.repo_path, check=True)
+            
+            # Agregar cambios
             subprocess.run(['git', 'add', '.'], 
                          cwd=self.repo_path, check=True)
+            
+            # Verificar si hay cambios para commitear
+            status = subprocess.run(['git', 'status', '--porcelain'],
+                                  cwd=self.repo_path,
+                                  capture_output=True,
+                                  text=True)
+            
+            if not status.stdout.strip():
+                print("✅ No hay cambios para sincronizar")
+                return True
+                
+            # Si hay cambios, continuar con commit y push
             subprocess.run(['git', 'commit', '-m', commit_message], 
                          cwd=self.repo_path, check=True)
             subprocess.run(['git', 'pull', 'origin', 'main', '--rebase'], 
