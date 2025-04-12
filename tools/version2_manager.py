@@ -173,6 +173,10 @@ class VersionManager:
         ttk.Button(btn_frame, text="Guardar Cambios", 
                   command=self.save_changes).pack(side=LEFT, padx=5)
         
+        # Agregar botón para editar versiones del año
+        ttk.Button(btn_frame, text="Editar Versiones del Año", 
+                  command=self.edit_year_versions).pack(side=LEFT, padx=5)
+        
         # Cargar programas
         self.load_programs()
         
@@ -682,6 +686,266 @@ class VersionManager:
 
         except Exception as e:
             messagebox.showerror("Error", f"Error al guardar cambios: {str(e)}")
+
+    def edit_year_versions(self):
+        """Abrir ventana de edición de versiones para el año seleccionado"""
+        selected = self.versions_tree.selection()
+        if not selected:
+            messagebox.showinfo("Info", "Por favor seleccione un año para editar sus versiones")
+            return
+
+        item = selected[0]
+        values = self.versions_tree.item(item)['values']
+        year = values[0]
+
+        # Crear ventana de edición
+        edit_window = Toplevel(self.root)
+        edit_window.title(f"Editar versiones del año {year}")
+        edit_window.geometry("800x600")
+        edit_window.configure(bg='#2b2b2b')
+
+        # Frame principal
+        main_frame = ttk.Frame(edit_window, padding="20", style="Custom.TFrame")
+        main_frame.pack(fill=BOTH, expand=True)
+
+        # Lista de versiones
+        versions_frame = ttk.LabelFrame(main_frame, text=f"Versiones del año {year}", padding="10")
+        versions_frame.pack(fill=BOTH, expand=True, padx=5, pady=5)
+
+        # Treeview para versiones
+        tree_frame = ttk.Frame(versions_frame)
+        tree_frame.pack(fill=BOTH, expand=True)
+
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical")
+        hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
+        
+        versions_tree = ttk.Treeview(tree_frame, selectmode='browse',
+                                    yscrollcommand=vsb.set,
+                                    xscrollcommand=hsb.set)
+        
+        vsb.config(command=versions_tree.yview)
+        hsb.config(command=versions_tree.xview)
+        
+        vsb.pack(side=RIGHT, fill=Y)
+        hsb.pack(side=BOTTOM, fill=X)
+        versions_tree.pack(fill=BOTH, expand=True)
+
+        versions_tree['columns'] = ('version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers')
+        versions_tree.column('#0', width=0, stretch=NO)
+        for col, width in zip(versions_tree['columns'], [120, 100, 80, 150, 150, 60, 60]):
+            versions_tree.column(col, width=width, minwidth=50)
+            versions_tree.heading(col, text=col.capitalize())
+
+        # Frame para entrada de datos
+        entry_frame = ttk.LabelFrame(main_frame, text="Nueva versión", padding="10")
+        entry_frame.pack(fill=X, padx=5, pady=5)
+
+        # Campos de entrada
+        entries = {}
+        row = 0
+        for field in ['version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers']:
+            ttk.Label(entry_frame, text=f"{field.capitalize()}:").grid(row=row, column=0, sticky=W, pady=2)
+            entries[field] = ttk.Entry(entry_frame, width=40)
+            entries[field].grid(row=row, column=1, sticky=W, pady=2, padx=5)
+            row += 1
+
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill=X, pady=10)
+
+        def add_version():
+            """Agregar nueva versión a la lista"""
+            values = [entries[field].get().strip() for field in ['version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers']]
+            if not values[0]:  # Verificar al menos la versión
+                messagebox.showerror("Error", "Por favor ingrese al menos la versión")
+                return
+            versions_tree.insert('', 'end', values=values)
+            for entry in entries.values():
+                entry.delete(0, END)
+
+        def save_versions():
+            """Guardar las versiones y actualizar el árbol principal"""
+            versions = []
+            for item in versions_tree.get_children():
+                values = versions_tree.item(item)['values']
+                versions.append({
+                    "version": values[0],
+                    "date": values[1] or f"Abril {year}",
+                    "size": values[2] or "4.2 GB",
+                    "torrentLink": values[3] or "https://pasteplay.com/TUENLACE",
+                    "magnetLink": values[4] or "magnet:?xt=urn:btih:HASH",
+                    "seeds": values[5] or "50",
+                    "peers": values[6] or "20"
+                })
+            
+            if versions:
+                # Actualizar el item en el árbol principal
+                self.versions_tree.item(item, values=(year, versions[0]["version"], 
+                                                    versions[0]["date"], versions[0]["size"],
+                                                    versions[0]["torrentLink"], 
+                                                    versions[0]["magnetLink"],
+                                                    versions[0]["seeds"], 
+                                                    versions[0]["peers"]))
+                
+                # Guardar todas las versiones en el archivo HTML
+                self.save_year_versions(year, versions)
+                
+            edit_window.destroy()
+            messagebox.showinfo("Éxito", "Versiones guardadas correctamente")
+
+        ttk.Button(btn_frame, text="Agregar Versión", command=add_version).pack(side=LEFT, padx=5)
+        ttk.Button(btn_frame, text="Guardar Cambios", command=save_versions).pack(side=LEFT, padx=5)
+        ttk.Button(btn_frame, text="Cerrar", command=edit_window.destroy).pack(side=LEFT, padx=5)
+
+        # Cargar versiones existentes
+        program_name = self.program_list.get().replace('-details.html', '')
+        html_path = os.path.join(os.path.dirname(self.programs_dir), 'subpages', 
+                                program_name, f"{program_name}-{year}.html")
+        
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+                script_pattern = r'const data = ({.*?});'
+                script_match = re.search(script_pattern, content, re.DOTALL)
+                if script_match:
+                    try:
+                        data = json.loads(script_match.group(1))
+                        for version in data.get('versions', []):
+                            versions_tree.insert('', 'end', values=(
+                                version.get('version', ''),
+                                version.get('date', ''),
+                                version.get('size', ''),
+                                version.get('torrentLink', ''),
+                                version.get('magnetLink', ''),
+                                version.get('seeds', ''),
+                                version.get('peers', '')
+                            ))
+                    except json.JSONDecodeError:
+                        pass
+
+    def save_year_versions(self, year, versions):
+        """Guardar versiones de un año específico"""
+        selected_file = self.program_list.get()
+        if not selected_file:
+            return
+        
+        program_name = selected_file.replace('-details.html', '')
+        subpages_dir = os.path.join(os.path.dirname(self.programs_dir), 'subpages')
+        program_dir = os.path.join(subpages_dir, program_name)
+        
+        if not os.path.exists(program_dir):
+            os.makedirs(program_dir)
+        
+        # Crear archivo HTML para el año
+        year_file = f"{program_name}-{year}.html"
+        year_path = os.path.join(program_dir, year_file)
+        
+        # Crear JSON de versiones
+        versions_json = json.dumps({"versions": versions}, indent=4)
+        
+        # Generar el HTML con las versiones
+        year_template = f"""<!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{program_name} {year} - Versiones</title>
+            <link rel="stylesheet" href="../csscomun.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+            <script src="../js/torrentTrackerversiones.js"></script>
+        </head>
+        <body>
+            <header>
+                <div class="container header-content">
+                    <a href="../index.html" class="logo">
+                        <span>⬇️</span>
+                        <span>PremiumDownloads</span>
+                    </a>
+                    <nav>
+                        <ul>
+                            <li><a href="../index.html">Inicio</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+
+            <div class="container">
+                <a href="../programs/{selected_file}" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Volver a {program_name}
+                </a>
+
+                <div class="download-detail">
+                    <h2>Versiones de {year}</h2>
+                    
+                    <div class="version-list">
+                        <!-- Las versiones se cargarán dinámicamente -->
+                    </div>
+
+                    <div class="torrent-note">
+                        <p><i class="fas fa-info-circle"></i> Para usar estos enlaces necesitas:</p>
+                        <ul>
+                            <li>• qBittorrent (Recomendado)</li>
+                            <li>• uTorrent</li>
+                            <li>• BitTorrent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="container">
+                    <div class="footer-links">
+                        <a href="#">Términos de uso</a>
+                        <a href="#">Política de privacidad</a>
+                        <a href="#">DMCA</a>
+                        <a href="#">Contacto</a>
+                    </div>
+                    <p>© {year} PremiumDownloads. Todos los derechos reservados.</p>
+                </div>
+            </footer>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', () => {{
+                const data = {versions_json};
+                const versionList = document.querySelector('.version-list');
+                versionList.innerHTML = data.versions.map(version => `
+                    <div class="version-item">
+                        <div class="version-info">
+                            <h3 class="version-name">${{version.version}}</h3>
+                            <span class="version-date">${{version.date}}</span>
+                            <span class="file-size">${{version.size}}</span>
+                        </div>
+                        <div class="download-container">
+                            <div class="download-options">
+                                <a href="${{version.torrentLink}}" class="torrent-button" target="_blank">
+                                    <i class="fas fa-download"></i>
+                                    <span>Torrent</span>
+                                </a>
+                                <a href="${{version.magnetLink}}" class="magnet-button">
+                                    <i class="fas fa-magnet"></i>
+                                    <span>Magnet</span>
+                                </a>
+                            </div>
+                            <div class="torrent-stats">
+                                <div class="peer-info">
+                                    <span class="seeds-indicator"></span>
+                                    <span>Seeds: ${{version.seeds}}</span>
+                                </div>
+                                <div class="peer-info">
+                                    <span class="peers-indicator"></span>
+                                    <span>Peers: ${{version.peers}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }});
+            </script>
+        </body>
+        </html>"""
+
+        with open(year_path, 'w', encoding='utf-8') as year_file:
+            year_file.write(year_template)
 
 def main():
     root = Tk()
