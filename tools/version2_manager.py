@@ -202,37 +202,26 @@ class VersionManager:
         subpages_dir = os.path.join(os.path.dirname(self.programs_dir), 'subpages')
         program_dir = os.path.join(subpages_dir, program_name)
         
-        # Primero cargar desde los HTML si existen
-        if (os.path.exists(program_dir)):
+        # Cargar solo desde los HTML si existen
+        if os.path.exists(program_dir):
             for file in os.listdir(program_dir):
                 if file.startswith(f"{program_name}-") and file.endswith(".html"):
                     year = file.replace(f"{program_name}-", "").replace(".html", "")
                     if year.isdigit() and len(year) == 4:
                         html_path = os.path.join(program_dir, file)
                         self.extract_versions_from_html(html_path, year)
-        
-        # Luego cargar desde el archivo details.html para los años/versiones que no tienen archivo HTML
-        with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            # Buscar entre las etiquetas AÑOS-START y AÑOS-END
-            pattern = r'<!-- AÑOS-START -->(.*?)<!-- AÑOS-END -->'
-            match = re.search(pattern, content, re.DOTALL)
-            if match:
-                versions_section = match.group(1)
-                # Extraer años y versiones
-                year_pattern = r'<li.*?>\s*<a.*?>\s*<span class="year">(\d{4})</span>\s*<span class="version-count">(.*?)</span>'
-                years_versions = re.findall(year_pattern, versions_section, re.DOTALL)
-                
-                for year, version in years_versions:
-                    # Verificar si este año ya está en el treeview
-                    exists = False
-                    for item in self.versions_tree.get_children():
-                        if self.versions_tree.item(item)['values'][0] == year:
-                            exists = True
-                            break
+        else:
+            # Si no hay archivos HTML, cargar desde details.html
+            with open(file_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+                pattern = r'<!-- AÑOS-START -->(.*?)<!-- AÑOS-END -->'
+                match = re.search(pattern, content, re.DOTALL)
+                if match:
+                    versions_section = match.group(1)
+                    year_pattern = r'<li.*?>\s*<a.*?>\s*<span class="year">(\d{4})</span>\s*<span class="version-count">(.*?)</span>'
+                    years_versions = re.findall(year_pattern, versions_section, re.DOTALL)
                     
-                    if not exists:
-                        # Añadir con datos predeterminados
+                    for year, version in years_versions:
                         self.versions_tree.insert('', 'end', values=(
                             year, version, f"Abril {year}", "4.2 GB", 
                             "https://pasteplay.com/TUENLACE", 
