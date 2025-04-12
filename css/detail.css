@@ -1436,3 +1436,78 @@ footer p {
         max-width: 100%;
     }
 }
+
+/* Estilos para las versiones por año */
+.version-years {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.year-item {
+    list-style: none;
+    transition: all 0.3s ease;
+}
+
+.year-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+
+.year-link:hover {
+    transform: translateX(10px);
+    background: rgba(0, 255, 204, 0.05);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+}
+
+.year {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-right: auto;
+}
+
+.version-count {
+    color: var(--text-muted);
+    margin: 0 1rem;
+}
+
+.fa-chevron-right {
+    color: var(--primary);
+    transition: transform 0.3s ease;
+}
+
+.year-link:hover .fa-chevron-right {
+    transform: translateX(5px);
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
+}
+
+/* Animación de entrada */
+.year-item {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.year-item:nth-child(1) { animation-delay: 0.1s; }
+.year-item:nth-child(2) { animation-delay: 0.2s; }
+.year-item:nth-child(3) { animation-delay: 0.3s; }
+.year-item:nth-child(4) { animation-delay: 0.4s; }
+.year-item:nth-child(5) { animation-delay: 0.5s; }

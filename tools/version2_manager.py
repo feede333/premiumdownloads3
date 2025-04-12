@@ -186,13 +186,21 @@ class VersionManager:
             
         file_path = os.path.join(self.programs_dir, selected_file)
         
-        # Construir la sección de versiones
+        # Construir la sección de versiones con el formato correcto
         versions_html = []
         for item in self.versions_tree.get_children():
             year, version = self.versions_tree.item(item)['values']
-            versions_html.append(f'<li>{year} - <span class="version">{version}</span></li>')
+            versions_html.append(
+                f'<li class="year-item">\n'
+                f'                        <a href="#" class="year-link">\n'
+                f'                            <span class="year">{year}</span>\n'
+                f'                            <span class="version-count">{version}</span>\n'
+                f'                            <i class="fas fa-chevron-right"></i>\n'
+                f'                        </a>\n'
+                f'                    </li>'
+            )
         
-        versions_section = "\n                    ".join(versions_html)
+        versions_section = "\n".join(versions_html)
         
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
