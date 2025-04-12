@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 import re
 import subprocess
+import json
 try:
     from git import Repo
 except ImportError:
@@ -13,7 +14,7 @@ class VersionManager:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestor de Versiones")
-        self.root.geometry("800x600")
+        self.root.geometry("900x700")
         self.root.configure(bg='#2b2b2b')
         
         # Directorio donde están los archivos details.html
@@ -35,6 +36,11 @@ class VersionManager:
         # Frame principal
         main_frame = ttk.Frame(root, padding="20", style="Custom.TFrame")
         main_frame.grid(row=0, column=0, sticky=(N, W, E, S))
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=1)
+        main_frame.rowconfigure(1, weight=1)
         
         # Selector de programa
         program_frame = ttk.LabelFrame(main_frame, text="Selección de Programa", padding="10")
@@ -47,34 +53,121 @@ class VersionManager:
         # Frame izquierdo - Años y versiones existentes
         versions_frame = ttk.LabelFrame(main_frame, text="Versiones Existentes", padding="10")
         versions_frame.grid(row=1, column=0, sticky=(N, S, W, E), padx=(0, 10))
+        versions_frame.columnconfigure(0, weight=1)
+        versions_frame.rowconfigure(0, weight=1)
         
-        self.versions_tree = ttk.Treeview(versions_frame, selectmode='extended')
+        # Crear un frame con scrollbar para el treeview
+        tree_frame = ttk.Frame(versions_frame)
+        tree_frame.grid(row=0, column=0, sticky=(N, S, W, E))
+        
+        # Scrollbar vertical
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical")
+        vsb.pack(side='right', fill='y')
+        
+        # Scrollbar horizontal
+        hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
+        hsb.pack(side='bottom', fill='x')
+        
+        self.versions_tree = ttk.Treeview(tree_frame, selectmode='browse',
+                                         yscrollcommand=vsb.set,
+                                         xscrollcommand=hsb.set)
         self.versions_tree.pack(fill=BOTH, expand=True)
-        self.versions_tree['columns'] = ('year', 'version')
+        
+        vsb.config(command=self.versions_tree.yview)
+        hsb.config(command=self.versions_tree.xview)
+        
+        self.versions_tree['columns'] = ('year', 'version', 'date', 'size', 'torrentLink', 'magnetLink', 'seeds', 'peers')
         self.versions_tree.column('#0', width=0, stretch=NO)
-        self.versions_tree.column('year', width=100)
-        self.versions_tree.column('version', width=150)
+        self.versions_tree.column('year', width=60, minwidth=50)
+        self.versions_tree.column('version', width=120, minwidth=80)
+        self.versions_tree.column('date', width=100, minwidth=80)
+        self.versions_tree.column('size', width=80, minwidth=60)
+        self.versions_tree.column('torrentLink', width=150, minwidth=100)
+        self.versions_tree.column('magnetLink', width=150, minwidth=100)
+        self.versions_tree.column('seeds', width=60, minwidth=50)
+        self.versions_tree.column('peers', width=60, minwidth=50)
+        
         self.versions_tree.heading('year', text='Año')
         self.versions_tree.heading('version', text='Versión')
+        self.versions_tree.heading('date', text='Fecha')
+        self.versions_tree.heading('size', text='Tamaño')
+        self.versions_tree.heading('torrentLink', text='Link Torrent')
+        self.versions_tree.heading('magnetLink', text='Link Magnet')
+        self.versions_tree.heading('seeds', text='Seeds')
+        self.versions_tree.heading('peers', text='Peers')
         
-        # Frame derecho - Agregar versiones
-        add_frame = ttk.LabelFrame(main_frame, text="Agregar Nueva Versión", padding="10")
-        add_frame.grid(row=1, column=1, sticky=(N, S, W, E))
+        self.versions_tree.bind("<Double-1>", self.edit_version)
         
-        ttk.Label(add_frame, text="Año:").grid(row=0, column=0, sticky=W)
-        self.year_entry = ttk.Entry(add_frame, width=10)
-        self.year_entry.grid(row=0, column=1, sticky=W, pady=5)
+        # Frame derecho - Agregar/Editar versiones
+        self.add_frame = ttk.LabelFrame(main_frame, text="Gestionar Versión", padding="10")
+        self.add_frame.grid(row=1, column=1, sticky=(N, S, W, E))
         
-        ttk.Label(add_frame, text="Versión:").grid(row=1, column=0, sticky=W)
-        self.version_entry = ttk.Entry(add_frame, width=20)
-        self.version_entry.grid(row=1, column=1, sticky=W, pady=5)
+        # Grid para los campos de entrada
+        row_count = 0
+        ttk.Label(self.add_frame, text="Año:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.year_entry = ttk.Entry(self.add_frame, width=10)
+        self.year_entry.grid(row=row_count, column=1, sticky=W, pady=5)
+        row_count += 1
         
-        # Botones
+        ttk.Label(self.add_frame, text="Versión:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.version_entry = ttk.Entry(self.add_frame, width=20)
+        self.version_entry.grid(row=row_count, column=1, sticky=W, pady=5)
+        row_count += 1
+        
+        ttk.Label(self.add_frame, text="Fecha:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.date_entry = ttk.Entry(self.add_frame, width=20)
+        self.date_entry.grid(row=row_count, column=1, sticky=W, pady=5)
+        ttk.Label(self.add_frame, text="Ej: Abril 2023").grid(row=row_count, column=2, sticky=W, pady=5)
+        row_count += 1
+        
+        ttk.Label(self.add_frame, text="Tamaño:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.size_entry = ttk.Entry(self.add_frame, width=15)
+        self.size_entry.grid(row=row_count, column=1, sticky=W, pady=5)
+        ttk.Label(self.add_frame, text="Ej: 4.2 GB").grid(row=row_count, column=2, sticky=W, pady=5)
+        row_count += 1
+        
+        ttk.Label(self.add_frame, text="Link Torrent:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.torrent_entry = ttk.Entry(self.add_frame, width=40)
+        self.torrent_entry.grid(row=row_count, column=1, columnspan=2, sticky=W, pady=5)
+        row_count += 1
+        
+        ttk.Label(self.add_frame, text="Link Magnet:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.magnet_entry = ttk.Entry(self.add_frame, width=40)
+        self.magnet_entry.grid(row=row_count, column=1, columnspan=2, sticky=W, pady=5)
+        row_count += 1
+        
+        ttk.Label(self.add_frame, text="Seeds:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.seeds_entry = ttk.Entry(self.add_frame, width=10)
+        self.seeds_entry.grid(row=row_count, column=1, sticky=W, pady=5)
+        row_count += 1
+        
+        ttk.Label(self.add_frame, text="Peers:").grid(row=row_count, column=0, sticky=W, pady=5)
+        self.peers_entry = ttk.Entry(self.add_frame, width=10)
+        self.peers_entry.grid(row=row_count, column=1, sticky=W, pady=5)
+        row_count += 1
+        
+        # Botones de acción para versiones
+        version_btn_frame = ttk.Frame(self.add_frame)
+        version_btn_frame.grid(row=row_count, column=0, columnspan=3, pady=10)
+        
+        self.edit_mode = False
+        self.editing_item = None
+        
+        self.add_button = ttk.Button(version_btn_frame, text="Agregar Versión", 
+                              command=self.add_version)
+        self.add_button.pack(side=LEFT, padx=5)
+        
+        self.update_button = ttk.Button(version_btn_frame, text="Actualizar Versión", 
+                                command=self.update_version, state=DISABLED)
+        self.update_button.pack(side=LEFT, padx=5)
+        
+        ttk.Button(version_btn_frame, text="Cancelar Edición", 
+                  command=self.cancel_edit).pack(side=LEFT, padx=5)
+        
+        # Botones de manejo general
         btn_frame = ttk.Frame(main_frame, style="Custom.TFrame")
         btn_frame.grid(row=2, column=0, columnspan=2, pady=20)
         
-        ttk.Button(btn_frame, text="Agregar Versión", 
-                  command=self.add_version).pack(side=LEFT, padx=5)
         ttk.Button(btn_frame, text="Eliminar Seleccionados", 
                   command=self.delete_selected).pack(side=LEFT, padx=5)
         ttk.Button(btn_frame, text="Guardar Cambios", 
@@ -104,8 +197,21 @@ class VersionManager:
         file_path = os.path.join(self.programs_dir, selected_file)
         if not os.path.exists(file_path):
             return
-            
-        # Leer el archivo y extraer las versiones
+        
+        program_name = selected_file.replace('-details.html', '')
+        subpages_dir = os.path.join(os.path.dirname(self.programs_dir), 'subpages')
+        program_dir = os.path.join(subpages_dir, program_name)
+        
+        # Primero cargar desde los HTML si existen
+        if os.path.exists(program_dir):
+            for file in os.listdir(program_dir):
+                if file.startswith(f"{program_name}-") and file.endswith(".html"):
+                    year = file.replace(f"{program_name}-", "").replace(".html", "")
+                    if year.isdigit() and len(year) == 4:
+                        html_path = os.path.join(program_dir, file)
+                        self.extract_versions_from_html(html_path, year)
+        
+        # Luego cargar desde el archivo details.html para los años/versiones que no tienen archivo HTML
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
             # Buscar entre las etiquetas AÑOS-START y AÑOS-END
@@ -114,13 +220,178 @@ class VersionManager:
             if match:
                 versions_section = match.group(1)
                 # Extraer años y versiones
-                year_pattern = r'<li>(\d{4})'
-                version_pattern = r'<span.*?>(.*?)</span>'
-                years = re.findall(year_pattern, versions_section)
-                versions = re.findall(version_pattern, versions_section)
+                year_pattern = r'<li.*?>\s*<a.*?>\s*<span class="year">(\d{4})</span>\s*<span class="version-count">(.*?)</span>'
+                years_versions = re.findall(year_pattern, versions_section, re.DOTALL)
                 
-                for i, (year, version) in enumerate(zip(years, versions)):
-                    self.versions_tree.insert('', 'end', values=(year, version))
+                for year, version in years_versions:
+                    # Verificar si este año ya está en el treeview
+                    exists = False
+                    for item in self.versions_tree.get_children():
+                        if self.versions_tree.item(item)['values'][0] == year:
+                            exists = True
+                            break
+                    
+                    if not exists:
+                        # Añadir con datos predeterminados
+                        self.versions_tree.insert('', 'end', values=(
+                            year, version, f"Abril {year}", "4.2 GB", 
+                            "https://pasteplay.com/TUENLACE", 
+                            "magnet:?xt=urn:btih:HASH", "50", "20"
+                        ))
+        
+        # Limpiar los campos de entrada
+        self.clear_entries()
+        self.edit_mode = False
+        self.editing_item = None
+        self.update_button.config(state=DISABLED)
+        self.add_button.config(state=NORMAL)
+
+    def extract_versions_from_html(self, html_path, year):
+        """Extraer información de versiones desde el archivo HTML del año"""
+        with open(html_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+            
+            # Buscar el objeto JSON en el script
+            script_pattern = r'const data = ({.*?});'
+            script_match = re.search(script_pattern, content, re.DOTALL)
+            
+            if script_match:
+                try:
+                    data_text = script_match.group(1)
+                    data = json.loads(data_text)
+                    
+                    for version_data in data.get("versions", []):
+                        self.versions_tree.insert('', 'end', values=(
+                            year,
+                            version_data.get("version", ""),
+                            version_data.get("date", ""),
+                            version_data.get("size", ""),
+                            version_data.get("torrentLink", ""),
+                            version_data.get("magnetLink", ""),
+                            version_data.get("seeds", ""),
+                            version_data.get("peers", "")
+                        ))
+                except json.JSONDecodeError:
+                    # Si no se puede analizar el JSON, intentamos extraer los valores manualmente
+                    version_pattern = r'"version": "(.*?)"'
+                    date_pattern = r'"date": "(.*?)"'
+                    size_pattern = r'"size": "(.*?)"'
+                    torrent_pattern = r'"torrentLink": "(.*?)"'
+                    magnet_pattern = r'"magnetLink": "(.*?)"'
+                    seeds_pattern = r'"seeds": "(.*?)"'
+                    peers_pattern = r'"peers": "(.*?)"'
+                    
+                    version = re.search(version_pattern, data_text)
+                    date = re.search(date_pattern, data_text)
+                    size = re.search(size_pattern, data_text)
+                    torrent = re.search(torrent_pattern, data_text)
+                    magnet = re.search(magnet_pattern, data_text)
+                    seeds = re.search(seeds_pattern, data_text)
+                    peers = re.search(peers_pattern, data_text)
+                    
+                    self.versions_tree.insert('', 'end', values=(
+                        year,
+                        version.group(1) if version else "",
+                        date.group(1) if date else "",
+                        size.group(1) if size else "",
+                        torrent.group(1) if torrent else "",
+                        magnet.group(1) if magnet else "",
+                        seeds.group(1) if seeds else "",
+                        peers.group(1) if peers else ""
+                    ))
+
+    def edit_version(self, event):
+        """Editar una versión seleccionada"""
+        selected = self.versions_tree.selection()
+        if not selected:
+            return
+            
+        # Obtener los valores del item seleccionado
+        item = selected[0]
+        values = self.versions_tree.item(item, 'values')
+        
+        # Llenar los campos de entrada con los valores
+        self.year_entry.delete(0, END)
+        self.year_entry.insert(0, values[0])
+        
+        self.version_entry.delete(0, END)
+        self.version_entry.insert(0, values[1])
+        
+        self.date_entry.delete(0, END)
+        self.date_entry.insert(0, values[2])
+        
+        self.size_entry.delete(0, END)
+        self.size_entry.insert(0, values[3])
+        
+        self.torrent_entry.delete(0, END)
+        self.torrent_entry.insert(0, values[4])
+        
+        self.magnet_entry.delete(0, END)
+        self.magnet_entry.insert(0, values[5])
+        
+        self.seeds_entry.delete(0, END)
+        self.seeds_entry.insert(0, values[6])
+        
+        self.peers_entry.delete(0, END)
+        self.peers_entry.insert(0, values[7])
+        
+        # Cambiar al modo de edición
+        self.edit_mode = True
+        self.editing_item = item
+        self.update_button.config(state=NORMAL)
+        self.add_button.config(state=DISABLED)
+        
+        # Cambiar el texto del frame
+        self.add_frame.config(text="Editar Versión")
+
+    def clear_entries(self):
+        """Limpia todos los campos de entrada"""
+        self.year_entry.delete(0, END)
+        self.version_entry.delete(0, END)
+        self.date_entry.delete(0, END)
+        self.size_entry.delete(0, END)
+        self.torrent_entry.delete(0, END)
+        self.magnet_entry.delete(0, END)
+        self.seeds_entry.delete(0, END)
+        self.peers_entry.delete(0, END)
+        
+        # Restaurar el texto del frame
+        self.add_frame.config(text="Gestionar Versión")
+
+    def cancel_edit(self):
+        """Cancelar la edición actual"""
+        self.clear_entries()
+        self.edit_mode = False
+        self.editing_item = None
+        self.update_button.config(state=DISABLED)
+        self.add_button.config(state=NORMAL)
+
+    def get_entry_values(self):
+        """Obtener los valores de los campos de entrada"""
+        year = self.year_entry.get().strip()
+        version = self.version_entry.get().strip()
+        date = self.date_entry.get().strip()
+        size = self.size_entry.get().strip()
+        torrent_link = self.torrent_entry.get().strip()
+        magnet_link = self.magnet_entry.get().strip()
+        seeds = self.seeds_entry.get().strip()
+        peers = self.peers_entry.get().strip()
+        
+        # Valores predeterminados
+        if not date:
+            date = f"Abril {year}"
+        if not size:
+            size = "4.2 GB"
+        if not torrent_link:
+            torrent_link = "https://pasteplay.com/TUENLACE"
+        if not magnet_link:
+            magnet_link = "magnet:?xt=urn:btih:HASH"
+        if not seeds:
+            seeds = "50"
+        if not peers:
+            peers = "20"
+            
+        return (year, version, date, size, torrent_link, magnet_link, seeds, peers)
 
     def add_version(self):
         """Agregar nueva versión"""
@@ -128,16 +399,41 @@ class VersionManager:
         version = self.version_entry.get().strip()
         
         if not year or not version:
-            messagebox.showerror("Error", "Por favor complete todos los campos")
+            messagebox.showerror("Error", "Por favor complete al menos los campos de Año y Versión")
             return
             
         if not year.isdigit() or len(year) != 4:
             messagebox.showerror("Error", "Por favor ingrese un año válido (4 dígitos)")
             return
+        
+        values = self.get_entry_values()
+        self.versions_tree.insert('', 'end', values=values)
+        self.clear_entries()
+
+    def update_version(self):
+        """Actualizar una versión existente"""
+        if not self.edit_mode or not self.editing_item:
+            return
             
-        self.versions_tree.insert('', 'end', values=(year, version))
-        self.year_entry.delete(0, END)
-        self.version_entry.delete(0, END)
+        year = self.year_entry.get().strip()
+        version = self.version_entry.get().strip()
+        
+        if not year or not version:
+            messagebox.showerror("Error", "Por favor complete al menos los campos de Año y Versión")
+            return
+            
+        if not year.isdigit() or len(year) != 4:
+            messagebox.showerror("Error", "Por favor ingrese un año válido (4 dígitos)")
+            return
+        
+        values = self.get_entry_values()
+        self.versions_tree.item(self.editing_item, values=values)
+        
+        self.clear_entries()
+        self.edit_mode = False
+        self.editing_item = None
+        self.update_button.config(state=DISABLED)
+        self.add_button.config(state=NORMAL)
 
     def delete_selected(self):
         """Eliminar versiones seleccionadas"""
@@ -193,17 +489,36 @@ class VersionManager:
         if not os.path.exists(program_dir):
             os.makedirs(program_dir)
         
-        # Construir la sección de versiones y crear archivos HTML
-        versions_html = []
+        # Agrupar versiones por año
+        years_data = {}
         for item in self.versions_tree.get_children():
-            year, version = self.versions_tree.item(item)['values']
+            values = self.versions_tree.item(item)['values']
+            year = values[0]
             
+            if year not in years_data:
+                years_data[year] = []
+                
+            years_data[year].append({
+                "version": values[1],
+                "date": values[2],
+                "size": values[3],
+                "torrentLink": values[4],
+                "magnetLink": values[5],
+                "seeds": values[6],
+                "peers": values[7]
+            })
+        
+        # Construir la sección de versiones y crear archivos HTML por año
+        versions_html = []
+        for year, versions in years_data.items():
             # Crear archivo HTML para el año
             year_file = f"{program_name}-{year}.html"
             year_path = os.path.join(program_dir, year_file)
             
-            if not os.path.exists(year_path):
-                year_template = f"""<!DOCTYPE html>
+            # Crear JSON de versiones para este año
+            versions_json = json.dumps({"versions": versions}, indent=4)
+            
+            year_template = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -229,7 +544,7 @@ class VersionManager:
     </header>
 
     <div class="container">
-        <a href="../detail.html" class="back-link">
+        <a href="../{selected_file.replace('-details.html', '.html')}" class="back-link">
             <i class="fa fa-arrow-left"></i> Volver a detalles
         </a>
 
@@ -265,12 +580,7 @@ class VersionManager:
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {{
-        const data = {{
-            "versions": [{{ "version": "{version}", "date": "Abril {year}", "size": "4.2 GB", 
-                               "torrentLink": "https://pasteplay.com/TUENLACE", 
-                               "magnetLink": "magnet:?xt=urn:btih:HASH", 
-                               "seeds": "50", "peers": "20" }}]
-        }};
+        const data = {versions_json};
 
         const versionList = document.querySelector('.version-list');
         versionList.innerHTML = data.versions.map(version => `
@@ -309,19 +619,22 @@ class VersionManager:
 </body>
 </html>"""
 
-                with open(year_path, 'w', encoding='utf-8') as year_file:
-                    year_file.write(year_template)
+            with open(year_path, 'w', encoding='utf-8') as year_file:
+                year_file.write(year_template)
             
-            # Actualizar el HTML con el enlace correcto
-            versions_html.append(
-                f'<li class="year-item">\n'
-                f'                        <a href="../subpages/{program_name}/{year_file}" class="year-link">\n'
-                f'                            <span class="year">{year}</span>\n'
-                f'                            <span class="version-count">{version}</span>\n'
-                f'                            <i class="fas fa-chevron-right"></i>\n'
-                f'                        </a>\n'
-                f'                    </li>'
-            )
+            # Actualizar el HTML con el enlace correcto y la versión
+            # Para details.html solo mostramos el año y la versión más reciente
+            if versions:
+                latest_version = versions[0]['version']
+                versions_html.append(
+                    f'<li class="year-item">\n'
+                    f'                        <a href="subpages/{program_name}/{year_file}" class="year-link">\n'
+                    f'                            <span class="year">{year}</span>\n'
+                    f'                            <span class="version-count">{latest_version}</span>\n'
+                    f'                            <i class="fas fa-chevron-right"></i>\n'
+                    f'                        </a>\n'
+                    f'                    </li>'
+                )
         
         versions_section = "\n".join(versions_html)
         
