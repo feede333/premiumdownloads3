@@ -203,7 +203,7 @@ class VersionManager:
         program_dir = os.path.join(subpages_dir, program_name)
         
         # Cargar solo desde los HTML si existen
-        if os.path.exists(program_dir):
+        if (os.path.exists(program_dir)):
             for file in os.listdir(program_dir):
                 if file.startswith(f"{program_name}-") and file.endswith(".html"):
                     year = file.replace(f"{program_name}-", "").replace(".html", "")
@@ -234,6 +234,8 @@ class VersionManager:
         self.editing_item = None
         self.update_button.config(state=DISABLED)
         self.add_button.config(state=NORMAL)
+        self.versions_tree.bind("<Double-1>", self.edit_version)
+        self.update_button.config(state=DISABLED)  # Reset button state on load
 
     def extract_versions_from_html(self, html_path, year):
         """Extraer información de versiones desde el archivo HTML del año"""
@@ -295,42 +297,24 @@ class VersionManager:
         if not selected:
             return
             
-        # Obtener los valores del item seleccionado
+        # Obtener el item seleccionado
         item = selected[0]
-        values = self.versions_tree.item(item, 'values')
+        values = self.versions_tree.item(item)['values']
         
-        # Llenar los campos de entrada con los valores
-        self.year_entry.delete(0, END)
-        self.year_entry.insert(0, values[0])
+        # Llenar los campos
+        entries = [self.year_entry, self.version_entry, self.date_entry, 
+                  self.size_entry, self.torrent_entry, self.magnet_entry,
+                  self.seeds_entry, self.peers_entry]
         
-        self.version_entry.delete(0, END)
-        self.version_entry.insert(0, values[1])
+        for entry, value in zip(entries, values):
+            entry.delete(0, END)
+            entry.insert(0, value)
         
-        self.date_entry.delete(0, END)
-        self.date_entry.insert(0, values[2])
-        
-        self.size_entry.delete(0, END)
-        self.size_entry.insert(0, values[3])
-        
-        self.torrent_entry.delete(0, END)
-        self.torrent_entry.insert(0, values[4])
-        
-        self.magnet_entry.delete(0, END)
-        self.magnet_entry.insert(0, values[5])
-        
-        self.seeds_entry.delete(0, END)
-        self.seeds_entry.insert(0, values[6])
-        
-        self.peers_entry.delete(0, END)
-        self.peers_entry.insert(0, values[7])
-        
-        # Cambiar al modo de edición
+        # Activar modo edición
         self.edit_mode = True
         self.editing_item = item
         self.update_button.config(state=NORMAL)
         self.add_button.config(state=DISABLED)
-        
-        # Cambiar el texto del frame
         self.add_frame.config(text="Editar Versión")
 
     def clear_entries(self):
@@ -395,15 +379,26 @@ class VersionManager:
             messagebox.showerror("Error", "Por favor ingrese un año válido (4 dígitos)")
             return
         
+        # Permitir múltiples versiones por año
         values = self.get_entry_values()
         self.versions_tree.insert('', 'end', values=values)
+        
+        # Ordenar las versiones por año y mantener el orden de inserción dentro del mismo año
+        items = [(self.versions_tree.item(item)["values"], item) for item in self.versions_tree.get_children('')]
+        items.sort(key=lambda x: (x[0][0], self.versions_tree.index(x[1])))
+        
+        for idx, (_, item) in enumerate(items):
+            self.versions_tree.move(item, '', idx)
+        
         self.clear_entries()
 
     def update_version(self):
         """Actualizar una versión existente"""
         if not self.edit_mode or not self.editing_item:
+            messagebox.showwarning("Advertencia", "No hay versión seleccionada para editar")
             return
             
+        # Validaciones
         year = self.year_entry.get().strip()
         version = self.version_entry.get().strip()
         
@@ -415,14 +410,21 @@ class VersionManager:
             messagebox.showerror("Error", "Por favor ingrese un año válido (4 dígitos)")
             return
         
+        # Obtener valores actualizados
         values = self.get_entry_values()
+        
+        # Actualizar el item en el treeview
         self.versions_tree.item(self.editing_item, values=values)
         
+        # Limpiar y resetear
         self.clear_entries()
         self.edit_mode = False
         self.editing_item = None
         self.update_button.config(state=DISABLED)
         self.add_button.config(state=NORMAL)
+        
+        # Mensaje de éxito
+        messagebox.showinfo("Éxito", "Versión actualizada correctamente")
 
     def delete_selected(self):
         """Eliminar versiones seleccionadas"""
