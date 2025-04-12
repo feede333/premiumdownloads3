@@ -1099,13 +1099,13 @@ class VersionManager:
             </header>
 
             <div class="container">
-                <a href="../programs/{selected_file}" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Volver a detalles
+                <a href="../{program_name}.html" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Volver a {program_name}
                 </a>
 
                 <div class="download-detail">
                     <h2>Versiones de {year}</h2>
-                    <!-- ... resto del template ... -->
+                    <!-- ... rest of template ... -->
     """
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
