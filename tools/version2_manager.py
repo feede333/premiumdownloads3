@@ -96,7 +96,7 @@ class VersionManager:
         self.versions_tree.heading('seeds', text='Seeds')
         self.versions_tree.heading('peers', text='Peers')
         
-        self.versions_tree.bind("<Double-1>", self.edit_version)
+        self.versions_tree.bind("<Double-1>", self.edit_version)  # Solo mantener esta línea
         
         # Frame derecho - Agregar/Editar versiones
         self.add_frame = ttk.LabelFrame(main_frame, text="Gestionar Versión", padding="10")
@@ -232,10 +232,6 @@ class VersionManager:
         self.clear_entries()
         self.edit_mode = False
         self.editing_item = None
-        self.update_button.config(state=DISABLED)
-        self.add_button.config(state=NORMAL)
-        self.versions_tree.bind("<Double-1>", self.edit_version)
-        self.update_button.config(state=DISABLED)  # Reset button state on load
 
     def extract_versions_from_html(self, html_path, year):
         """Extraer información de versiones desde el archivo HTML del año"""
@@ -246,7 +242,7 @@ class VersionManager:
             script_pattern = r'const data = ({.*?});'
             script_match = re.search(script_pattern, content, re.DOTALL)
             
-            if script_match:
+            if (script_match):
                 try:
                     data_text = script_match.group(1)
                     data = json.loads(data_text)
