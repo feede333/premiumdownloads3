@@ -1,6 +1,8 @@
 import os
 from tkinter import *
-from tkinter import ttk, messagebox
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from tkinter import messagebox
 import re
 import subprocess
 import json
@@ -14,41 +16,145 @@ class VersionManager:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestor de Versiones")
-        self.root.geometry("900x700")
-        self.root.configure(bg='#2b2b2b')
+        self.root.geometry("1024x768")
         
         # Directorio donde están los archivos details.html
-        self.programs_dir = "../programs"
-        self.repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.programs_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "programs")
+        self.repo_path = os.path.dirname(os.path.dirname(__file__))
         self.github_token = os.getenv("GITHUB_TOKEN")
+        
         if not self.github_token:
             messagebox.showwarning(
                 "Advertencia", 
                 "Token de GitHub no encontrado. Configure GITHUB_TOKEN en las variables de entorno."
             )
         
-        # Estilo
-        style = ttk.Style()
-        style.configure("Custom.TFrame", background='#2b2b2b')
-        style.configure("Custom.TLabel", background='#2b2b2b', foreground='#ffffff')
-        style.configure("Custom.TButton", padding=5)
+        # Aplicar tema oscuro personalizado
+        style = ttk.Style(theme="darkly")
         
-        # Frame principal
-        main_frame = ttk.Frame(root, padding="20", style="Custom.TFrame")
+        # Personalizar colores principales
+        style.configure(
+            "TLabel",
+            foreground="#ffffff",
+            background="#1e1e1e"
+        )
+        
+        style.configure(
+            "TFrame",
+            background="#1e1e1e"
+        )
+        
+        style.configure(
+            "TLabelframe",
+            background="#1e1e1e",
+            foreground="#ffffff",
+            bordercolor="#3d3d3d"
+        )
+        
+        style.configure(
+            "TLabelframe.Label",
+            foreground="#ffffff",
+            background="#1e1e1e",
+            font=("Segoe UI", 10, "bold")
+        )
+        
+        # Mejorar Treeview
+        style.configure(
+            "Treeview",
+            background="#2d2d2d",
+            foreground="#ffffff",
+            fieldbackground="#2d2d2d",
+            borderwidth=0,
+            font=("Segoe UI", 9),
+            rowheight=25
+        )
+        
+        style.configure(
+            "Treeview.Heading",
+            background="#0d47a1",
+            foreground="white",
+            relief="flat",
+            font=("Segoe UI", 9, "bold"),
+            padding=5
+        )
+        
+        style.map(
+            "Treeview.Heading",
+            background=[("active", "#1565c0")]
+        )
+        
+        # Mejorar botones
+        style.configure(
+            "primary.TButton",
+            font=("Segoe UI", 9),
+            padding=10
+        )
+        
+        style.configure(
+            "success.Outline.TButton",
+            font=("Segoe UI", 9, "bold"),
+            padding=10
+        )
+        
+        style.configure(
+            "danger.Outline.TButton",
+            font=("Segoe UI", 9, "bold"),
+            padding=10
+        )
+        
+        # Frame principal con padding y bordes redondeados
+        main_frame = ttk.Frame(root, padding="20")
         main_frame.grid(row=0, column=0, sticky=(N, W, E, S))
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
-        main_frame.columnconfigure(0, weight=1)
-        main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(1, weight=1)
         
-        # Selector de programa
-        program_frame = ttk.LabelFrame(main_frame, text="Selección de Programa", padding="10")
+        # Barra de título personalizada
+        title_frame = ttk.Frame(main_frame)
+        title_frame.grid(row=0, column=0, columnspan=2, sticky=(W, E), pady=(0, 20))
+        
+        logo_label = ttk.Label(
+            title_frame,
+            text="⬇️",
+            font=("Segoe UI Emoji", 32)
+        )
+        logo_label.pack(side=LEFT, padx=(0, 10))
+        
+        ttk.Label(
+            title_frame, 
+            text="PremiumDownloads Manager", 
+            font=("Segoe UI", 24, "bold"),
+            bootstyle="inverse-primary"
+        ).pack(side=LEFT)
+
+        # Selector de programa mejorado
+        program_frame = ttk.LabelFrame(
+            main_frame, 
+            text="Selección de Programa",
+            padding="10",
+            bootstyle="primary"
+        )
         program_frame.grid(row=0, column=0, columnspan=2, sticky=(W, E), pady=(0, 20))
         
         self.program_list = ttk.Combobox(program_frame, width=50)
         self.program_list.pack(fill=X)
         self.program_list.bind('<<ComboboxSelected>>', self.load_versions)
+        
+        # Barra de búsqueda mejorada
+        search_frame = ttk.Frame(program_frame, style="Custom.TFrame")
+        search_frame.pack(fill=X, padx=10, pady=10)
+        
+        ttk.Label(
+            search_frame, 
+            text="🔍",
+            font=("Segoe UI Emoji", 14),
+            foreground="#64b5f6"
+        ).pack(side=LEFT, padx=5)
+        
+        self.search_entry = ttk.Entry(
+            search_frame,
+            font=("Segoe UI", 10),
+            width=40
+        )
+        self.search_entry.pack(side=LEFT, padx=5, fill=X, expand=True)
+        self.search_entry.bind('<KeyRelease>', self.search_versions)
         
         # Frame izquierdo - Años y versiones existentes
         versions_frame = ttk.LabelFrame(main_frame, text="Versiones Existentes", padding="10")
@@ -68,9 +174,13 @@ class VersionManager:
         hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
         hsb.pack(side='bottom', fill='x')
         
-        self.versions_tree = ttk.Treeview(tree_frame, selectmode='extended',  # Cambiar 'browse' por 'extended'
-                                         yscrollcommand=vsb.set,
-                                         xscrollcommand=hsb.set)
+        # TreeView mejorado
+        self.versions_tree = ttk.Treeview(
+            tree_frame, 
+            selectmode='extended',
+            bootstyle="primary",
+            height=15
+        )
         self.versions_tree.pack(fill=BOTH, expand=True)
         
         vsb.config(command=self.versions_tree.yview)
@@ -165,17 +275,29 @@ class VersionManager:
                   command=self.cancel_edit).pack(side=LEFT, padx=5)
         
         # Botones de manejo general
-        btn_frame = ttk.Frame(main_frame, style="Custom.TFrame")
+        btn_frame = ttk.Frame(main_frame)
         btn_frame.grid(row=2, column=0, columnspan=2, pady=20)
         
-        ttk.Button(btn_frame, text="Eliminar Seleccionados", 
-                  command=self.delete_selected).pack(side=LEFT, padx=5)
-        ttk.Button(btn_frame, text="Guardar Cambios", 
-                  command=self.save_changes).pack(side=LEFT, padx=5)
+        ttk.Button(
+            btn_frame, 
+            text="✨ Agregar Versión",
+            bootstyle="success-outline",
+            command=self.add_version
+        ).pack(side=LEFT, padx=5)
         
-        # Agregar botón para editar versiones del año
-        ttk.Button(btn_frame, text="Editar Versiones del Año", 
-                  command=self.edit_year_versions).pack(side=LEFT, padx=5)
+        ttk.Button(
+            btn_frame, 
+            text="🗑️ Eliminar Seleccionados",
+            bootstyle="danger-outline",
+            command=self.delete_selected
+        ).pack(side=LEFT, padx=5)
+        
+        ttk.Button(
+            btn_frame, 
+            text="💾 Guardar Cambios",
+            bootstyle="info-outline",
+            command=self.save_changes
+        ).pack(side=LEFT, padx=5)
         
         # Cargar programas
         self.load_programs()
@@ -1054,6 +1176,59 @@ class VersionManager:
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
             year_file.write(year_template)
+
+    def search_versions(self, event):
+        """Buscar versiones en el TreeView"""
+        search_term = self.search_entry.get().lower()
+        
+        # Resetear todos los tags primero
+        for item in self.versions_tree.get_children():
+            self.versions_tree.item(item, tags=())
+        
+        # Mostrar todos los items si el término de búsqueda está vacío
+        if not search_term:
+            return
+        
+        # Buscar en todas las columnas
+        for item in self.versions_tree.get_children():
+            values = self.versions_tree.item(item)['values']
+            found = False
+            
+            # Convertir todos los valores a string y buscar
+            for value in values:
+                if str(value).lower().find(search_term) != -1:
+                    found = True
+                    break
+            
+            if found:
+                self.versions_tree.item(item, tags=('match',))
+            else:
+                self.versions_tree.item(item, tags=('hidden',))
+        
+        # Configurar colores para los resultados
+        self.versions_tree.tag_configure('match', background='#ff3333', foreground='white')  # Rojo brillante
+        self.versions_tree.tag_configure('hidden', background='#2b2b2b', foreground='gray')  # Oscurecer los no encontrados
+
+    def show_message(self, title, message, level="info"):
+        """Mostrar mensajes estilizados"""
+        if level == "error":
+            messagebox.showerror(
+                title,
+                message,
+                icon="error"
+            )
+        elif level == "warning":
+            messagebox.showwarning(
+                title,
+                message,
+                icon="warning"
+            )
+        else:
+            messagebox.showinfo(
+                title,
+                message,
+                icon="info"
+            )
 
 def main():
     root = Tk()
