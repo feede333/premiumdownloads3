@@ -865,6 +865,7 @@ class VersionManager:
             """Actualizar versión existente"""
             nonlocal edit_mode, editing_item
             if not edit_mode or not editing_item:
+                messagebox.showwarning("Advertencia", "No hay versión seleccionada para editar")
                 return
                 
             values = [entries[field].get().strip() for field in ['version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers']]
