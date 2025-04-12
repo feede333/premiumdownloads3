@@ -82,6 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (captchaValue !== currentCaptcha) {
             captchaError.textContent = 'El CAPTCHA ingresado es incorrecto.';
+            // Add this to your form validation logic
+            captchaBox.classList.add('error');
+            setTimeout(() => captchaBox.classList.remove('error'), 500);
             return;
         }
 
