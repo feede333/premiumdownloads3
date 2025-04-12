@@ -587,7 +587,14 @@
 
 .captcha-error.show {
     display: block;
-    animation: fadeIn 0.3s ease forwards;
+    animation: errorShake 0.5s ease-in-out;
+    color: var(--accent);
+    background: rgba(255, 64, 129, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--accent);
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 64, 129, 0.2);
 }
 
 /* Responsive adjustments */
@@ -635,6 +642,31 @@
     100% { transform: rotate(360deg); }
 }
 
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+@keyframes successSlideIn {
+    0% {
+        transform: translate(-50%, -40%);
+        opacity: 0;
+    }
+    10% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+    90% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+}
+
 /* FEEDBACK MESSAGES */
 .success-feedback {
     position: fixed;
@@ -647,9 +679,13 @@
     border-radius: var(--radius);
     font-size: 1.1rem;
     z-index: 1000;
-    animation: successPulse 1.8s ease-out forwards;
+    animation: successSlideIn 2s ease-out forwards;
     font-family: 'Orbitron', sans-serif;
-    box-shadow: 0 0 30px rgba(0, 255, 204, 0.4);
+    box-shadow: 
+        0 0 30px rgba(0, 255, 204, 0.4),
+        inset 0 0 15px rgba(255, 255, 255, 0.2);
+    text-align: center;
+    white-space: nowrap;
 }
 
 /* LOADING STATES */
@@ -764,4 +800,11 @@
     max-height: 200px;
     border-radius: var(--radius);
     margin-top: 1rem;
+}
+
+/* Add a glow effect to the captcha box on error */
+.captcha-box.error {
+    animation: errorShake 0.5s ease-in-out;
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(255, 64, 129, 0.3);
 }
