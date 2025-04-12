@@ -1054,7 +1054,6 @@ class VersionManager:
                         pass
 
     def save_year_versions(self, year, versions):
-        """Guardar versiones de un año específico"""
         selected_file = self.program_list.get()
         if not selected_file:
             return
@@ -1080,27 +1079,27 @@ class VersionManager:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{program_name} {year} - Versiones</title>
-            <link rel="stylesheet" href="../csscomun.css">
+            <link rel="stylesheet" href="../../csscomun.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-            <script src="../js/torrentTrackerversiones.js"></script>
+            <script src="../../js/torrentTrackerversiones.js"></script>
         </head>
         <body>
             <header>
                 <div class="container header-content">
-                    <a href="../index.html" class="logo">
+                    <a href="../../index.html" class="logo">
                         <span>⬇️</span>
                         <span>PremiumDownloads</span>
                     </a>
                     <nav>
                         <ul>
-                            <li><a href="../index.html">Inicio</a></li>
+                            <li><a href="../../index.html">Inicio</a></li>
                         </ul>
                     </nav>
                 </div>
             </header>
 
             <div class="container">
-                <a href="../programs/{selected_file}" class="back-link">
+                <a href="../../programs/{selected_file}" class="back-link">
                     <i class="fa fa-arrow-left"></i> Volver a {program_name}
                 </a>
 
