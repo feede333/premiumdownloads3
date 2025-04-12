@@ -185,14 +185,59 @@ class VersionManager:
             return
             
         file_path = os.path.join(self.programs_dir, selected_file)
+        program_name = selected_file.replace('-details.html', '')
         
-        # Construir la sección de versiones con el formato correcto
+        # Crear directorio en subpages
+        subpages_dir = os.path.join(os.path.dirname(self.programs_dir), 'subpages')
+        program_dir = os.path.join(subpages_dir, program_name)
+        if not os.path.exists(program_dir):
+            os.makedirs(program_dir)
+        
+        # Construir la sección de versiones y crear archivos HTML
         versions_html = []
         for item in self.versions_tree.get_children():
             year, version = self.versions_tree.item(item)['values']
+            
+            # Crear archivo HTML para el año
+            year_file = f"{program_name}-{year}.html"
+            year_path = os.path.join(program_dir, year_file)
+            
+            if not os.path.exists(year_path):
+                year_template = f"""<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{program_name} - {year} | PremiumDownloads</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../../programs/{selected_file}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Volver a {program_name}
+        </a>
+        <h1>{program_name} - Versiones {year}</h1>
+        <div class="version-content">
+            <!-- VERSIONES-START -->
+            <div class="version-item">
+                <h2>{version}</h2>
+                <!-- Contenido específico de la versión -->
+            </div>
+            <!-- VERSIONES-END -->
+        </div>
+    </div>
+</body>
+</html>"""
+                
+                with open(year_path, 'w', encoding='utf-8') as year_file:
+                    year_file.write(year_template)
+            
+            # Actualizar el HTML con el enlace correcto
             versions_html.append(
                 f'<li class="year-item">\n'
-                f'                        <a href="#" class="year-link">\n'
+                f'                        <a href="../subpages/{program_name}/{year_file}" class="year-link">\n'
                 f'                            <span class="year">{year}</span>\n'
                 f'                            <span class="version-count">{version}</span>\n'
                 f'                            <i class="fas fa-chevron-right"></i>\n'
