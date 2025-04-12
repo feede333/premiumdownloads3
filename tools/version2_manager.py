@@ -220,7 +220,7 @@ class VersionManager:
                 content = file.read()
                 pattern = r'<!-- AÑOS-START -->(.*?)<!-- AÑOS-END -->'
                 match = re.search(pattern, content, re.DOTALL)
-                if match:
+                if (match):
                     versions_section = match.group(1)
                     year_pattern = r'<li.*?>\s*<a.*?>\s*<span class="year">(\d{4})</span>\s*<span class="version-count">(.*?)</span>'
                     years_versions = re.findall(year_pattern, versions_section, re.DOTALL)
@@ -793,9 +793,94 @@ class VersionManager:
             edit_window.destroy()
             messagebox.showinfo("Éxito", "Versiones guardadas correctamente")
 
-        ttk.Button(btn_frame, text="Agregar Versión", command=add_version).pack(side=LEFT, padx=5)
-        ttk.Button(btn_frame, text="Guardar Cambios", command=save_versions).pack(side=LEFT, padx=5)
-        ttk.Button(btn_frame, text="Cerrar", command=edit_window.destroy).pack(side=LEFT, padx=5)
+        # Agregar binding para doble clic en una versión
+        versions_tree.bind("<Double-1>", lambda e: edit_selected_version())
+        
+        # Variables para modo edición
+        edit_mode = False
+        editing_item = None
+        
+        def edit_selected_version():
+            """Editar la versión seleccionada"""
+            nonlocal edit_mode, editing_item
+            selected = versions_tree.selection()
+            if not selected:
+                return
+                
+            # Obtener valores de la versión seleccionada
+            item = selected[0]
+            values = versions_tree.item(item)['values']
+            
+            # Llenar los campos con los valores actuales
+            for field, value in zip(['version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers'], values):
+                entries[field].delete(0, END)
+                entries[field].insert(0, value)
+            
+            # Activar modo edición
+            edit_mode = True
+            editing_item = item
+            add_version_btn.config(state=DISABLED)
+            update_version_btn.config(state=NORMAL)
+            entry_frame.config(text="Editar versión")
+
+        def cancel_edit():
+            """Cancelar la edición actual"""
+            nonlocal edit_mode, editing_item
+            # Limpiar campos
+            for entry in entries.values():
+                entry.delete(0, END)
+            
+            # Resetear modo edición
+            edit_mode = False
+            editing_item = None
+            add_version_btn.config(state=NORMAL)
+            update_version_btn.config(state=DISABLED)
+            entry_frame.config(text="Nueva versión")
+
+        def add_version():
+            """Agregar nueva versión a la lista"""
+            values = [entries[field].get().strip() for field in ['version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers']]
+            if not values[0]:  # Verificar al menos la versión
+                messagebox.showerror("Error", "Por favor ingrese al menos la versión")
+                return
+            versions_tree.insert('', 'end', values=values)
+            for entry in entries.values():
+                entry.delete(0, END)
+
+        def update_version():
+            """Actualizar versión existente"""
+            nonlocal edit_mode, editing_item
+            if not edit_mode or not editing_item:
+                return
+                
+            values = [entries[field].get().strip() for field in ['version', 'date', 'size', 'torrent', 'magnet', 'seeds', 'peers']]
+            if not values[0]:
+                messagebox.showerror("Error", "Por favor ingrese al menos la versión")
+                return
+                
+            versions_tree.item(editing_item, values=values)
+            cancel_edit()
+            messagebox.showinfo("Éxito", "Versión actualizada correctamente")
+
+        # Actualizar frame de botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill=X, pady=10)
+        
+        add_version_btn = ttk.Button(btn_frame, text="Agregar Versión", command=add_version)
+        add_version_btn.pack(side=LEFT, padx=5)
+        
+        update_version_btn = ttk.Button(btn_frame, text="Actualizar Versión", 
+                                      command=update_version, state=DISABLED)
+        update_version_btn.pack(side=LEFT, padx=5)
+        
+        ttk.Button(btn_frame, text="Cancelar Edición", 
+                  command=cancel_edit).pack(side=LEFT, padx=5)
+        
+        ttk.Button(btn_frame, text="Guardar Cambios", 
+                  command=save_versions).pack(side=LEFT, padx=5)
+        
+        ttk.Button(btn_frame, text="Cerrar", 
+                  command=edit_window.destroy).pack(side=LEFT, padx=5)
 
         # Cargar versiones existentes
         program_name = self.program_list.get().replace('-details.html', '')
