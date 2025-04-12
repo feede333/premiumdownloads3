@@ -203,7 +203,7 @@ class VersionManager:
         program_dir = os.path.join(subpages_dir, program_name)
         
         # Primero cargar desde los HTML si existen
-        if os.path.exists(program_dir):
+        if (os.path.exists(program_dir)):
             for file in os.listdir(program_dir):
                 if file.startswith(f"{program_name}-") and file.endswith(".html"):
                     year = file.replace(f"{program_name}-", "").replace(".html", "")
@@ -628,7 +628,7 @@ class VersionManager:
                 latest_version = versions[0]['version']
                 versions_html.append(
                     f'<li class="year-item">\n'
-                    f'                        <a href="subpages/{program_name}/{year_file}" class="year-link">\n'
+                    f'                        <a href="../subpages/{program_name}/{program_name}-{year}.html" class="year-link">\n'
                     f'                            <span class="year">{year}</span>\n'
                     f'                            <span class="version-count">{latest_version}</span>\n'
                     f'                            <i class="fas fa-chevron-right"></i>\n'
