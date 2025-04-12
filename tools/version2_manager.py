@@ -1100,13 +1100,49 @@ class VersionManager:
 
             <div class="container">
                 <a href="../../programs/{selected_file}" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Volver a detalles
+                    <i class="fa fa-arrow-left"></i> Volver a {program_name}
                 </a>
 
                 <div class="download-detail">
                     <h2>Versiones de {year}</h2>
-                    <!-- ... rest of the template ... -->
-    """
+                    <div class="version-list">
+                        <!-- Las versiones se cargarán dinámicamente -->
+                    </div>
+
+                    <div class="torrent-note">
+                        <p><i class="fas fa-info-circle"></i> Para usar estos enlaces necesitas:</p>
+                        <ul>
+                            <li>• qBittorrent (Recomendado)</li>
+                            <li>• uTorrent</li>
+                            <li>• BitTorrent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="container">
+                    <div class="footer-links">
+                        <a href="#">Términos de uso</a>
+                        <a href="#">Política de privacidad</a>
+                        <a href="#">DMCA</a>
+                        <a href="#">Contacto</a>
+                    </div>
+                    <p>© {year} PremiumDownloads. Todos los derechos reservados.</p>
+                </div>
+            </footer>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', () => {{
+                const data = {versions_json};
+                const versionList = document.querySelector('.version-list');
+                versionList.innerHTML = data.versions.map(version => `
+                    <!-- ... rest of template ... -->
+                `).join('');
+            }});
+            </script>
+        </body>
+        </html>"""
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
             year_file.write(year_template)
