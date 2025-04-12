@@ -739,7 +739,7 @@ class VersionManager:
                 </header>
 
                 <div class="container">
-                    <a href="../{selected_file.replace('-details.html', '.html')}" class="back-link">
+                    <a href="../programs/{selected_file}" class="back-link">
                         <i class="fa fa-arrow-left"></i> Volver a detalles
                     </a>
 
@@ -1079,32 +1079,33 @@ class VersionManager:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{program_name} {year} - Versiones</title>
-            <link rel="stylesheet" href="../../css/csscomun.css">
+            <link rel="stylesheet" href="../csscomun.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-            <script src="../../js/torrentTrackerversiones.js"></script>
+            <script src="../js/torrentTrackerversiones.js"></script>
         </head>
         <body>
             <header>
                 <div class="container header-content">
-                    <a href="../../index.html" class="logo">
+                    <a href="../index.html" class="logo">
                         <span>⬇️</span>
                         <span>PremiumDownloads</span>
                     </a>
                     <nav>
                         <ul>
-                            <li><a href="../../index.html">Inicio</a></li>
+                            <li><a href="../index.html">Inicio</a></li>
                         </ul>
                     </nav>
                 </div>
             </header>
 
             <div class="container">
-                <a href="../../{program_name}.html" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Volver a {program_name}
+                <a href="../programs/{selected_file}" class="back-link">
+                    <i class="fa fa-arrow-left"></i> Volver a detalles
                 </a>
 
                 <div class="download-detail">
-                    <!-- ... rest of the template ... -->
+                    <h2>Versiones de {year}</h2>
+                    <!-- ... resto del template ... -->
     """
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
