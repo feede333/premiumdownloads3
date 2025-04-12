@@ -364,10 +364,33 @@ img {
     align-items: center;
     gap: 0.5rem;
     color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
 }
 
 .meta-item i {
     color: var(--primary);
+    font-size: 1.1rem;
+}
+
+/* Estilos específicos para cada tipo de meta */
+.meta-size i {
+    content: '\f019'; /* Icono de descarga */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.meta-date i {
+    content: '\f133'; /* Icono de calendario */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.meta-item:hover {
+    background: rgba(0, 255, 204, 0.1);
+    transform: translateY(-2px);
 }
 
 .download-description {

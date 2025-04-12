@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="comment-author-image">
                 ${comment.image ? 
                     `<img src="${comment.image}" alt="${comment.name}">` : 
-                    `<div class="default-avatar">@</div>`
+                    '<div class="default-avatar"></div>'
                 }
             </div>
             <div class="comment-content">

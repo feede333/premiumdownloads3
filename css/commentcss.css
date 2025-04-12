@@ -156,29 +156,29 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: #000;
-    font-weight: bold;
-    font-size: 1.4rem;
-    font-family: 'Orbitron', sans-serif;
     position: relative;
     overflow: hidden;
 }
 
 .default-avatar::before {
-    content: '\f007'; /* Usuario ícono de FontAwesome */
+    content: '\f007'; /* FontAwesome user icon */
     font-family: 'Font Awesome 5 Free';
-    font-size: 1.5rem;
+    font-weight: 900; /* Required for solid style */
+    font-size: 1.2rem;
     color: rgba(0, 0, 0, 0.8);
     z-index: 1;
+}
+
+/* Remove any other content that might be adding the @ symbol */
+.default-avatar div,
+.default-avatar span {
+    display: none;
 }
 
 .default-avatar::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: linear-gradient(45deg,
         transparent,
         rgba(255, 255, 255, 0.1),
