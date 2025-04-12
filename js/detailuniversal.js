@@ -42,13 +42,24 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayComment(comment) {
         const commentElement = document.createElement('div');
         commentElement.className = 'comment-card';
+        
+        // Crear la estructura del comentario estilo YouTube
         commentElement.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-author">${comment.name}</span>
-                <span class="comment-date">${comment.date}</span>
+            <div class="comment-author-image">
+                ${comment.image ? 
+                    `<img src="${comment.image}" alt="${comment.name}">` : 
+                    `<div class="default-avatar">${comment.name.charAt(0).toUpperCase()}</div>`
+                }
             </div>
-            <div class="comment-text">${comment.text}</div>
+            <div class="comment-content">
+                <div class="comment-header">
+                    <span class="comment-author">${comment.name}</span>
+                    <span class="comment-date">${comment.date}</span>
+                </div>
+                <div class="comment-text">${comment.text}</div>
+            </div>
         `;
+        
         commentsList.appendChild(commentElement);
     }
 
@@ -80,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
             email,
             text,
             date: new Date().toLocaleString(),
+            image: imagePreview.querySelector('img')?.src || null
         };
 
         const comments = getComments();
@@ -93,4 +105,38 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     loadComments();
+
+    // Agregar manejo de previsualización de imagen
+    const imagePreview = document.querySelector('.image-preview');
+    
+    imageInput.addEventListener('change', function(e) {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            
+            // Crear elementos si no existen
+            if (!imagePreview.querySelector('img')) {
+                const img = document.createElement('img');
+                const removeButton = document.createElement('button');
+                removeButton.className = 'remove-image';
+                removeButton.innerHTML = '×';
+                removeButton.onclick = function() {
+                    imagePreview.innerHTML = '';
+                    imageInput.value = '';
+                    imagePreview.style.display = 'none';
+                };
+                imagePreview.appendChild(img);
+                imagePreview.appendChild(removeButton);
+            }
+
+            const previewImg = imagePreview.querySelector('img');
+            
+            reader.onloadend = function() {
+                previewImg.src = reader.result;
+                imagePreview.style.display = 'block';
+            }
+
+            reader.readAsDataURL(file);
+        }
+    });
 });
