@@ -389,3 +389,83 @@ footer {
         transform: translateY(0);
     }
 }
+
+
+
+/* === THEME LIGHT === */
+[data-theme="light"] {
+  --bg: #f2f5f9;
+  --card: #ffffff;
+  --primary: #00bcd4;
+  --secondary: #4f46e5;
+  --accent: #ff4081;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --border: #d1d5db;
+  --shadow: 0 0 12px rgba(79, 70, 229, 0.15);
+}
+
+[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+[data-theme="light"] .download-card {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="light"] nav a {
+  color: var(--text);
+}
+
+[data-theme="light"] nav a.active,
+[data-theme="light"] nav a:hover {
+  background: var(--primary);
+  color: white;
+}
+
+[data-theme="light"] .category-link {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .category-link.active,
+[data-theme="light"] .category-link:hover {
+  background: var(--primary);
+  color: white;
+}
+
+[data-theme="light"] .search-bar {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+[data-theme="light"] .search-input {
+  color: var(--text);
+}
+
+[data-theme="light"] .search-input::placeholder {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .sidebar {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+[data-theme="light"] .footer {
+  background: #e5e7eb;
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .download-button {
+  background: var(--primary);
+  color: white;
+}
+
+[data-theme="light"] .download-button:hover {
+  background: var(--accent);
+  color: white;
+}
+
