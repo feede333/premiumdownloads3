@@ -780,8 +780,8 @@ class VersionManager:
         def save_versions():
             """Guardar las versiones y actualizar el árbol principal"""
             versions = []
-            for item in versions_tree.get_children():
-                values = versions_tree.item(item)['values']
+            for tree_item in versions_tree.get_children():
+                values = versions_tree.item(tree_item)['values']
                 versions.append({
                     "version": values[0],
                     "date": values[1] or f"Abril {year}",
@@ -793,19 +793,27 @@ class VersionManager:
                 })
             
             if versions:
-                # Actualizar el item en el árbol principal
-                self.versions_tree.item(item, values=(year, versions[0]["version"], 
-                                                    versions[0]["date"], versions[0]["size"],
-                                                    versions[0]["torrentLink"], 
-                                                    versions[0]["magnetLink"],
-                                                    versions[0]["seeds"], 
-                                                    versions[0]["peers"]))
+                # Actualizar el item original en el árbol principal
+                original_item = item  # Este es el item original que recibimos al abrir la ventana
+                self.versions_tree.item(original_item, values=(
+                    year, 
+                    versions[0]["version"],  # Mostramos la primera versión en el árbol principal 
+                    versions[0]["date"], 
+                    versions[0]["size"],
+                    versions[0]["torrentLink"], 
+                    versions[0]["magnetLink"],
+                    versions[0]["seeds"], 
+                    versions[0]["peers"]
+                ))
                 
                 # Guardar todas las versiones en el archivo HTML
                 self.save_year_versions(year, versions)
                 
-            edit_window.destroy()
-            messagebox.showinfo("Éxito", "Versiones guardadas correctamente")
+                edit_window.destroy()
+                messagebox.showinfo("Éxito", "Versiones guardadas correctamente")
+                
+                # Recargar las versiones para actualizar la vista
+                self.load_versions(None)
 
         # Agregar binding para doble clic en una versión
         versions_tree.bind("<Double-1>", lambda e: edit_selected_version())
