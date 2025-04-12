@@ -719,8 +719,14 @@ class ProgramManagerApp:
                     <span class="download-category">{data["category"]}</span>
                     
                     <div class="download-meta">
-                        <span class="file-size">{data.get("fileSize", "")}</span>
-                        <span class="file-date">{datetime.now().strftime("%d.%m.%Y")}</span>
+                        <div class="meta-item meta-size">
+                            <i class="fas fa-download"></i>
+                            <span>{data.get("fileSize", "N/A")}</span>
+                        </div>
+                        <div class="meta-item meta-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{datetime.now().strftime("%d.%m.%Y")}</span>
+                        </div>
                     </div>
                     
                     <div class="download-description">
