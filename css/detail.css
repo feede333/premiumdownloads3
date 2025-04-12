@@ -192,7 +192,7 @@ html[data-theme="dark"] header .header-content .logo:hover {
 .language-toggle {
     background: transparent;
     border: 1px solid var(--primary);
-    color: var(--primary);
+    color: var (--primary);
     padding: 0.5rem 1rem;
     border-radius: var(--radius);
     cursor: pointer;
@@ -283,12 +283,14 @@ html[data-theme="dark"] header .header-content .logo:hover {
 }
 
 .download-image img {
-    width: 90%; /* Aumentado de 80% a 90% */
-    height: 90%; /* Aumentado de 80% a 90% */
+    width: 90%;
+    height: 90%;
     object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(0, 255, 204, 0.2));
     transition: transform 0.3s ease;
     border-radius: var(--radius); /* Agregar border-radius solo a la imagen */
+    -webkit-border-radius: var(--radius); /* Para compatibilidad con Safari */
+    -moz-border-radius: var(--radius); /* Para compatibilidad con Firefox */
 }
 
 /* Asegurar que todas las imágenes en el sitio tengan bordes redondeados */
@@ -296,6 +298,18 @@ html[data-theme="dark"] header .header-content .logo:hover {
 .preview-image,
 .comment-image {
     border-radius: var(--radius);
+}
+
+img {
+    border-radius: var(--radius);
+    -webkit-border-radius: var(--radius);
+    -moz-border-radius: var(--radius);
+}
+
+/* Mantener las imágenes circulares para los avatares */
+.comment-avatar img,
+.user-avatar img {
+    border-radius: 50%;
 }
 
 /* Para imágenes en comentarios */
@@ -1093,11 +1107,11 @@ footer p {
     position: relative;
     background: var(--card);
     border-radius: var(--radius);
-    border: 1px solid var(--border);
     padding: 2rem;
     margin: 2rem 0;
     box-shadow: var(--shadow);
     overflow: hidden;
+    z-index: 1;
 }
 
 .download-detail::before {
@@ -1106,20 +1120,39 @@ footer p {
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
+    bottom: 0;
+    border-radius: inherit;
     background: linear-gradient(90deg, 
-        transparent,
         var(--primary),
         var(--secondary),
+        var(--accent),
         var(--primary),
-        transparent
+        var(--secondary)
     );
-    animation: borderGlow 3s linear infinite;
+    background-size: 300% 100%; /* Ajustado para transición más suave */
+    animation: neonGlow 6s linear infinite; /* Aumentado a 6s para más suavidad */
+    z-index: -1;
 }
 
-@keyframes borderGlow {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+.download-detail::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--card);
+    border-radius: calc(var(--radius) - 2px);
+    z-index: -1;
+}
+
+@keyframes neonGlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 150% 50%; /* Ajustado para loop más suave */
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Botón de volver */
