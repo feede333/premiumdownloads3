@@ -97,10 +97,13 @@ header {
 
 /* Navigation styling */
 nav {
-    flex: 1;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
     align-items: center;
+    gap: 2rem;
+    z-index: 0;
 }
 
 nav ul {
@@ -374,11 +377,11 @@ html[data-theme="dark"] header .header-content .logo:hover {
 }
 
 .requirements {
-    box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+    width: 100%; /* Cambiado de max-width a width */
     background: var(--card);
     border-radius: var(--radius);
     padding: 2rem;
-    margin: 2rem 0;
+    margin: 2rem 0; /* Cambiado de 'margin: 2rem auto' a 'margin: 2rem 0' */
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
 }
@@ -396,6 +399,8 @@ html[data-theme="dark"] header .header-content .logo:hover {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    max-width: 600px; /* Mantener el ancho limitado de la lista */
+    margin: 0; /* Cambiado de 'margin: 0 auto' a 'margin: 0' */
 }
 
 .requirements li {
@@ -405,7 +410,7 @@ html[data-theme="dark"] header .header-content .logo:hover {
     gap: 1rem;
     padding: 1.2rem;
     background: var(--bg-tertiary);
-    border-radius: var (--radius);
+    border-radius: var(--radius);
     border: 1px solid transparent;
     transition: all 0.4s ease, border-color 0.4s ease;
     position: relative;
@@ -1262,5 +1267,16 @@ footer p {
 
     .requirements li:hover {
         transform: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .requirements {
+        max-width: 100%;
+        margin: 2rem 0; /* Mantener alineación izquierda en móvil */
+    }
+    
+    .requirements ul {
+        max-width: 100%;
     }
 }
