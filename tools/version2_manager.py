@@ -1105,7 +1105,7 @@ class VersionManager:
 
                 <div class="download-detail">
                     <h2>Versiones de {year}</h2>
-                    <!-- ... resto del template ... -->
+                    <!-- ... rest of the template ... -->
     """
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
