@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const email = emailInput.value.trim();
         const text = document.getElementById('comment-text').value.trim();
         const captchaValue = captchaInput.value.trim();
+        const captchaBox = document.querySelector('.captcha-box');
 
         if (!name || !text) {
             alert('Por favor, completa todos los campos obligatorios.');
@@ -82,11 +83,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (captchaValue !== currentCaptcha) {
             captchaError.textContent = 'El CAPTCHA ingresado es incorrecto.';
-            // Add this to your form validation logic
+            captchaError.classList.add('show');
             captchaBox.classList.add('error');
-            setTimeout(() => captchaBox.classList.remove('error'), 500);
+            
+            setTimeout(() => {
+                captchaBox.classList.remove('error');
+                captchaError.classList.remove('show');
+            }, 500);
             return;
         }
+
+        // Si el captcha es correcto, mostrar mensaje de éxito
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-feedback';
+        successMessage.textContent = '¡Comentario publicado con éxito!';
+        document.body.appendChild(successMessage);
+
+        // Eliminar el mensaje después de la animación
+        setTimeout(() => {
+            successMessage.remove();
+        }, 2000);
 
         const newComment = {
             name,
