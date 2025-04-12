@@ -68,7 +68,7 @@ class VersionManager:
         hsb = ttk.Scrollbar(tree_frame, orient="horizontal")
         hsb.pack(side='bottom', fill='x')
         
-        self.versions_tree = ttk.Treeview(tree_frame, selectmode='browse',
+        self.versions_tree = ttk.Treeview(tree_frame, selectmode='extended',  # Cambiar 'browse' por 'extended'
                                          yscrollcommand=vsb.set,
                                          xscrollcommand=hsb.set)
         self.versions_tree.pack(fill=BOTH, expand=True)
@@ -441,9 +441,36 @@ class VersionManager:
         if not selected_items:
             messagebox.showinfo("Info", "Por favor seleccione las versiones a eliminar")
             return
+        
+        if messagebox.askyesno("Confirmar", "¿Está seguro de eliminar las versiones seleccionadas?"):
+            selected_file = self.program_list.get()
+            program_name = selected_file.replace('-details.html', '')
+            subpages_dir = os.path.join(os.path.dirname(self.programs_dir), 'subpages')
+            program_dir = os.path.join(subpages_dir, program_name)
             
-        for item in selected_items:
-            self.versions_tree.delete(item)
+            years_to_delete = set()
+            for item in selected_items:
+                values = self.versions_tree.item(item)['values']
+                year = values[0]
+                years_to_delete.add(year)
+                self.versions_tree.delete(item)
+            
+            # Eliminar archivos HTML correspondientes
+            for year in years_to_delete:
+                html_file = f"{program_name}-{year}.html"
+                file_path = os.path.join(program_dir, html_file)
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except Exception as e:
+                        messagebox.showerror("Error", f"No se pudo eliminar el archivo {html_file}: {str(e)}")
+            
+            # Verificar si la carpeta del programa quedó vacía
+            if os.path.exists(program_dir) and not os.listdir(program_dir):
+                try:
+                    os.rmdir(program_dir)
+                except Exception as e:
+                    print(f"No se pudo eliminar la carpeta vacía: {str(e)}")
 
     def sync_with_github(self, commit_message):
         """Sincronizar cambios con GitHub"""
