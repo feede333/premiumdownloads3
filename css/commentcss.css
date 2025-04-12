@@ -155,10 +155,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: #000;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    font-family: 'Orbitron', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.default-avatar::before {
+    content: '\f007'; /* Usuario ícono de FontAwesome */
+    font-family: 'Font Awesome 5 Free';
+    font-size: 1.5rem;
+    color: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+.default-avatar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: shine 2s infinite;
 }
 
 .comment-content {
@@ -171,8 +197,14 @@
 
 .comment-author {
     font-weight: bold;
-    color: var(--text);
+    color: var(--primary);
     margin-right: 1rem;
+    font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.comment-author:hover {
+    text-shadow: 0 0 10px var(--primary);
 }
 
 .comment-date {

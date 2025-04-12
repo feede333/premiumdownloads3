@@ -43,17 +43,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const commentElement = document.createElement('div');
         commentElement.className = 'comment-card';
         
-        // Crear la estructura del comentario estilo YouTube
         commentElement.innerHTML = `
             <div class="comment-author-image">
                 ${comment.image ? 
                     `<img src="${comment.image}" alt="${comment.name}">` : 
-                    `<div class="default-avatar">${comment.name.charAt(0).toUpperCase()}</div>`
+                    `<div class="default-avatar">@</div>`
                 }
             </div>
             <div class="comment-content">
                 <div class="comment-header">
-                    <span class="comment-author">${comment.name}</span>
+                    <span class="comment-author">@${comment.name}</span>
                     <span class="comment-date">${comment.date}</span>
                 </div>
                 <div class="comment-text">${comment.text}</div>
