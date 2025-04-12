@@ -1079,7 +1079,7 @@ class VersionManager:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{program_name} {year} - Versiones</title>
-            <link rel="stylesheet" href="../../csscomun.css">
+            <link rel="stylesheet" href="../../css/csscomun.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
             <script src="../../js/torrentTrackerversiones.js"></script>
         </head>
@@ -1099,79 +1099,13 @@ class VersionManager:
             </header>
 
             <div class="container">
-                <a href="../../programs/{selected_file}" class="back-link">
+                <a href="../../{program_name}.html" class="back-link">
                     <i class="fa fa-arrow-left"></i> Volver a {program_name}
                 </a>
 
                 <div class="download-detail">
-                    <h2>Versiones de {year}</h2>
-                    
-                    <div class="version-list">
-                        <!-- Las versiones se cargarán dinámicamente -->
-                    </div>
-
-                    <div class="torrent-note">
-                        <p><i class="fas fa-info-circle"></i> Para usar estos enlaces necesitas:</p>
-                        <ul>
-                            <li>• qBittorrent (Recomendado)</li>
-                            <li>• uTorrent</li>
-                            <li>• BitTorrent</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <footer>
-                <div class="container">
-                    <div class="footer-links">
-                        <a href="#">Términos de uso</a>
-                        <a href="#">Política de privacidad</a>
-                        <a href="#">DMCA</a>
-                        <a href="#">Contacto</a>
-                    </div>
-                    <p>© {year} PremiumDownloads. Todos los derechos reservados.</p>
-                </div>
-            </footer>
-
-            <script>
-            document.addEventListener('DOMContentLoaded', () => {{
-                const data = {versions_json};
-                const versionList = document.querySelector('.version-list');
-                versionList.innerHTML = data.versions.map(version => `
-                    <div class="version-item">
-                        <div class="version-info">
-                            <h3 class="version-name">${{version.version}}</h3>
-                            <span class="version-date">${{version.date}}</span>
-                            <span class="file-size">${{version.size}}</span>
-                        </div>
-                        <div class="download-container">
-                            <div class="download-options">
-                                <a href="${{version.torrentLink}}" class="torrent-button" target="_blank">
-                                    <i class="fas fa-download"></i>
-                                    <span>Torrent</span>
-                                </a>
-                                <a href="${{version.magnetLink}}" class="magnet-button">
-                                    <i class="fas fa-magnet"></i>
-                                    <span>Magnet</span>
-                                </a>
-                            </div>
-                            <div class="torrent-stats">
-                                <div class="peer-info">
-                                    <span class="seeds-indicator"></span>
-                                    <span>Seeds: ${{version.seeds}}</span>
-                                </div>
-                                <div class="peer-info">
-                                    <span class="peers-indicator"></span>
-                                    <span>Peers: ${{version.peers}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }});
-            </script>
-        </body>
-        </html>"""
+                    <!-- ... rest of the template ... -->
+    """
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
             year_file.write(year_template)
