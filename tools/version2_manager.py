@@ -1079,27 +1079,27 @@ class VersionManager:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{program_name} {year} - Versiones</title>
-            <link rel="stylesheet" href="/premiumdownloads2/csscomun.css">
+            <link rel="stylesheet" href="../../csscomun.css">  <!-- Ruta relativa corregida -->
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-            <script src="/premiumdownloads2/js/torrentTrackerversiones.js"></script>
+            <script src="../../js/torrentTrackerversiones.js"></script>  <!-- Ruta relativa corregida -->
         </head>
         <body>
             <header>
                 <div class="container header-content">
-                    <a href="/premiumdownloads2/index.html" class="logo">
+                    <a href="../../index.html" class="logo">  <!-- Ruta relativa corregida -->
                         <span>⬇️</span>
                         <span>PremiumDownloads</span>
                     </a>
                     <nav>
                         <ul>
-                            <li><a href="/premiumdownloads2/index.html">Inicio</a></li>
+                            <li><a href="../../index.html">Inicio</a></li>  <!-- Ruta relativa corregida -->
                         </ul>
                     </nav>
                 </div>
             </header>
 
             <div class="container">
-                <a href="/premiumdownloads2/programs/{selected_file}" class="back-link">
+                <a href="../../programs/{selected_file}" class="back-link">  <!-- Ruta relativa corregida -->
                     <i class="fa fa-arrow-left"></i> Volver a detalles
                 </a>
 
