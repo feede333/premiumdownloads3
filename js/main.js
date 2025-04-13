@@ -552,70 +552,95 @@ function initializeSearch() {
     const searchInput = document.getElementById('searchPrograms');
     const searchButton = document.querySelector('.search-button');
     const programsGrid = document.getElementById('dynamicProgramsGrid');
+    let originalPrograms = [];
+
+    // Store original programs when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        originalPrograms = Array.from(document.querySelectorAll('.program-card'));
+    });
 
     function searchPrograms() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        const programs = document.querySelectorAll('.program-card');
-        const searchResults = [];
 
         // Clear previous results
         programsGrid.innerHTML = '';
 
+        // If search is empty, restore all programs
         if (!searchTerm) {
-            programs.forEach(program => programsGrid.appendChild(program));
+            originalPrograms.forEach(program => {
+                programsGrid.appendChild(program.cloneNode(true));
+            });
             return;
         }
 
-        programs.forEach(program => {
+        const searchResults = [];
+
+        originalPrograms.forEach(program => {
             const title = program.querySelector('.program-title').textContent.toLowerCase();
-            const description = program.querySelector('.program-description').textContent.toLowerCase();
+            const description = program.querySelector('.program-description')?.textContent.toLowerCase() || '';
             const category = program.querySelector('.category-badge')?.textContent.toLowerCase() || '';
 
-            const similarityScore = Math.max(
-                calculateSimilarity(title, searchTerm),
-                calculateSimilarity(description, searchTerm),
-                calculateSimilarity(category, searchTerm)
+            // Improved search logic
+            const searchTerms = searchTerm.split(' ');
+            const matches = searchTerms.every(term => 
+                title.includes(term) || 
+                description.includes(term) || 
+                category.includes(term)
             );
 
-            if (similarityScore > 0.3) {
+            if (matches) {
                 searchResults.push({
                     element: program.cloneNode(true),
-                    score: similarityScore
+                    relevance: calculateRelevance(title, description, category, searchTerm)
                 });
             }
         });
 
         if (searchResults.length === 0) {
-            const noResultsMessage = createNoResultsMessage();
-            programsGrid.appendChild(noResultsMessage);
+            showNoResults();
         } else {
-            // Sort by similarity score and append to grid
+            // Sort by relevance and display results
             searchResults
-                .sort((a, b) => b.score - a.score)
+                .sort((a, b) => b.relevance - a.relevance)
                 .forEach(({ element }) => programsGrid.appendChild(element));
         }
     }
 
-    function createNoResultsMessage() {
+    function calculateRelevance(title, description, category, searchTerm) {
+        let score = 0;
+        const terms = searchTerm.split(' ');
+
+        terms.forEach(term => {
+            // Title matches are most important
+            if (title.includes(term)) score += 3;
+            // Category matches are second
+            if (category.includes(term)) score += 2;
+            // Description matches are third
+            if (description.includes(term)) score += 1;
+        });
+
+        return score;
+    }
+
+    function showNoResults() {
         const message = document.createElement('div');
         message.className = 'no-results-message';
-        message.style.cssText = `
-            text-align: center;
-            padding: 2rem;
-            color: var(--text);
-            width: 100%;
-            grid-column: 1/-1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        `;
         message.innerHTML = `
-            <i class="fas fa-search fa-3x"></i>
-            <h3>No se encontraron resultados</h3>
-            <p>Intenta con términos más generales</p>
+            <div class="no-results-content">
+                <i class="fas fa-search fa-3x"></i>
+                <h3>No se encontraron resultados</h3>
+                <p>Intenta con otros términos de búsqueda</p>
+                <button class="reset-search">Mostrar todos los programas</button>
+            </div>
         `;
-        return message;
+
+        programsGrid.appendChild(message);
+
+        // Add reset button functionality
+        message.querySelector('.reset-search').addEventListener('click', () => {
+            searchInput.value = '';
+            searchPrograms();
+        });
     }
 
     // Event listeners
