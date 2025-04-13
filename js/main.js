@@ -692,3 +692,32 @@ function updateThemeIcon(theme) {
 // Initialize theme toggle when DOM is loaded
 document.addEventListener('DOMContentLoaded', initializeThemeToggle);
 
+// Mobile menu functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navContainer = document.querySelector('.nav-container');
+    
+    if (mobileMenuToggle && navContainer) {
+        mobileMenuToggle.addEventListener('click', function() {
+            navContainer.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+            
+            // Toggle menu icon
+            const icon = mobileMenuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navContainer.contains(e.target) && 
+                !mobileMenuToggle.contains(e.target) && 
+                navContainer.classList.contains('active')) {
+                navContainer.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                mobileMenuToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
+            }
+        });
+    }
+});
+
