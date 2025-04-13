@@ -1,3 +1,16 @@
+// Global variables
+let originalPrograms = [];
+
+// Initialize all functionality when DOM loads
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPrograms();
+    initializeCategoryFilters();
+    initializeMenuToggle();
+    initializeSearch();
+    initializeThemeToggle();
+    initializeLanguageToggle();
+});
+
 // Función principal de inicialización
 document.addEventListener('DOMContentLoaded', async () => {
     // Primero cargar los programas
@@ -553,63 +566,98 @@ function initializeSearch() {
     const searchInput = document.getElementById('searchPrograms');
     const searchButton = document.querySelector('.search-button');
     const programsGrid = document.getElementById('dynamicProgramsGrid');
-    let originalPrograms = [];
-
-    // Store original programs when page loads
-    function storeOriginalPrograms() {
-        originalPrograms = Array.from(document.querySelectorAll('.program-card')).map(program => program.cloneNode(true));
-    }
-
+    
+    // Store original programs
+    storeOriginalPrograms();
+    
+    // Search functionality
     function searchPrograms() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-
-        // Clear previous results
-        programsGrid.innerHTML = '';
-
-        // If search is empty, restore all programs
+        
         if (!searchTerm) {
             restoreOriginalPrograms();
             return;
         }
-
-        // ... rest of search logic ...
+        
+        programsGrid.innerHTML = '';
+        let hasResults = false;
+        
+        originalPrograms.forEach(program => {
+            const programClone = program.cloneNode(true);
+            const title = programClone.querySelector('.card-title')?.textContent.toLowerCase() || '';
+            const category = programClone.querySelector('.category-badge')?.textContent.toLowerCase() || '';
+            const description = programClone.querySelector('.program-description')?.textContent.toLowerCase() || '';
+            
+            if (title.includes(searchTerm) || 
+                category.includes(searchTerm) || 
+                description.includes(searchTerm)) {
+                programsGrid.appendChild(programClone);
+                hasResults = true;
+            }
+        });
+        
+        if (!hasResults) {
+            showNoResultsMessage(true);
+        } else {
+            showNoResultsMessage(false);
+        }
     }
 
-    function restoreOriginalPrograms() {
-        programsGrid.innerHTML = ''; // Clear current content
+    // Event listeners
+    searchInput.addEventListener('input', debounce(() => {
+        const searchTerm = searchInput.value.trim();
+        if (!searchTerm) {
+            restoreOriginalPrograms();
+            showNoResultsMessage(false);
+        } else {
+            searchPrograms();
+        }
+    }, 300));
+    
+    searchButton.addEventListener('click', searchPrograms);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchPrograms();
+    });
+}
+
+// Helper functions
+function storeOriginalPrograms() {
+    const programsGrid = document.getElementById('dynamicProgramsGrid');
+    if (programsGrid) {
+        originalPrograms = Array.from(programsGrid.children).map(program => program.cloneNode(true));
+    }
+}
+
+function restoreOriginalPrograms() {
+    const programsGrid = document.getElementById('dynamicProgramsGrid');
+    if (programsGrid && originalPrograms.length > 0) {
+        programsGrid.innerHTML = '';
         originalPrograms.forEach(program => {
             programsGrid.appendChild(program.cloneNode(true));
         });
     }
-
-    // Initialize and store programs when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        storeOriginalPrograms();
-    });
-
-    // Update original programs after dynamic loading
-    document.addEventListener('programsLoaded', () => {
-        storeOriginalPrograms();
-    });
-
-    // Event listeners
-    searchInput.addEventListener('input', (e) => {
-        if (!e.target.value.trim()) {
-            restoreOriginalPrograms();
-        } else {
-            debounce(searchPrograms, 300)();
-        }
-    });
-
-    searchButton.addEventListener('click', searchPrograms);
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            searchPrograms();
-        }
-    });
 }
 
-// Debounce helper function
+function showNoResultsMessage(show) {
+    const programsGrid = document.getElementById('dynamicProgramsGrid');
+    let message = document.querySelector('.no-results-message');
+    
+    if (!message && show) {
+        message = document.createElement('div');
+        message.className = 'no-results-message';
+        message.innerHTML = `
+            <div class="no-results-content">
+                <i class="fas fa-search fa-3x"></i>
+                <h3>No se encontraron resultados</h3>
+                <p>Intenta con otros términos de búsqueda</p>
+            </div>
+        `;
+        programsGrid.appendChild(message);
+    } else if (message) {
+        message.style.display = show ? 'block' : 'none';
+    }
+}
+
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
