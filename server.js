@@ -42,6 +42,30 @@ app.get('/data/versions.json', (req, res) => {
     }
 });
 
+// Create logs directory if it doesn't exist
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir);
+}
+
+// Add logging endpoint
+app.post('/api/log-visit', (req, res) => {
+    try {
+        const logData = {
+            ...req.body,
+            timestamp: new Date().toISOString()
+        };
+
+        const logPath = path.join(__dirname, 'logs', 'visits.log');
+        fs.appendFileSync(logPath, JSON.stringify(logData) + '\n');
+
+        res.status(200).send('Log recorded');
+    } catch (error) {
+        console.error('Error logging visit:', error);
+        res.status(500).send('Error recording log');
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
