@@ -789,3 +789,37 @@ footer {
     /* Add your small phone styles here */
 }
 
+/* No Results Message */
+.no-results-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+.no-results-content {
+    text-align: center;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.no-results-content i {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.no-results-content h3 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.no-results-content p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+

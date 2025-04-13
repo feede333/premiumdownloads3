@@ -654,7 +654,7 @@ function showNoResultsMessage(show) {
         `;
         programsGrid.appendChild(message);
     } else if (message) {
-        message.style.display = show ? 'block' : 'none';
+        message.style.display = show ? 'flex' : 'none';
     }
 }
 
