@@ -548,3 +548,33 @@ function initializeSearchAndSort() {
     });
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchPrograms');
+    const searchButton = document.querySelector('.search-button');
+
+    function searchPrograms() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const programs = document.querySelectorAll('.program-card');
+
+        programs.forEach(program => {
+            const title = program.querySelector('.program-title').textContent.toLowerCase();
+            const description = program.querySelector('.program-description').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                program.style.display = '';
+            } else {
+                program.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', searchPrograms);
+    searchButton.addEventListener('click', searchPrograms);
+    
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            searchPrograms();
+        }
+    });
+});
+
