@@ -1079,70 +1079,34 @@ class VersionManager:
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>{program_name} {year} - Versiones</title>
-            <link rel="stylesheet" href="../../csscomun.css">  <!-- Ruta relativa corregida -->
+            <link rel="stylesheet" href="../../csscomun.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-            <script src="../../js/torrentTrackerversiones.js"></script>  <!-- Ruta relativa corregida -->
+            <script src="../../js/torrentTrackerversiones.js"></script>
         </head>
         <body>
             <header>
                 <div class="container header-content">
-                    <a href="../../index.html" class="logo">  <!-- Ruta relativa corregida -->
+                    <a href="../../index.html" class="logo">
                         <span>⬇️</span>
                         <span>PremiumDownloads</span>
                     </a>
                     <nav>
                         <ul>
-                            <li><a href="../../index.html">Inicio</a></li>  <!-- Ruta relativa corregida -->
+                            <li><a href="../../index.html">Inicio</a></li>
                         </ul>
                     </nav>
                 </div>
             </header>
 
             <div class="container">
-                <a href="../../programs/{selected_file}" class="back-link">  <!-- Ruta relativa corregida -->
+                <a href="../../programs/{selected_file}" class="back-link">
                     <i class="fa fa-arrow-left"></i> Volver a detalles
                 </a>
 
                 <div class="download-detail">
                     <h2>Versiones de {year}</h2>
-                    <div class="version-list">
-                        <!-- Las versiones se cargarán dinámicamente -->
-                    </div>
-
-                    <div class="torrent-note">
-                        <p><i class="fas fa-info-circle"></i> Para usar estos enlaces necesitas:</p>
-                        <ul>
-                            <li>• qBittorrent (Recomendado)</li>
-                            <li>• uTorrent</li>
-                            <li>• BitTorrent</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <footer>
-                <div class="container">
-                    <div class="footer-links">
-                        <a href="#">Términos de uso</a>
-                        <a href="#">Política de privacidad</a>
-                        <a href="#">DMCA</a>
-                        <a href="#">Contacto</a>
-                    </div>
-                    <p>© {year} PremiumDownloads. Todos los derechos reservados.</p>
-                </div>
-            </footer>
-
-            <script>
-            document.addEventListener('DOMContentLoaded', () => {{
-                const data = {versions_json};
-                const versionList = document.querySelector('.version-list');
-                versionList.innerHTML = data.versions.map(version => `
                     <!-- ... rest of template ... -->
-                `).join('');
-            }});
-            </script>
-        </body>
-        </html>"""
+        """
 
         with open(year_path, 'w', encoding='utf-8') as year_file:
             year_file.write(year_template)
