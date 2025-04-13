@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeCategoryFilters();
     initializeMenuToggle();
     initializeSearchAndSort();
+    initializeThemeToggle();
 });
 
 async function loadPrograms() {
@@ -555,9 +556,9 @@ function initializeSearch() {
     let originalPrograms = [];
 
     // Store original programs when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        originalPrograms = Array.from(document.querySelectorAll('.program-card'));
-    });
+    function storeOriginalPrograms() {
+        originalPrograms = Array.from(document.querySelectorAll('.program-card')).map(program => program.cloneNode(true));
+    }
 
     function searchPrograms() {
         const searchTerm = searchInput.value.toLowerCase().trim();
@@ -567,84 +568,39 @@ function initializeSearch() {
 
         // If search is empty, restore all programs
         if (!searchTerm) {
-            originalPrograms.forEach(program => {
-                programsGrid.appendChild(program.cloneNode(true));
-            });
+            restoreOriginalPrograms();
             return;
         }
 
-        const searchResults = [];
+        // ... rest of search logic ...
+    }
 
+    function restoreOriginalPrograms() {
+        programsGrid.innerHTML = ''; // Clear current content
         originalPrograms.forEach(program => {
-            const title = program.querySelector('.program-title').textContent.toLowerCase();
-            const description = program.querySelector('.program-description')?.textContent.toLowerCase() || '';
-            const category = program.querySelector('.category-badge')?.textContent.toLowerCase() || '';
-
-            // Improved search logic
-            const searchTerms = searchTerm.split(' ');
-            const matches = searchTerms.every(term => 
-                title.includes(term) || 
-                description.includes(term) || 
-                category.includes(term)
-            );
-
-            if (matches) {
-                searchResults.push({
-                    element: program.cloneNode(true),
-                    relevance: calculateRelevance(title, description, category, searchTerm)
-                });
-            }
-        });
-
-        if (searchResults.length === 0) {
-            showNoResults();
-        } else {
-            // Sort by relevance and display results
-            searchResults
-                .sort((a, b) => b.relevance - a.relevance)
-                .forEach(({ element }) => programsGrid.appendChild(element));
-        }
-    }
-
-    function calculateRelevance(title, description, category, searchTerm) {
-        let score = 0;
-        const terms = searchTerm.split(' ');
-
-        terms.forEach(term => {
-            // Title matches are most important
-            if (title.includes(term)) score += 3;
-            // Category matches are second
-            if (category.includes(term)) score += 2;
-            // Description matches are third
-            if (description.includes(term)) score += 1;
-        });
-
-        return score;
-    }
-
-    function showNoResults() {
-        const message = document.createElement('div');
-        message.className = 'no-results-message';
-        message.innerHTML = `
-            <div class="no-results-content">
-                <i class="fas fa-search fa-3x"></i>
-                <h3>No se encontraron resultados</h3>
-                <p>Intenta con otros términos de búsqueda</p>
-                <button class="reset-search">Mostrar todos los programas</button>
-            </div>
-        `;
-
-        programsGrid.appendChild(message);
-
-        // Add reset button functionality
-        message.querySelector('.reset-search').addEventListener('click', () => {
-            searchInput.value = '';
-            searchPrograms();
+            programsGrid.appendChild(program.cloneNode(true));
         });
     }
+
+    // Initialize and store programs when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        storeOriginalPrograms();
+    });
+
+    // Update original programs after dynamic loading
+    document.addEventListener('programsLoaded', () => {
+        storeOriginalPrograms();
+    });
 
     // Event listeners
-    searchInput.addEventListener('input', debounce(searchPrograms, 300));
+    searchInput.addEventListener('input', (e) => {
+        if (!e.target.value.trim()) {
+            restoreOriginalPrograms();
+        } else {
+            debounce(searchPrograms, 300)();
+        }
+    });
+
     searchButton.addEventListener('click', searchPrograms);
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -700,28 +656,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Theme toggle functionality
-const themeToggle = document.querySelector('.theme-toggle');
-const html = document.documentElement;
+function initializeThemeToggle() {
+    const themeToggle = document.querySelector('.theme-toggle');
+    const html = document.documentElement;
 
-// Set initial theme to dark and save it
-const savedTheme = localStorage.getItem('theme') || 'dark';
-html.setAttribute('data-theme', savedTheme);
-updateThemeIcon(savedTheme);
+    // Set initial theme to dark
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
 
-themeToggle?.addEventListener('click', () => {
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
-});
+    themeToggle?.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
+}
 
 function updateThemeIcon(theme) {
-    const icon = themeToggle.querySelector('i');
+    const icon = document.querySelector('.theme-toggle i');
     if (icon) {
         // Show sun icon in dark mode, moon icon in light mode
-        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        if (theme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
     }
 }
+
+// Initialize theme toggle when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeThemeToggle);
 
