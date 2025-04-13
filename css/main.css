@@ -170,6 +170,7 @@ nav a.active {
     min-height: calc(100vh - 200px); /* Ajusta según el tamaño de tu header y footer */
 }
 
+/* Actualizar estilos del sidebar y categorías */
 .sidebar {
     position: sticky;
     top: 20px;
@@ -181,14 +182,6 @@ nav a.active {
     box-shadow: var(--shadow);
     margin-right: 30px;
     border: 1px solid var(--border);
-}
-
-.sidebar h3 {
-    margin-bottom: 1.5rem;
-    color: var(--primary);
-    font-size: 1.2rem;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border);
 }
 
 .category-list {
@@ -241,6 +234,15 @@ nav a.active {
 .category-link:hover .count {
     background: rgba(0, 0, 0, 0.1);
     color: #000;
+}
+
+/* Título del sidebar */
+.sidebar h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+    font-size: 1.2rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
 }
 
 /* Asegurarse que el contenido principal tenga suficiente espacio */
