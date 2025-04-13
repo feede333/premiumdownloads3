@@ -733,7 +733,7 @@ class VersionManager:
                         </a>
                         <nav>
                             <ul>
-                                <li><a href="../index.html">Inicio</a></li>
+                                <li><a href="../../index.html">Inicio</a></li>
                             </ul>
                         </nav>
                     </div>
