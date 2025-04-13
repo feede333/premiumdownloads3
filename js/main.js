@@ -548,6 +548,163 @@ function initializeSearchAndSort() {
     });
 }
 
+function initializeSearch() {
+    const searchInput = document.getElementById('searchPrograms');
+    const searchButton = document.querySelector('.search-button');
+    const programsGrid = document.getElementById('dynamicProgramsGrid');
+
+    function calculateSimilarity(str1, str2) {
+        str1 = str1.toLowerCase();
+        str2 = str2.toLowerCase();
+        
+        // Direct match
+        if (str1.includes(str2) || str2.includes(str1)) return 1;
+        
+        // Levenshtein distance for similar words
+        const matrix = Array(str2.length + 1).fill().map(() => 
+            Array(str1.length + 1).fill(0)
+        );
+
+        for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+        for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+
+        for (let j = 1; j <= str2.length; j++) {
+            for (let i = 1; i <= str1.length; i++) {
+                const cost = str1[i-1] === str2[j-1] ? 0 : 1;
+                matrix[j][i] = Math.min(
+                    matrix[j-1][i] + 1,
+                    matrix[j][i-1] + 1,
+                    matrix[j-1][i-1] + cost
+                );
+            }
+        }
+
+        // Convert distance to similarity score (0-1)
+        const maxLength = Math.max(str1.length, str2.length);
+        return 1 - (matrix[str2.length][str1.length] / maxLength);
+    }
+
+    function searchPrograms() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        if (!searchTerm) {
+            showAllPrograms();
+            return;
+        }
+
+        const programs = document.querySelectorAll('.program-card');
+        const searchResults = [];
+
+        programs.forEach(program => {
+            const title = program.querySelector('.program-title').textContent;
+            const description = program.querySelector('.program-description').textContent;
+            const category = program.querySelector('.category-badge')?.textContent || '';
+
+            // Calculate similarity scores
+            const titleScore = calculateSimilarity(title, searchTerm);
+            const descScore = calculateSimilarity(description, searchTerm);
+            const categoryScore = calculateSimilarity(category, searchTerm);
+
+            // Use the highest similarity score
+            const maxScore = Math.max(titleScore, descScore, categoryScore);
+
+            if (maxScore > 0.3) { // Threshold for similarity
+                searchResults.push({
+                    element: program,
+                    score: maxScore
+                });
+            }
+        });
+
+        // Sort results by similarity score
+        searchResults.sort((a, b) => b.score - a.score);
+
+        // Update UI with results
+        updateSearchResults(searchResults);
+    }
+
+    function updateSearchResults(results) {
+        const noResultsMessage = document.querySelector('.no-results-message') || 
+            createNoResultsMessage();
+
+        if (results.length === 0) {
+            showNoResults(noResultsMessage);
+            return;
+        }
+
+        // Hide no results message
+        noResultsMessage.style.display = 'none';
+
+        // Show results
+        programs.forEach(program => {
+            program.style.display = 'none';
+        });
+
+        results.forEach(({element}) => {
+            element.style.display = '';
+        });
+    }
+
+    function createNoResultsMessage() {
+        const message = document.createElement('div');
+        message.className = 'no-results-message';
+        message.innerHTML = `
+            <div class="no-results-content">
+                <i class="fas fa-search"></i>
+                <p>No se encontraron resultados</p>
+                <p class="suggestion">Intenta con términos más generales</p>
+            </div>
+        `;
+        programsGrid.appendChild(message);
+        return message;
+    }
+
+    function showNoResults(message) {
+        const programs = document.querySelectorAll('.program-card');
+        programs.forEach(program => {
+            program.style.display = 'none';
+        });
+        message.style.display = 'block';
+    }
+
+    function showAllPrograms() {
+        const programs = document.querySelectorAll('.program-card');
+        const noResultsMessage = document.querySelector('.no-results-message');
+        
+        programs.forEach(program => {
+            program.style.display = '';
+        });
+        
+        if (noResultsMessage) {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', debounce(searchPrograms, 300));
+    searchButton.addEventListener('click', searchPrograms);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            searchPrograms();
+        }
+    });
+}
+
+// Debounce helper function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Initialize search when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeSearch);
+
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchPrograms');
     const searchButton = document.querySelector('.search-button');
