@@ -707,13 +707,19 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeThemeToggle() {
     const themeToggle = document.querySelector('.theme-toggle');
     const html = document.documentElement;
+    
+    if (!themeToggle) {
+        console.error('Theme toggle button not found');
+        return;
+    }
 
-    // Set initial theme to dark
+    // Set initial theme
     const savedTheme = localStorage.getItem('theme') || 'dark';
     html.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
 
-    themeToggle?.addEventListener('click', () => {
+    themeToggle.addEventListener('click', () => {
+        console.log('Theme toggle clicked'); // Debug
         const currentTheme = html.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
@@ -726,7 +732,6 @@ function initializeThemeToggle() {
 function updateThemeIcon(theme) {
     const icon = document.querySelector('.theme-toggle i');
     if (icon) {
-        // Show sun icon in dark mode, moon icon in light mode
         if (theme === 'dark') {
             icon.classList.remove('fa-moon');
             icon.classList.add('fa-sun');
@@ -737,8 +742,38 @@ function updateThemeIcon(theme) {
     }
 }
 
-// Initialize theme toggle when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeThemeToggle);
+function initializeLanguageToggle() {
+    const languageToggle = document.querySelector('.language-toggle');
+    
+    if (!languageToggle) {
+        console.error('Language toggle button not found');
+        return;
+    }
+
+    languageToggle.addEventListener('click', () => {
+        console.log('Language toggle clicked'); // Debug
+        const currentLang = languageToggle.getAttribute('data-lang') || 'es';
+        const newLang = currentLang === 'es' ? 'en' : 'es';
+        
+        languageToggle.setAttribute('data-lang', newLang);
+        languageToggle.textContent = newLang === 'es' ? 'EN' : 'ES';
+        localStorage.setItem('language', newLang);
+        
+        // Here you would call your translation function
+        translatePage(newLang);
+    });
+
+    // Set initial language
+    const savedLang = localStorage.getItem('language') || 'es';
+    languageToggle.setAttribute('data-lang', savedLang);
+    languageToggle.textContent = savedLang === 'es' ? 'EN' : 'ES';
+}
+
+// Make sure these are called when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeThemeToggle();
+    initializeLanguageToggle();
+});
 
 // Mobile menu functionality
 document.addEventListener('DOMContentLoaded', function() {

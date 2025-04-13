@@ -101,8 +101,35 @@ nav a.active {
     display: flex;
     gap: 1rem;
     margin-left: auto;
-    z-index: 1;
+    z-index: 1000;
     position: relative;
+}
+
+.theme-toggle,
+.language-toggle {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    position: relative;
+}
+
+.theme-toggle:hover,
+.language-toggle:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+/* Ensure the buttons are clickable in mobile view */
+@media (max-width: 992px) {
+    .theme-language-controls {
+        position: relative;
+        z-index: 1002;
+    }
 }
 
 .theme-language-controls button {
@@ -779,6 +806,12 @@ footer {
         display: block;
         width: 100%;
         text-align: center;
+    }
+
+    /* Ensure the buttons are clickable in mobile view */
+    .theme-language-controls {
+        position: relative;
+        z-index: 1002;
     }
 
     /* Add more mobile styles here if needed */
