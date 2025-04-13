@@ -216,11 +216,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0; /* Remove padding to help centering */
+}
+
+.send-message i {
     font-size: 1.1rem;
+    display: flex; /* Added to help centering */
+    align-items: center;
+    justify-content: center;
+    transform: rotate(45deg); /* Rotate paper plane icon */
+    margin-left: -2px; /* Fine-tune positioning */
+    margin-top: -2px;
 }
 
 .send-message:hover {
-    background: #43a047;
+    background: var(--accent);
     transform: scale(1.05);
 }
 
@@ -570,7 +580,9 @@
 }
 
 .new-chat-btn:hover {
-    background: #3d8b40;
+    background: var(--accent); /* Changed from #3d8b40 to match theme */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 255, 204, 0.2);
 }
 
 .conversations-list {
