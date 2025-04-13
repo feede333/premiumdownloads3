@@ -173,9 +173,10 @@ class VersionManager:
     </header>
 
     <div class="container">
-        <a href="../../programs/{program_id}-details.html" class="back-link">
+        <a href="/premiumdownloads2/programs/{program_id}-details.html" class="back-link">
             <i class="fa fa-arrow-left"></i> Volver a detalles
         </a>
+        print(f"Ruta generada para 'Volver a detalles': ../../programs/{program_id}-details.html")
 
         <div class="download-detail">
             <h2>Versiones de {year}</h2>
