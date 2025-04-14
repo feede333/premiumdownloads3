@@ -619,8 +619,8 @@ class ProgramManagerApp:
             program_id = data["id"].lower().replace(' ', '-')
             program_name = data["title"]
 
-            # Manejar la imagen del programa PRIMERO
-            program_image_relative = "../images/default.png"  # Valor por defecto
+            # Manejar la imagen
+            program_image_relative = "./images/default.png"  # Ruta relativa base
             if hasattr(self, 'image_path') and self.image_path:
                 try:
                     # Crear directorio de imágenes si no existe
@@ -632,11 +632,16 @@ class ProgramManagerApp:
                     image_filename = f"{program_id}{extension}"
                     image_dest = os.path.join(images_dir, image_filename)
                     shutil.copy2(self.image_path, image_dest)
-                    program_image_relative = f"./images/{image_filename}"  # Ruta relativa para index.html
+                    
+                    # Usar rutas relativas diferentes para index y detail
+                    index_image_path = f"./images/{image_filename}"
+                    detail_image_path = f"../images/{image_filename}"
+                    
                     print(f"✅ Imagen copiada: {image_dest}")
                 except Exception as e:
                     print(f"⚠️ Error al procesar imagen: {str(e)}")
-                    program_image_relative = "./images/default.png"
+                    index_image_path = "./images/default.png"
+                    detail_image_path = "../images/default.png"
 
             # AHORA podemos usar program_image_relative en las plantillas
             body_template = f"""
@@ -648,7 +653,7 @@ class ProgramManagerApp:
                 <div class="download-detail">
                     <div class="program-header">
                         <div class="program-image">
-                            <img src="{program_image_relative}" alt="{program_name}">
+                            <img src="{detail_image_path}" alt="{program_name}">
                         </div>
                         <div class="program-info">
                             <h1 class="program-title">{program_name}</h1>
@@ -712,7 +717,7 @@ class ProgramManagerApp:
         <div class="download-detail">
             <div class="download-header">
                 <div class="download-image">
-                    <img src="{program_image_relative}" alt="{program_name}">
+                    <img src="{detail_image_path}" alt="{program_name}">
                 </div>
                 <div class="download-info">
                     <h1 class="download-title">{program_name}</h1>
@@ -858,7 +863,10 @@ class ProgramManagerApp:
                 "title": program_name,
                 "category": data["category"],
                 "date": datetime.now().strftime("%d.%m.%Y"),
-                "image": program_image_relative  # Agregar ruta de la imagen
+                "image": {
+                    "index": index_image_path,
+                    "detail": detail_image_path
+                }
             }
 
             # Actualizar lista de programas
@@ -1148,7 +1156,7 @@ class ProgramManagerApp:
             # Generar HTML para cada programa
             programs_html = []
             for program in sorted(programs, key=lambda x: x["name"]):
-                image_path = program.get("image", "./images/default.png")
+                image_path = program.get("image", {}).get("index", "./images/default.png")
                 programs_html.append(f'''
                     <div class="program-card">
                         <div class="program-image">

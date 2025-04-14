@@ -501,6 +501,7 @@ footer {
     align-content: start;
 }
 
+/* Actualizar los estilos de la tarjeta de programa */
 .program-card {
     background: var(--card);
     border-radius: var(--radius);
@@ -510,6 +511,7 @@ footer {
     height: 100%;
     display: flex;
     flex-direction: column;
+    min-height: 400px; /* Altura mínima para evitar deformaciones */
 }
 
 .program-card:hover {
@@ -548,6 +550,8 @@ footer {
     flex: 1;
     display: flex;
     flex-direction: column;
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    max-width: 100%; /* Previene desbordamiento */
 }
 
 .program-title {
@@ -562,6 +566,10 @@ footer {
     font-size: 0.9rem;
     margin-bottom: 15px;
     flex: 1;
+    word-wrap: break-word; /* Permite que el texto se rompa */
+    overflow-wrap: break-word;
+    max-width: 100%; /* Previene desbordamiento */
+    white-space: normal; /* Permite múltiples líneas */
 }
 
 .program-meta {
@@ -570,6 +578,13 @@ footer {
     align-items: center;
     font-size: 0.85rem;
     color: var(--text-muted);
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si es necesario */
+    gap: 8px; /* Espacio entre elementos cuando se envuelven */
+}
+
+.program-meta > span {
+    white-space: nowrap; /* Mantiene cada elemento en una línea */
 }
 
 /* Responsive adjustments */
