@@ -620,7 +620,6 @@ class ProgramManagerApp:
             program_name = data["title"]
 
             # Manejar la imagen
-            program_image_relative = "./images/default.png"  # Ruta relativa base
             if hasattr(self, 'image_path') and self.image_path:
                 try:
                     # Crear directorio de imágenes si no existe
@@ -633,223 +632,27 @@ class ProgramManagerApp:
                     image_dest = os.path.join(images_dir, image_filename)
                     shutil.copy2(self.image_path, image_dest)
                     
-                    # Usar rutas relativas diferentes para index y detail
-                    index_image_path = f"./images/{image_filename}"
-                    detail_image_path = f"../images/{image_filename}"
+                    # Rutas relativas para ambos archivos
+                    image_path = f"./images/{image_filename}"
                     
                     print(f"✅ Imagen copiada: {image_dest}")
                 except Exception as e:
                     print(f"⚠️ Error al procesar imagen: {str(e)}")
-                    index_image_path = "./images/default.png"
-                    detail_image_path = "../images/default.png"
+                    image_path = "./images/default.png"
+            else:
+                image_path = "./images/default.png"
 
-            # AHORA podemos usar program_image_relative en las plantillas
-            body_template = f"""
-            <div class="container">
-                <a href="../index.html" class="back-link">
-                    <i class="fas fa-arrow-left"></i> Volver a todos los programas
-                </a>
+            # Actualizar el JSON con la información de la imagen
+            program_data = {
+                "id": program_id,
+                "title": program_name,
+                "category": data["category"],
+                "date": datetime.now().strftime("%d.%m.%Y"),
+                "image": image_path,  # Usar la misma ruta para ambos
+                "description": data.get("description", ""),
+            }
 
-                <div class="download-detail">
-                    <div class="program-header">
-                        <div class="program-image">
-                            <img src="{detail_image_path}" alt="{program_name}">
-                        </div>
-                        <div class="program-info">
-                            <h1 class="program-title">{program_name}</h1>
-                            <div class="program-meta">
-                                <span class="category-badge">{data["category"]}</span>
-                                <span class="date">{datetime.now().strftime("%d.%m.%Y")}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- resto del template... -->
-                </div>
-            </div>
-            """
-
-            # Actualizar el template HTML para que coincida con program8-details.html
-            html_template = f"""<!DOCTYPE html>
-<html lang="es" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{program_name} - Descarga | PremiumDownloads</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/detail.css">
-    <link rel="stylesheet" href="../css/commentcss.css">
-    <link rel="stylesheet" href="../css/chat.css">
-    <script src="../js/detailuniversal.js" defer></script>
-    <script src="../js/main.js" defer></script>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="../index.html" class="logo">
-                    <span>⬇️</span>
-                    <span>PremiumDownloads</span>
-                </a>
-                <nav>
-                    <ul>
-                        <li><a href="../index.html">Inicio</a></li>
-                        <li><a href="../populares.html">Populares</a></li>
-                    </ul>
-                </nav>
-                <div class="theme-language-controls">
-                    <button class="theme-toggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button class="language-toggle">
-                        <span class="lang-text">ES</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        <a href="../index.html" class="back-link">
-            <i class="fa fa-arrow-left"></i> Volver a todos los programas
-        </a>
-
-        <div class="download-detail">
-            <div class="download-header">
-                <div class="download-image">
-                    <img src="{detail_image_path}" alt="{program_name}">
-                </div>
-                <div class="download-info">
-                    <h1 class="download-title">{program_name}</h1>
-                    <span class="download-category">{data["category"]}</span>
-                    
-                    <div class="download-meta">
-                        <div class="meta-item meta-size">
-                            <i class="fas fa-download"></i>
-                            <span>{data.get("fileSize", "N/A")}</span>
-                        </div>
-                        <div class="meta-item meta-date">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>{datetime.now().strftime("%d.%m.%Y")}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="download-description">
-                        <p>{data.get("description", "")}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="download-versions">
-                <h3 class="versions-title">Versiones por año</h3>
-                <ul class="version-years">
-                    <!-- AÑOS-START -->
-                    <!-- Se actualizará dinámicamente -->
-                    <!-- AÑOS-END -->
-                </ul>
-            </div>
-
-            <div class="requirements">
-                <h3>Requisitos del sistema</h3>
-                <ul>
-                    <li>Sistema operativo: {data.get("os", "")}</li>
-                    <li>Procesador: {data.get("processor", "")}</li>
-                    <li>Memoria RAM: {data.get("ram", "")}</li>
-                    <li>Espacio en disco: {data.get("disk", "")}</li>
-                    <li>Resolución de pantalla: {data.get("display", "")}</li>
-                </ul>
-            </div>
-
-            <section class="comments-section">
-                <h3>Comentarios</h3>
-                
-                <form id="comment-form" class="comment-form" aria-label="Formulario de comentarios">
-                    <div class="form-row">
-                        <input type="text" id="comment-name" placeholder="Tu nombre" required
-                            class="comment-input" aria-label="Nombre">
-                        <input type="email" id="user-email" placeholder="Correo electrónico (opcional)" 
-                            class="comment-input email-input" aria-label="Correo electrónico">
-                    </div>
-                
-                    <div class="image-upload-container">
-                        <input type="file" id="comment-image" accept="image/*" hidden>
-                        <label for="comment-image" class="photo-icon">
-                            <i class="fas fa-camera"></i> Agregar foto
-                        </label>
-                        <div class="image-preview"></div>
-                    </div>
-                
-                    <textarea id="comment-text" placeholder="Escribe tu comentario..." required
-                        class="comment-textarea" aria-label="Comentario"></textarea>
-                    
-                    <div class="captcha-container">
-                        <div class="captcha-box">
-                            <span id="captcha-text"></span>
-                            <button type="button" id="refresh-captcha" class="refresh-captcha">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                        <input type="text" id="captcha-input" placeholder="Ingresa el código" required
-                            class="captcha-input" aria-label="Verificación CAPTCHA">
-                        <span id="captcha-error" class="captcha-error"></span>
-                    </div>
-
-                    <button type="submit" class="comment-submit">Publicar</button>
-                </form>
-                
-                <div id="comments-list" class="comments-list">
-                    <!-- Los comentarios aparecerán aquí -->
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Términos de uso</a>
-                <a href="#">Política de privacidad</a>
-                <a href="#">DMCA</a>
-                <a href="#">Contacto</a>
-            </div>
-            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-
-    <div class="ai-chat-widget">
-        <button class="chat-toggle">
-            <i class="fas fa-robot"></i>
-        </button>
-        <div class="chat-container">
-            <div class="chat-header">
-                <h3>Asistente IA</h3>
-                <button class="close-chat">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="chat-messages">
-                <div class="message bot">
-                    ¡Hola! Soy el asistente virtual. ¿En qué puedo ayudarte?
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" placeholder="Escribe tu mensaje...">
-                <button class="send-message">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</body>
-</html>"""
-
-            # Guardar el archivo HTML
-            details_path = os.path.join(programs_dir, f"{program_id}-details.html")
-            with open(details_path, "w", encoding="utf-8") as f:
-                f.write(html_template)
-            print(f"✅ Archivo HTML creado: {details_path}")
-
-            # Actualizar el JSON de programas
+            # Actualizar lista de programas
             json_path = self.get_json_path()
             try:
                 with open(json_path, 'r', encoding='utf-8') as f:
@@ -857,19 +660,6 @@ class ProgramManagerApp:
             except (FileNotFoundError, json.JSONDecodeError):
                 programs_data = {"programs": []}
 
-            # Agregar o actualizar programa
-            program_data = {
-                "id": program_id,
-                "title": program_name,
-                "category": data["category"],
-                "date": datetime.now().strftime("%d.%m.%Y"),
-                "image": {
-                    "index": index_image_path,
-                    "detail": detail_image_path
-                }
-            }
-
-            # Actualizar lista de programas
             programs = programs_data.get("programs", [])
             program_index = next((i for i, p in enumerate(programs) 
                                 if p["id"] == program_id), None)
@@ -884,7 +674,31 @@ class ProgramManagerApp:
             # Guardar JSON actualizado
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(programs_data, f, indent=2, ensure_ascii=False)
-            print(f"✅ JSON actualizado: {json_path}")
+
+            # Usar la misma ruta de imagen en el template HTML
+            html_template = f"""
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <!-- ...existing head... -->
+            </head>
+            <body>
+                <!-- ...existing content... -->
+                <div class="download-header">
+                    <div class="download-image">
+                        <img src="{image_path}" alt="{program_name}">
+                    </div>
+                    <!-- ...rest of the template... -->
+                </div>
+            </body>
+            </html>
+            """
+
+            # Guardar el archivo HTML
+            details_path = os.path.join(programs_dir, f"{program_id}-details.html")
+            with open(details_path, "w", encoding="utf-8") as f:
+                f.write(html_template)
+            print(f"✅ Archivo HTML creado: {details_path}")
 
             # Actualizar la lista de programas en la interfaz
             self.load_existing_programs()
@@ -1116,7 +930,6 @@ class ProgramManagerApp:
             return False
 
     def update_index_page(self):
-        """Actualiza el index.html con los programas y sus enlaces"""
         try:
             index_path = os.path.join(self.base_path, "index.html")
             
@@ -1156,7 +969,7 @@ class ProgramManagerApp:
             # Generar HTML para cada programa
             programs_html = []
             for program in sorted(programs, key=lambda x: x["name"]):
-                image_path = program.get("image", {}).get("index", "./images/default.png")
+                image_path = program.get("image", "./images/default.png")
                 programs_html.append(f'''
                     <div class="program-card">
                         <div class="program-image">

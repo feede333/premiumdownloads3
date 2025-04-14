@@ -543,6 +543,7 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%; /* Asegurar ancho completo */
 }
 
 .program-info {
@@ -566,25 +567,26 @@ footer {
     font-size: 0.9rem;
     margin-bottom: 15px;
     flex: 1;
-    word-wrap: break-word; /* Permite que el texto se rompa */
     overflow-wrap: break-word;
-    max-width: 100%; /* Previene desbordamiento */
-    white-space: normal; /* Permite múltiples líneas */
+    word-wrap: break-word;
+    word-break: break-word; /* Forzar quiebre de palabras largas */
+    hyphens: auto;
+    max-width: 100%;
 }
 
 .program-meta {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    width: 100%; /* Asegura que ocupe todo el ancho */
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan si es necesario */
-    gap: 8px; /* Espacio entre elementos cuando se envuelven */
+    flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
+    gap: 8px;
+    width: 100%;
+    margin-top: auto; /* Empujar hacia abajo */
 }
 
 .program-meta > span {
-    white-space: nowrap; /* Mantiene cada elemento en una línea */
+    white-space: nowrap;
+    flex: 0 1 auto; /* Permitir encogimiento */
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
 /* Responsive adjustments */
