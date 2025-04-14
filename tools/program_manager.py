@@ -632,11 +632,11 @@ class ProgramManagerApp:
                     image_filename = f"{program_id}{extension}"
                     image_dest = os.path.join(images_dir, image_filename)
                     shutil.copy2(self.image_path, image_dest)
-                    program_image_relative = f"../images/{image_filename}"
+                    program_image_relative = f"./images/{image_filename}"  # Ruta relativa para index.html
                     print(f"✅ Imagen copiada: {image_dest}")
                 except Exception as e:
                     print(f"⚠️ Error al procesar imagen: {str(e)}")
-                    program_image_relative = "../images/default.png"
+                    program_image_relative = "./images/default.png"
 
             # AHORA podemos usar program_image_relative en las plantillas
             body_template = f"""
@@ -857,7 +857,8 @@ class ProgramManagerApp:
                 "id": program_id,
                 "title": program_name,
                 "category": data["category"],
-                "date": datetime.now().strftime("%d.%m.%Y")
+                "date": datetime.now().strftime("%d.%m.%Y"),
+                "image": program_image_relative  # Agregar ruta de la imagen
             }
 
             # Actualizar lista de programas
@@ -1127,7 +1128,8 @@ class ProgramManagerApp:
                         "name": program_name,
                         "details_url": f"programs/{file}",  # Enlace al details.html específico
                         "version_count": version_count,
-                        "latest_year": max(years).replace(".html", "") if years else "N/A"
+                        "latest_year": max(years).replace(".html", "") if years else "N/A",
+                        "image": f"./images/{program_id}.png" if os.path.exists(f"./images/{program_id}.png") else "./images/default.png"
                     })
 
             # Leer plantilla del index
@@ -1146,16 +1148,22 @@ class ProgramManagerApp:
             # Generar HTML para cada programa
             programs_html = []
             for program in sorted(programs, key=lambda x: x["name"]):
+                image_path = program.get("image", "./images/default.png")
                 programs_html.append(f'''
                     <div class="program-card">
-                        <h3>{program["name"]}</h3>
-                        <div class="program-meta">
-                            <span>Versiones: {program["version_count"]}</span>
-                            <span>Última: {program["latest_year"]}</span>
+                        <div class="program-image">
+                            <img src="{image_path}" alt="{program['name']}">
                         </div>
-                        <a href="{program["details_url"]}" class="program-link">
-                            Ver detalles <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="program-content">
+                            <h3>{program["name"]}</h3>
+                            <div class="program-meta">
+                                <span>Versiones: {program["version_count"]}</span>
+                                <span>Última: {program["latest_year"]}</span>
+                            </div>
+                            <a href="{program["details_url"]}" class="program-link">
+                                Ver detalles <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
                 ''')
 
