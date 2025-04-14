@@ -893,3 +893,83 @@ footer {
     margin: 0;
 }
 
+/* Estilos para la página de detalles */
+.program-details {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
+}
+
+.program-header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.program-header .program-image {
+    flex: 0 0 300px;
+    height: 300px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.program-header .program-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.program-info {
+    flex: 1;
+}
+
+.program-info h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.program-requirements ul {
+    list-style: none;
+    padding: 0;
+}
+
+.program-requirements li {
+    margin: 0.5rem 0;
+}
+
+.download-section {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.download-button {
+    display: inline-block;
+    background: var(--primary);
+    color: #000;
+    padding: 1rem 2rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.download-button:hover {
+    background: var(--secondary);
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .program-header {
+        flex-direction: column;
+    }
+
+    .program-header .program-image {
+        flex: 0 0 200px;
+        height: 200px;
+    }
+}
+

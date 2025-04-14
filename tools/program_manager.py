@@ -675,21 +675,90 @@ class ProgramManagerApp:
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(programs_data, f, indent=2, ensure_ascii=False)
 
-            # Usar la misma ruta de imagen en el template HTML
+            # Actualizar el template HTML con todos los detalles
             html_template = f"""
             <!DOCTYPE html>
-            <html lang="es">
+            <html lang="es" data-theme="light">
             <head>
-                <!-- ...existing head... -->
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>{program_name} - PremiumDownloads</title>
+                <link rel="stylesheet" href="../css/main.css">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
             </head>
             <body>
-                <!-- ...existing content... -->
-                <div class="download-header">
-                    <div class="download-image">
-                        <img src="{image_path}" alt="{program_name}">
+                <header>
+                    <div class="container">
+                        <div class="header-content">
+                            <a href="../index.html" class="logo">
+                                <span>⬇️</span>
+                                <span>PremiumDownloads</span>
+                            </a>
+                            <nav>
+                                <ul>
+                                    <li><a href="../index.html">Inicio</a></li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
-                    <!-- ...rest of the template... -->
-                </div>
+                </header>
+
+                <main class="container">
+                    <div class="program-details">
+                        <div class="program-header">
+                            <div class="program-image">
+                                <img src="../{image_path}" alt="{program_name}">
+                            </div>
+                            <div class="program-info">
+                                <h1>{program_name}</h1>
+                                <span class="category-badge">{data['category']}</span>
+                                <div class="program-meta">
+                                    <span><i class="fas fa-code-branch"></i> Versión: {data.get('version', 'N/A')}</span>
+                                    <span><i class="fas fa-file"></i> Tamaño: {data.get('fileSize', 'N/A')}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="program-description">
+                            <h2>Descripción</h2>
+                            <p>{data.get('description', 'Sin descripción disponible.')}</p>
+                        </div>
+
+                        <div class="program-requirements">
+                            <h2>Requisitos del Sistema</h2>
+                            <ul>
+                                <li><strong>Sistema Operativo:</strong> {data.get('os', 'N/A')}</li>
+                                <li><strong>Procesador:</strong> {data.get('processor', 'N/A')}</li>
+                                <li><strong>RAM:</strong> {data.get('ram', 'N/A')}</li>
+                                <li><strong>Espacio en disco:</strong> {data.get('disk', 'N/A')}</li>
+                                <li><strong>Pantalla:</strong> {data.get('display', 'N/A')}</li>
+                            </ul>
+                        </div>
+
+                        <div class="program-instructions">
+                            <h2>Instrucciones de Instalación</h2>
+                            <p>{data.get('instructions', 'Sin instrucciones disponibles.')}</p>
+                        </div>
+
+                        <div class="download-section">
+                            <a href="{data.get('downloadLink', '#')}" class="download-button">
+                                <i class="fas fa-download"></i> Descargar {program_name}
+                            </a>
+                        </div>
+                    </div>
+                </main>
+
+                <footer>
+                    <div class="container">
+                        <div class="footer-links">
+                            <a href="#">Términos de uso</a>
+                            <a href="#">Política de privacidad</a>
+                            <a href="#">DMCA</a>
+                            <a href="#">Contacto</a>
+                        </div>
+                        <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+                    </div>
+                </footer>
             </body>
             </html>
             """
