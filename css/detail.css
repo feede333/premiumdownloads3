@@ -320,10 +320,67 @@ img {
     border-radius: var(--radius);
 }
 
+.download-detail {
+    position: relative;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    z-index: 1;
+    max-width: 100%;
+}
+
+.download-detail::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, 
+        var(--primary),
+        var(--secondary),
+        var(--accent),
+        var(--primary),
+        var(--secondary)
+    );
+    background-size: 300% 100%; /* Ajustado para transición más suave */
+    animation: neonGlow 6s linear infinite; /* Aumentado a 6s para más suavidad */
+    z-index: -1;
+}
+
+.download-detail::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--card);
+    border-radius: calc(var(--radius) - 2px);
+    z-index: -1;
+}
+
+@keyframes neonGlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 150% 50%; /* Ajustado para loop más suave */
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 .download-info {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .download-title {
@@ -351,7 +408,10 @@ img {
 
 .download-meta {
     display: flex;
-    gap: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+    margin: 1rem 0;
     align-items: center;
     padding: 1rem;
     background: var(--bg-tertiary);
@@ -368,6 +428,9 @@ img {
     background: var(--bg-tertiary);
     border-radius: var(--radius);
     transition: all 0.3s ease;
+    flex: 0 1 auto;
+    white-space: nowrap;
+    margin-right: 1rem;
 }
 
 .meta-item i {
@@ -401,6 +464,11 @@ img {
     border-radius: var(--radius);
     border: 1px solid var(--border);
     transition: all 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .download-description:hover {

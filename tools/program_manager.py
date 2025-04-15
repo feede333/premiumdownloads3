@@ -619,36 +619,44 @@ class ProgramManagerApp:
             program_id = data["id"].lower().replace(' ', '-')
             program_name = data["title"]
 
-            # Manejar la imagen
+            # Manejar la imagen con rutas diferentes para index y detail
             if hasattr(self, 'image_path') and self.image_path:
                 try:
-                    # Crear directorio de imágenes si no existe
                     images_dir = os.path.join(base_dir, 'images')
                     os.makedirs(images_dir, exist_ok=True)
                     
-                    # Copiar la imagen seleccionada
                     _, extension = os.path.splitext(self.image_path)
                     image_filename = f"{program_id}{extension}"
                     image_dest = os.path.join(images_dir, image_filename)
                     shutil.copy2(self.image_path, image_dest)
                     
-                    # Rutas relativas para ambos archivos
-                    image_path = f"./images/{image_filename}"
+                    # Rutas diferentes para index y detail
+                    image_path_index = f"./images/{image_filename}"
+                    image_path_detail = f"../images/{image_filename}"
                     
                     print(f"✅ Imagen copiada: {image_dest}")
                 except Exception as e:
                     print(f"⚠️ Error al procesar imagen: {str(e)}")
-                    image_path = "./images/default.png"
+                    image_path_index = "./images/default.png"
+                    image_path_detail = "../images/default.png"
             else:
-                image_path = "./images/default.png"
+                image_path_index = "./images/default.png"
+                image_path_detail = "../images/default.png"
 
-            # Actualizar el JSON con la información de la imagen
+            # Crear una versión corta de la descripción para el index
+            description_full = data.get("description", "Sin descripción disponible.")
+            description_short = description_full[:150] + "..." if len(description_full) > 150 else description_full
+
+            # Actualizar el JSON con ambas descripciones
             program_data = {
                 "id": program_id,
                 "title": program_name,
                 "category": data["category"],
                 "date": datetime.now().strftime("%d.%m.%Y"),
-                "image": image_path,  # Usar la misma ruta para ambos
+                "image": image_path_index,
+                "image_detail": image_path_detail,
+                "description_short": description_short,
+                "description_full": description_full,
                 "description": data.get("description", ""),
             }
 
@@ -724,7 +732,7 @@ class ProgramManagerApp:
         <div class="download-detail">
             <div class="download-header">
                 <div class="download-image">
-                    <img src="{image_path}" alt="{program_name}">
+                    <img src="{image_path_detail}" alt="{program_name}">
                 </div>
                 <div class="download-info">
                     <h1 class="download-title">{program_name}</h1>
@@ -1106,7 +1114,8 @@ class ProgramManagerApp:
                         "details_url": f"programs/{file}",  # Enlace al details.html específico
                         "version_count": version_count,
                         "latest_year": max(years).replace(".html", "") if years else "N/A",
-                        "image": f"./images/{program_id}.png" if os.path.exists(f"./images/{program_id}.png") else "./images/default.png"
+                        "image": f"./images/{program_id}.png" if os.path.exists(f"./images/{program_id}.png") else "./images/default.png",
+                        "description_short": "Descripción breve del programa"  # Ejemplo de descripción corta
                     })
 
             # Leer plantilla del index
@@ -1125,14 +1134,14 @@ class ProgramManagerApp:
             # Generar HTML para cada programa
             programs_html = []
             for program in sorted(programs, key=lambda x: x["name"]):
-                image_path = program.get("image", "./images/default.png")
                 programs_html.append(f'''
                     <div class="program-card">
                         <div class="program-image">
-                            <img src="{image_path}" alt="{program['name']}">
+                            <img src="{program.get('image', './images/default.png')}" alt="{program['name']}">
                         </div>
                         <div class="program-content">
                             <h3>{program["name"]}</h3>
+                            <p class="program-description">{program.get('description_short', '')}</p>
                             <div class="program-meta">
                                 <span>Versiones: {program["version_count"]}</span>
                                 <span>Última: {program["latest_year"]}</span>
