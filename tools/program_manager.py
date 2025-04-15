@@ -676,92 +676,179 @@ class ProgramManagerApp:
                 json.dump(programs_data, f, indent=2, ensure_ascii=False)
 
             # Actualizar el template HTML con todos los detalles
-            html_template = f"""
-            <!DOCTYPE html>
-            <html lang="es" data-theme="light">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>{program_name} - PremiumDownloads</title>
-                <link rel="stylesheet" href="../css/main.css">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-            </head>
-            <body>
-                <header>
-                    <div class="container">
-                        <div class="header-content">
-                            <a href="../index.html" class="logo">
-                                <span>⬇️</span>
-                                <span>PremiumDownloads</span>
-                            </a>
-                            <nav>
-                                <ul>
-                                    <li><a href="../index.html">Inicio</a></li>
-                                </ul>
-                            </nav>
+            html_template = f"""<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{program_name} - Descarga | PremiumDownloads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/detail.css">
+    <link rel="stylesheet" href="../css/commentcss.css">
+    <link rel="stylesheet" href="../css/chat.css">
+    <script src="../js/detailuniversal.js" defer></script>
+    <script src="../js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="logo">
+                    <span>⬇️</span>
+                    <span>PremiumDownloads</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="../index.html">Inicio</a></li>
+                        <li><a href="../populares.html">Populares</a></li>
+                    </ul>
+                </nav>
+                <div class="theme-language-controls">
+                    <button class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="language-toggle">
+                        <span class="lang-text">ES</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">
+            <i class="fa fa-arrow-left"></i> Volver a todos los programas
+        </a>
+
+        <div class="download-detail">
+            <div class="download-header">
+                <div class="download-image">
+                    <img src="{image_path}" alt="{program_name}">
+                </div>
+                <div class="download-info">
+                    <h1 class="download-title">{program_name}</h1>
+                    <span class="download-category">{data['category']}</span>
+                    
+                    <div class="download-meta">
+                        <div class="meta-item meta-size">
+                            <i class="fas fa-download"></i>
+                            <span>{data.get('fileSize', 'N/A')}</span>
+                        </div>
+                        <div class="meta-item meta-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{datetime.now().strftime('%d.%m.%Y')}</span>
                         </div>
                     </div>
-                </header>
-
-                <main class="container">
-                    <div class="program-details">
-                        <div class="program-header">
-                            <div class="program-image">
-                                <img src="../{image_path}" alt="{program_name}">
-                            </div>
-                            <div class="program-info">
-                                <h1>{program_name}</h1>
-                                <span class="category-badge">{data['category']}</span>
-                                <div class="program-meta">
-                                    <span><i class="fas fa-code-branch"></i> Versión: {data.get('version', 'N/A')}</span>
-                                    <span><i class="fas fa-file"></i> Tamaño: {data.get('fileSize', 'N/A')}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="program-description">
-                            <h2>Descripción</h2>
-                            <p>{data.get('description', 'Sin descripción disponible.')}</p>
-                        </div>
-
-                        <div class="program-requirements">
-                            <h2>Requisitos del Sistema</h2>
-                            <ul>
-                                <li><strong>Sistema Operativo:</strong> {data.get('os', 'N/A')}</li>
-                                <li><strong>Procesador:</strong> {data.get('processor', 'N/A')}</li>
-                                <li><strong>RAM:</strong> {data.get('ram', 'N/A')}</li>
-                                <li><strong>Espacio en disco:</strong> {data.get('disk', 'N/A')}</li>
-                                <li><strong>Pantalla:</strong> {data.get('display', 'N/A')}</li>
-                            </ul>
-                        </div>
-
-                        <div class="program-instructions">
-                            <h2>Instrucciones de Instalación</h2>
-                            <p>{data.get('instructions', 'Sin instrucciones disponibles.')}</p>
-                        </div>
-
-                        <div class="download-section">
-                            <a href="{data.get('downloadLink', '#')}" class="download-button">
-                                <i class="fas fa-download"></i> Descargar {program_name}
-                            </a>
-                        </div>
+                    
+                    <div class="download-description">
+                        <p>{data.get('description', 'Sin descripción disponible.')}</p>
                     </div>
-                </main>
+                </div>
+            </div>
 
-                <footer>
-                    <div class="container">
-                        <div class="footer-links">
-                            <a href="#">Términos de uso</a>
-                            <a href="#">Política de privacidad</a>
-                            <a href="#">DMCA</a>
-                            <a href="#">Contacto</a>
-                        </div>
-                        <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+            <div class="download-versions">
+                <h3 class="versions-title">Versiones por año</h3>
+                <ul class="version-years">
+                    <!-- AÑOS-START -->
+                    <!-- Se actualizará dinámicamente -->
+                    <!-- AÑOS-END -->
+                </ul>
+            </div>
+
+            <div class="requirements">
+                <h3>Requisitos del sistema</h3>
+                <ul>
+                    <li>Sistema operativo: {data.get('os', 'N/A')}</li>
+                    <li>Procesador: {data.get('processor', 'N/A')}</li>
+                    <li>Memoria RAM: {data.get('ram', 'N/A')}</li>
+                    <li>Espacio en disco: {data.get('disk', 'N/A')}</li>
+                    <li>Resolución de pantalla: {data.get('display', 'N/A')}</li>
+                </ul>
+            </div>
+
+            <section class="comments-section">
+                <h3>Comentarios</h3>
+                
+                <form id="comment-form" class="comment-form" aria-label="Formulario de comentarios">
+                    <div class="form-row">
+                        <input type="text" id="comment-name" placeholder="Tu nombre" required
+                            class="comment-input" aria-label="Nombre">
+                        <input type="email" id="user-email" placeholder="Correo electrónico (opcional)" 
+                            class="comment-input email-input" aria-label="Correo electrónico">
                     </div>
-                </footer>
-            </body>
-            </html>
-            """
+                
+                    <div class="image-upload-container">
+                        <input type="file" id="comment-image" accept="image/*" hidden>
+                        <label for="comment-image" class="photo-icon">
+                            <i class="fas fa-camera"></i> Agregar foto
+                        </label>
+                        <div class="image-preview"></div>
+                    </div>
+                
+                    <textarea id="comment-text" placeholder="Escribe tu comentario..." required
+                        class="comment-textarea" aria-label="Comentario"></textarea>
+                    
+                    <div class="captcha-container">
+                        <div class="captcha-box">
+                            <span id="captcha-text"></span>
+                            <button type="button" id="refresh-captcha" class="refresh-captcha">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <input type="text" id="captcha-input" placeholder="Ingresa el código" required
+                            class="captcha-input" aria-label="Verificación CAPTCHA">
+                        <span id="captcha-error" class="captcha-error"></span>
+                    </div>
+
+                    <button type="submit" class="comment-submit">Publicar</button>
+                </form>
+                
+                <div id="comments-list" class="comments-list">
+                    <!-- Los comentarios aparecerán aquí -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Términos de uso</a>
+                <a href="#">Política de privacidad</a>
+                <a href="#">DMCA</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p>© {datetime.now().year} PremiumDownloads. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="ai-chat-widget">
+        <button class="chat-toggle">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>Asistente IA</h3>
+                <button class="close-chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-messages">
+                <div class="message bot">
+                    ¡Hola! Soy el asistente virtual. ¿En qué puedo ayudarte?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" placeholder="Escribe tu mensaje...">
+                <button class="send-message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
 
             # Guardar el archivo HTML
             details_path = os.path.join(programs_dir, f"{program_id}-details.html")
