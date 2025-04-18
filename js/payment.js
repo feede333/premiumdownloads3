@@ -1,37 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Variables para el sistema de pago
-    let stripe, elements, cardElement;
     let currentProduct = null;
-    
-    // Inicializar Stripe (reemplaza con tu clave pública de Stripe)
-    const initializeStripe = () => {
-        stripe = Stripe('pk_test_TuClavePublicaDeStripeAqui');
-        elements = stripe.elements();
-        
-        // Crear el elemento de tarjeta de crédito
-        cardElement = elements.create('card', {
-            style: {
-                base: {
-                    fontSize: '16px',
-                    color: '#32325d',
-                    fontFamily: 'Arial, sans-serif',
-                }
-            }
-        });
-        
-        // Montar el elemento de tarjeta en el DOM
-        cardElement.mount('#card-element');
-        
-        // Manejar errores de validación en tiempo real
-        cardElement.on('change', function(event) {
-            const displayError = document.getElementById('card-errors');
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = '';
-            }
-        });
-    };
     
     // Función para abrir el modal de pago
     window.openPaymentModal = function(productId, productName, price) {
@@ -52,11 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mostrar el modal
         modal.style.display = 'block';
-        
-        // Inicializar Stripe si aún no se ha hecho
-        if (!stripe) {
-            initializeStripe();
-        }
     };
     
     // Cerrar el modal cuando se hace clic en el botón de cerrar
@@ -86,27 +50,27 @@ document.addEventListener('DOMContentLoaded', function() {
         spinner.classList.remove('hidden');
         
         try {
-            // Ejemplo: Crear una intención de pago en tu servidor
-            const paymentIntent = await createPaymentIntent(currentProduct.id, currentProduct.price);
+            // Obtener datos del formulario
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
             
-            // Confirmar el pago con Stripe
-            const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: {
-                        name: document.getElementById('name').value,
-                        email: document.getElementById('email').value
-                    }
-                }
+            // Crear solicitud de pago a Paykassa (a través de tu backend)
+            const paymentResponse = await createPaykassaPayment({
+                amount: currentProduct.price,
+                currency: 'USD', // o la moneda que prefieras
+                orderId: `order_${Date.now()}`, // generar un ID único para el pedido
+                productId: currentProduct.id,
+                productName: currentProduct.name,
+                customerName: name,
+                customerEmail: email
             });
             
-            if (result.error) {
+            if (paymentResponse.success) {
+                // Redirigir al usuario a la página de pago de Paykassa
+                window.location.href = paymentResponse.redirectUrl;
+            } else {
                 // Mostrar error
-                const errorElement = document.getElementById('card-errors');
-                errorElement.textContent = result.error.message;
-            } else if (result.paymentIntent.status === 'succeeded') {
-                // Pago exitoso, redirigir a la página de descarga o mostrar mensaje de éxito
-                window.location.href = `download.html?id=${currentProduct.id}&token=${result.paymentIntent.id}`;
+                document.getElementById('card-errors').textContent = paymentResponse.message || 'Error al procesar el pago';
             }
         } catch (error) {
             console.error('Error en el proceso de pago:', error);
@@ -119,19 +83,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Función para crear una intención de pago en el servidor
-    async function createPaymentIntent(productId, amount) {
-        // Esta función debería comunicarse con tu servidor para crear una intención de pago
-        // Este es solo un ejemplo, deberías implementar la llamada real a tu backend
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    clientSecret: 'test_client_secret',
-                    amount: amount,
-                    id: 'pi_example'
-                });
-            }, 1000);
-        });
+    // Función para crear una solicitud de pago a Paykassa (a través de tu backend)
+    async function createPaykassaPayment(paymentData) {
+        try {
+            // Esta es una solicitud a tu propio backend, que luego se comunicará con Paykassa
+            const response = await fetch('/api/create-paykassa-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(paymentData)
+            });
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error al crear la solicitud de pago:', error);
+            return {
+                success: false,
+                message: 'Error de comunicación con el servidor'
+            };
+        }
     }
 
     // Ejemplo de cómo agregar un botón de compra a tus tarjetas de producto
