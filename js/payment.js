@@ -104,19 +104,4 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
     }
-
-    // Ejemplo de cómo agregar un botón de compra a tus tarjetas de producto
-    function createProgramCard(program) {
-        // ...código existente...
-        
-        const buyButton = document.createElement('button');
-        buyButton.className = 'buy-button';
-        buyButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Comprar';
-        buyButton.addEventListener('click', function() {
-            openPaymentModal(program.id, program.name, program.price);
-        });
-        
-        cardActions.appendChild(buyButton);
-        // ...código existente...
-    }
 });

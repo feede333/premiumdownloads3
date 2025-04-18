@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="./css/payment.css">
     <script src="./js/main.js" defer></script>
     <script src="js/chat.js" defer></script>
-    <script src="https://js.stripe.com/v3/"></script>
     <script src="./js/payment.js" defer></script>
     
     <!-- Google tag (gtag.js) -->
@@ -155,16 +154,11 @@
                         <label for="email">Email</label>
                         <input type="email" id="email" required>
                     </div>
-                    <div class="form-group">
-                        <label>Información de pago</label>
-                        <!-- Contenedor para el elemento Stripe -->
-                        <div id="card-element"></div>
-                        <div id="card-errors" role="alert"></div>
-                    </div>
                     <button type="submit" id="submit-payment" class="payment-button">
-                        <span id="button-text">Pagar ahora</span>
+                        <span id="button-text">Proceder al pago</span>
                         <div class="spinner hidden" id="spinner"></div>
                     </button>
+                    <div id="card-errors" role="alert"></div>
                 </form>
             </div>
         </div>

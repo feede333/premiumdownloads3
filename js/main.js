@@ -66,27 +66,41 @@ async function loadPrograms() {
     }
 }
 
-function createProgramCard(program, index) {
+function createProgramCard(program) {
     const card = document.createElement('div');
-    card.className = 'download-card';
-    card.dataset.category = program.category;
-    card.style.animationDelay = `${index * 0.1}s`;
+    card.className = 'program-card';
+    card.setAttribute('data-category', program.category);
     
+    // Crear el contenido de la tarjeta
     card.innerHTML = `
-        <div class="card-image">
-            <img src="${program.image}" alt="${program.title}">
+        <div class="program-image">
+            <img src="${program.image}" alt="${program.name}">
         </div>
-        <div class="card-content">
-            <h3 class="card-title">${program.title}</h3>
-            <span class="category-badge">${program.category}</span>
-            <div class="card-meta">
-                <span>${program.fileSize}</span>
-                <span>${program.version}</span>
-            </div>
+        <div class="program-info">
+            <h3>${program.name}</h3>
             <p class="program-description">${program.description}</p>
-            <a href="./programs/${program.id}-details.html" class="download-button">Ver detalles</a>
+            <div class="program-meta">
+                <span class="version">v${program.version}</span>
+                <span class="size">${program.size}</span>
+            </div>
+            <p class="price">$${program.price.toFixed(2)}</p>
+        </div>
+        <div class="card-actions">
+            <!-- Botón de compra se añade por JavaScript -->
         </div>
     `;
+    
+    const cardActions = card.querySelector('.card-actions');
+    
+    // Añadir botón de compra
+    const buyButton = document.createElement('button');
+    buyButton.className = 'buy-button';
+    buyButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Comprar';
+    buyButton.addEventListener('click', function() {
+        openPaymentModal(program.id, program.name, program.price);
+    });
+    
+    cardActions.appendChild(buyButton);
     
     return card;
 }
