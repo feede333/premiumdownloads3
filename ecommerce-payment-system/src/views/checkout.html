@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - PremiumDownloads</title>
+    <link rel="stylesheet" href="../public/css/checkout.css">
+    <script src="../public/js/payment.js" defer></script>
+</head>
+<body>
+    <div class="checkout-container">
+        <h1>Información de Pago</h1>
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="cardNumber">Número de Tarjeta</label>
+                <input type="text" id="cardNumber" name="cardNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="cardExpiry">Fecha de Expiración (MM/AA)</label>
+                <input type="text" id="cardExpiry" name="cardExpiry" required>
+            </div>
+            <div class="form-group">
+                <label for="cardCVC">CVC</label>
+                <input type="text" id="cardCVC" name="cardCVC" required>
+            </div>
+            <div class="form-group">
+                <label for="cardHolder">Nombre del Titular</label>
+                <input type="text" id="cardHolder" name="cardHolder" required>
+            </div>
+            <button type="submit" class="submit-button">Pagar</button>
+        </form>
+        <div id="paymentStatus" class="payment-status"></div>
+    </div>
+</body>
+</html>

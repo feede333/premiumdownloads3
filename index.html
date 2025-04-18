@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/chat.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="./css/payment.css">
     <script src="./js/main.js" defer></script>
     <script src="js/chat.js" defer></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="./js/payment.js" defer></script>
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VNB0480EHZ"></script>
@@ -121,6 +124,48 @@
                 <button class="send-message">
                     <i class="fas fa-paper-plane"></i>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="paymentModal" class="payment-modal">
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h3>Completar Pago</h3>
+                <button class="close-payment-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="payment-modal-body">
+                <div class="product-summary">
+                    <h4>Resumen de compra</h4>
+                    <div id="productDetails"></div>
+                    <div class="price-info">
+                        <span>Total:</span>
+                        <span id="totalPrice"></span>
+                    </div>
+                </div>
+                <form id="payment-form">
+                    <div class="form-group">
+                        <label for="name">Nombre completo</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Información de pago</label>
+                        <!-- Contenedor para el elemento Stripe -->
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert"></div>
+                    </div>
+                    <button type="submit" id="submit-payment" class="payment-button">
+                        <span id="button-text">Pagar ahora</span>
+                        <div class="spinner hidden" id="spinner"></div>
+                    </button>
+                </form>
             </div>
         </div>
     </div>

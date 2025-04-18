@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Pago - PremiumDownloads</title>
+    <link rel="stylesheet" href="../public/css/checkout.css">
+</head>
+<body>
+    <div class="confirmation-container">
+        <h1>¡Gracias por tu compra!</h1>
+        <p>Tu pago ha sido procesado con éxito.</p>
+        <p>Detalles de tu pedido:</p>
+        <ul>
+            <li>ID de Pedido: <span id="orderId"></span></li>
+            <li>Método de Pago: <span id="paymentMethod"></span></li>
+            <li>Total: <span id="totalAmount"></span></li>
+        </ul>
+        <a href="index.html" class="btn">Volver a la tienda</a>
+    </div>
+
+    <script src="../public/js/payment.js"></script>
+</body>
+</html>
